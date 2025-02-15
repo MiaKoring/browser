@@ -11,4 +11,5 @@ struct DownloadOverviewButton {
     @Environment(AppViewModel.self) var appViewModel
     @Environment(ContentViewModel.self) var contentViewModel
     @State var playAnimation: Bool = false
+    @State var isHovered = false
 }

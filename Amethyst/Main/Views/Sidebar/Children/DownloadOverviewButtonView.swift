@@ -9,6 +9,12 @@ import SwiftUI
 
 extension DownloadOverviewButton: View {
     var body: some View {
+        if isHovered {
+            HStack {
+                Spacer()
+                ShortDownloadOverview()
+            }
+        }
         HStack {
             Spacer()
             Image(systemName: "arrow.down.app")
@@ -19,7 +25,7 @@ extension DownloadOverviewButton: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(-2)
                 .overlay(alignment: .topTrailing) {
-                    if !appViewModel.downloadManager.activeDownloads.isEmpty {
+                    if let downloadManager = appViewModel.downloadManager, !downloadManager.activeDownloads.isEmpty {
                         Circle()
                             .fill(.blue)
                             .frame(width: 8)
@@ -30,6 +36,7 @@ extension DownloadOverviewButton: View {
                     if isHovered {
                         playAnimation.toggle()
                     }
+                    self.isHovered = isHovered
                 }
                 .symbolEffect(.wiggle.byLayer, value: playAnimation)
         }

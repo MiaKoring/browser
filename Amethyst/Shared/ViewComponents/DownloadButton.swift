@@ -26,7 +26,7 @@ struct DownloadButton: View {
                 .padding()
                 .onTapGesture {
                     if let url = webViewModel.currentURL {
-                        appViewModel.downloadManager.downloadFile(from: url, withName: nil)
+                        appViewModel.downloadManager?.downloadFile(from: url, withName: nil)
                     }
                 }
         }

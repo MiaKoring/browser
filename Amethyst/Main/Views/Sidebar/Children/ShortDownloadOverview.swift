@@ -7,8 +7,21 @@
 
 import SwiftUI
 
-struct ShortDownloadOverview: View {
+extension ShortDownloadOverview: View {
     var body: some View {
-        Text("Test")
+        VStack(alignment: .leading) {
+            if !displayedItems.isEmpty {
+                ForEach(displayedItems, id: \.name) { item in
+                    HStack {
+                        item.icon
+                            .frame(maxWidth: 50, maxHeight: 50)
+                        Text(item.name)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            updateDisplayedItems()
+        }
     }
 }

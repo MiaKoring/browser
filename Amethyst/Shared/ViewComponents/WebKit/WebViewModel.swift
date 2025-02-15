@@ -217,7 +217,7 @@ class WebViewModel: NSObject, ObservableObject {
 
     func downloadBinary(from url: URL?, withName name: String?) {
         guard let url = url else { return }
-        appViewModel.downloadManager.downloadFile(from: url, withName: name)
+        appViewModel.downloadManager?.downloadFile(from: url, withName: name)
     }
     
     func appendHistory() {

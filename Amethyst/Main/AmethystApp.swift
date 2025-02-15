@@ -19,16 +19,19 @@ struct AmethystApp: App {
     @State var contentViewModel = ContentViewModel(id: "window1")
     @State var contentViewModel2 = ContentViewModel(id: "window2")
     @State var contentViewModel3 = ContentViewModel(id: "window3")
+    @Environment(\.modelContext) var context
     let container: ModelContainer
     
     init() {
         do {
-            container = try ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, migrationPlan: TabMigration.self)
+            container = try ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self)
             
         } catch {
             fatalError("failed to initialize model container: \(error.localizedDescription)")
         }
         self.appViewModel = AppViewModel()
+        appViewModel.modelContainer = container
+        self.appViewModel.downloadManager = DownloadManager()
     }
     
     

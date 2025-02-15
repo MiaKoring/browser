@@ -28,7 +28,7 @@ extension WebViewModel: WKUIDelegate {
             return openInNewTab(configuration: configuration)
         } else if navigationAction.shouldPerformDownload {
             guard let url = navigationAction.request.url else { return nil }
-            appViewModel.downloadManager.downloadFile(from: url, withName: nil)
+            appViewModel.downloadManager?.downloadFile(from: url, withName: nil)
             return nil
         } else {
             print("was wird das jetzt? \(navigationAction.description)")

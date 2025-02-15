@@ -5,6 +5,7 @@
 //  Created by Mia Koring on 10.12.24.
 //
 import SwiftUI
+import SwiftData
 
 @Observable
 class DownloadManager: NSObject, URLSessionDownloadDelegate {
@@ -57,7 +58,10 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let downloadInfo = activeDownloads[downloadTask] else { return }
+        guard let downloadInfo = activeDownloads[downloadTask] else {
+            print("couldn't get active download info")
+            return
+        }
         
         do {
             var targetURL = downloadInfo.targetURL
@@ -79,6 +83,28 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
             
             
             activeDownloads.removeValue(forKey: downloadTask)
+            
+            guard let bookmark = try? targetURL.bookmarkData(
+                options: .withSecurityScope,
+                includingResourceValuesForKeys: [.nameKey, .contentTypeKey, .creationDateKey],
+                relativeTo: nil
+            ) else {
+                print("failed to create Bookmark")
+                return
+            }
+            DispatchQueue.main.async(execute: DispatchWorkItem(block: {
+                do {
+                    let context = try ModelContext(ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self))
+                    let downloaded = DownloadedItem(bookmark: bookmark, createdAt: Date.now.timeIntervalSinceReferenceDate)
+                    context.insert(downloaded)
+                    try context.save()
+                    print(downloaded.createdAt)
+                    print(downloaded.bookmark)
+                } catch {
+                    print("error: \(error)")
+                }
+                
+            }))
         } catch {
             print("Download-Fehler: \(error.localizedDescription)")
         }
@@ -95,3 +121,4 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
         updateDownload(for: downloadTask, progress: progress, downloadedBytes: totalBytesWritten, totalBytes: totalBytesExpectedToWrite)
     }
 }
+

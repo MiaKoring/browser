@@ -64,6 +64,7 @@ struct ContentView {
     @Environment(\.scenePhase) var scenePhase
     @State var showHistory = false
     @State var showMeiliSetup = false
+    @Query var downloadedItems: [DownloadedItem]
     
     
     func onAppear() {

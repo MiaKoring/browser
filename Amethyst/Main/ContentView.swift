@@ -12,6 +12,7 @@ import WebKit
 
 extension ContentView: View, TabOpener {
     
+    
     var body: some View {
         GeometryReader { reader in
             BackgroundView {
@@ -168,6 +169,9 @@ extension ContentView: View, TabOpener {
         }
         .onChange(of: appViewModel.currentlyActiveWindowId) {
             print(appViewModel.currentlyActiveWindowId)
+        }
+        .onAppear {
+            print("downloadedItems: \(downloadedItems)")
         }
     }
     
