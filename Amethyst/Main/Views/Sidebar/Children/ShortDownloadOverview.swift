@@ -15,7 +15,21 @@ extension ShortDownloadOverview: View {
                     HStack {
                         item.icon
                             .frame(maxWidth: 50, maxHeight: 50)
+                            .if(item.progress != nil) { view in
+                                view.overlay(alignment: .bottom) {
+                                    ProgressView(value: item.progress?.value)
+                                        .progressViewStyle(.linear)
+                                        .padding(.horizontal, 5)
+                                }
+                            }
                         Text(item.name)
+                            .lineLimit(1)
+                        Spacer()
+                    }
+                    .onTapGesture {
+                        if let url = item.url {
+                            NSWorkspace.shared.open(url)
+                        }
                     }
                 }
             }
@@ -25,3 +39,4 @@ extension ShortDownloadOverview: View {
         }
     }
 }
+

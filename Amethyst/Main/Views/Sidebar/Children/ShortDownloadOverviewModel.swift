@@ -16,7 +16,8 @@ struct ShortDownloadOverview {
     struct DownloadItem: Hashable {
         let name: String
         let dateCreated: Double
-        let progress: Double?
+        let progress: Progress?
+        let url: URL?
         let icon: Image
         
         func hash(into hasher: inout Hasher) {
@@ -27,7 +28,7 @@ struct ShortDownloadOverview {
     func updateDisplayedItems() {
         print("shouldLoad")
         let active = appViewModel.downloadManager?.activeDownloads.prefix(4).map { item in
-            DownloadItem(name: item.value.targetURL.lastPathComponent, dateCreated: Date.now.timeIntervalSinceReferenceDate, progress: item.value.progress, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(item.value.targetURL.pathExtension) ?? .data)))
+            DownloadItem(name: item.value.targetURL.lastPathComponent, dateCreated: Date.now.timeIntervalSinceReferenceDate, progress: item.value.progress, url: nil, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(item.value.targetURL.pathExtension) ?? .data)))
         }
         var newest: [DownloadItem] = []
         
@@ -38,6 +39,7 @@ struct ShortDownloadOverview {
             var bookmarkDataIsStale: Bool = false
             guard let data = Data(base64Encoded: item.bookmark), let url = try? URL(resolvingBookmarkData: data, options: .withSecurityScope, bookmarkDataIsStale: &bookmarkDataIsStale) else {
                 print("couldn't get URL")
+                context.delete(item)
                 continue
             }
             guard let activeCount = active?.count, newest.count + activeCount < 4 else { continue }
@@ -49,11 +51,12 @@ struct ShortDownloadOverview {
                 item.bookmark = bookmarkData.base64EncodedString()
             }
             
-            guard let ressourceValues = try? url.resourceValues(forKeys: [.nameKey, .typeIdentifierKey]), let name = ressourceValues.name, let typeIdentifier = ressourceValues.typeIdentifier else {
+            guard !FileManager.default.isInTrash(url), let ressourceValues = try? url.resourceValues(forKeys: [.nameKey, .typeIdentifierKey]), let name = ressourceValues.name, let typeIdentifier = ressourceValues.typeIdentifier else {
                 print("failed to get ressource values")
+                context.delete(item)
                 continue
             }
-            newest.append(DownloadItem(name: name, dateCreated: item.createdAt, progress: nil, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(typeIdentifier) ?? .data))))
+            newest.append(DownloadItem(name: name, dateCreated: item.createdAt, progress: nil, url: url, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(typeIdentifier) ?? .data))))
             
             
         }
@@ -69,4 +72,17 @@ struct ShortDownloadOverview {
         print(displayedItems)
     }
     
+}
+
+extension FileManager {
+    public func isInTrash(_ file: URL) -> Bool {
+        var relationship: URLRelationship = .other
+        try? getRelationship(
+            &relationship,
+            of: .trashDirectory,
+            in: .allDomainsMask,
+            toItemAt: file
+        )
+        return relationship == .contains
+    }
 }

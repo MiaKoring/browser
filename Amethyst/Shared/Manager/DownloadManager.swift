@@ -8,12 +8,25 @@ import SwiftUI
 import SwiftData
 
 @Observable
+class Progress: Equatable {
+    static func == (lhs: Progress, rhs: Progress) -> Bool {
+        lhs.value == rhs.value
+    }
+    
+    var value: Double
+    
+    init(value: Double) {
+        self.value = value
+    }
+}
+
+@Observable
 class DownloadManager: NSObject, URLSessionDownloadDelegate {
     struct DownloadInfo {
         let originalURL: URL
         let targetURL: URL
         let downloadURL: URL
-        var progress: Double
+        var progress: Progress
         var totalBytes: Int64
         var downloadedBytes: Int64
     }
@@ -40,7 +53,7 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
             originalURL: url,
             targetURL: targetURL,
             downloadURL: downloadSidecarURL,
-            progress: 0.0,
+            progress: Progress(value: 0.0),
             totalBytes: 0,
             downloadedBytes: 0
         )
@@ -51,7 +64,7 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
     private func updateDownload(for task: URLSessionTask, progress: Double, downloadedBytes: Int64, totalBytes: Int64) {
         guard var downloadInfo = activeDownloads[task] else { return }
         
-        downloadInfo.progress = progress
+        downloadInfo.progress.value = progress
         downloadInfo.downloadedBytes = downloadedBytes
         downloadInfo.totalBytes = totalBytes
         activeDownloads[task] = downloadInfo

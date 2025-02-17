@@ -163,6 +163,10 @@ extension AmethystApp {
         appViewModel.openWindowByID = { id in
             openWindow(id: id)
         }
+        
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            return handleAndPassCommand(event)
+        }
     }
     
     func search() {

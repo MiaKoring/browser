@@ -13,7 +13,22 @@ extension DownloadOverviewButton: View {
             HStack {
                 Spacer()
                 ShortDownloadOverview()
+                    .frame(width: 200)
+                    .background {
+                        ZStack {
+                            UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
+                                .fill(.thinMaterial)
+                            UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
+                                .stroke(style: .init(lineWidth: 2))
+                                .fill(.thinMaterial)
+                        }
+                        
+                    }
+                    .onHover { hovering in
+                        self.isHovered = hovering
+                    }
             }
+            .padding(.bottom, -6)
         }
         HStack {
             Spacer()
