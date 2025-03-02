@@ -10,4 +10,6 @@ enum Regexpr {
     case urlWithoutProtocol
     case ip
     case ipWithoutProtocol
+    case localhost
+    case localhostWithoutProtocol
 }

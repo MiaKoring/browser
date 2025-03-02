@@ -33,6 +33,12 @@ extension TabOpener {
             processURL(text: text, tabID: tabID, hasProtocol: true)
         } else if let _ = text.wholeMatch(of: Regexpr.ipWithoutProtocol.regex) {
             processURL(text: text, tabID: tabID)
+        } else if let _ = text.wholeMatch(of: Regexpr.localhost.regex){
+            let text = text.replacingOccurrences(of: "localhost", with: "127.0.0.1", range: text.firstRange(of: "localhost"))
+            processURL(text: text, tabID: tabID, hasProtocol: true)
+        } else if let _ = text.wholeMatch(of: Regexpr.localhostWithoutProtocol.regex){
+            let text = text.replacingOccurrences(of: "localhost", with: "127.0.0.1", range: text.firstRange(of: "localhost"))
+            processURL(text: "http://\(text)", tabID: tabID, hasProtocol: true)
         } else {
             processURL(text: text, tabID: tabID, searchEngine: true)
         }
