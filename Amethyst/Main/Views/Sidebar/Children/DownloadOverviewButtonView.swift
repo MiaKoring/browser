@@ -13,6 +13,7 @@ extension DownloadOverviewButton: View {
             HStack {
                 Spacer()
                 ShortDownloadOverview()
+                    .clipShape(UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15)))
                     .frame(width: 200)
                     .background {
                         ZStack {

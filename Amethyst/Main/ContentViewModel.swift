@@ -7,6 +7,7 @@
 import SwiftUI
 import SwiftData
 import WebKit
+import AuthenticationServices
 
 @Observable
 class ContentViewModel: NSObject, ObservableObject {
@@ -68,6 +69,9 @@ struct ContentView {
     
     
     func onAppear() {
+        UserDefaults.standard.set(true, forKey: "WebKitLoggingEnabled")
+        UserDefaults.standard.set("WebAuthn,Authenticator", forKey: "WebKitLogLevel")
+
         NotificationCenter.default.addObserver(
             forName: NSWindow.didBecomeMainNotification,
             object: nil,

@@ -13,28 +13,13 @@ struct ShortDownloadOverview {
     @State var displayedItems = [DownloadItem]()
     @Query(sort: [SortDescriptor<DownloadedItem>(\.createdAt, order: .reverse)]) var downloadedItems: [DownloadedItem]
     
-    struct DownloadItem: Hashable {
-        let name: String
-        let dateCreated: Double
-        let progress: Progress?
-        let url: URL?
-        let icon: Image
-        
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(name + dateCreated.description)
-        }
-    }
-    
     func updateDisplayedItems() {
-        print("shouldLoad")
         let active = appViewModel.downloadManager?.activeDownloads.prefix(4).map { item in
             DownloadItem(name: item.value.targetURL.lastPathComponent, dateCreated: Date.now.timeIntervalSinceReferenceDate, progress: item.value.progress, url: nil, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(item.value.targetURL.pathExtension) ?? .data)))
         }
         var newest: [DownloadItem] = []
         
-        let newestDownloadedItems = downloadedItems.prefix(4)
-        
-        print("DownloadedItemsCount \(downloadedItems.count)")
+        let newestDownloadedItems = downloadedItems.filter({$0.createdAt > Date.now.timeIntervalSinceReferenceDate - 3600 * 24 * 7}).prefix(4)
         for item in newestDownloadedItems {
             var bookmarkDataIsStale: Bool = false
             guard let data = Data(base64Encoded: item.bookmark), let url = try? URL(resolvingBookmarkData: data, options: .withSecurityScope, bookmarkDataIsStale: &bookmarkDataIsStale) else {

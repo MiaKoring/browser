@@ -9,6 +9,7 @@ import SwiftData
 import WebKit
 import Combine
 import MeiliSearch
+import AuthenticationServices
 
 class WebViewModel: NSObject, ObservableObject {
     @Published var canGoBack: Bool = false
@@ -35,6 +36,8 @@ class WebViewModel: NSObject, ObservableObject {
         self.appViewModel = appViewModel
         super.init()
         
+        
+        
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
         webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
@@ -49,6 +52,11 @@ class WebViewModel: NSObject, ObservableObject {
         webConfiguration.upgradeKnownHostsToHTTPS = true
         webConfiguration.preferences.isFraudulentWebsiteWarningEnabled = true
         webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
+        
+        let contentController = WKUserContentController()
+        contentController.addScriptMessageHandler(self, contentWorld: .defaultClient, name: "webauthn")
+        webConfiguration.userContentController = contentController
+        
         self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
         self.webView?.allowsBackForwardNavigationGestures = false
         self.webView?.underPageBackgroundColor = .myPurple
@@ -56,9 +64,11 @@ class WebViewModel: NSObject, ObservableObject {
         self.webView?.navigationDelegate = self
         self.webView?.isInspectable = true
         self.webView?.allowsLinkPreview = true
+        self.webView?.isInspectable = true
         setupBindings()
         injectJavaScript()
         injectCSSGlobally()
+        injectCustomWebAuthn()
     }
     
     init(processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -81,6 +91,11 @@ class WebViewModel: NSObject, ObservableObject {
         webConfiguration.upgradeKnownHostsToHTTPS = true
         webConfiguration.preferences.isFraudulentWebsiteWarningEnabled = true
         webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
+        
+        let contentController = WKUserContentController()
+        contentController.addScriptMessageHandler(self, contentWorld: .defaultClient, name: "webauthn")
+        webConfiguration.userContentController = contentController
+        
         self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
         self.webView?.allowsBackForwardNavigationGestures = false
         self.webView?.underPageBackgroundColor = .myPurple
@@ -88,9 +103,11 @@ class WebViewModel: NSObject, ObservableObject {
         self.webView?.navigationDelegate = self
         self.webView?.isInspectable = true
         self.webView?.allowsLinkPreview = true
+        self.webView?.isInspectable = true
         setupBindings()
         injectJavaScript()
         injectCSSGlobally()
+        injectCustomWebAuthn()
     }
     
     init(processPool: WKProcessPool, restore tab: SavedTab, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -111,6 +128,12 @@ class WebViewModel: NSObject, ObservableObject {
         webConfiguration.upgradeKnownHostsToHTTPS = true
         webConfiguration.preferences.isFraudulentWebsiteWarningEnabled = true
         webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
+        webConfiguration.preferences.setValue(true, forKey: "allowWebAuthentication")
+        
+        let contentController = WKUserContentController()
+        contentController.addScriptMessageHandler(self, contentWorld: .defaultClient, name: "webauthn")
+        webConfiguration.userContentController = contentController
+        
         self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
         self.webView?.allowsBackForwardNavigationGestures = false
         self.webView?.underPageBackgroundColor = .myPurple
@@ -118,6 +141,7 @@ class WebViewModel: NSObject, ObservableObject {
         self.webView?.navigationDelegate = self
         self.webView?.isInspectable = true
         self.webView?.allowsLinkPreview = true
+        self.webView?.isInspectable = true
         if let url = tab.url {
             self.webView?.load(URLRequest(url: url))
         }
@@ -125,6 +149,7 @@ class WebViewModel: NSObject, ObservableObject {
         setupBindings()
         injectJavaScript()
         injectCSSGlobally()
+        injectCustomWebAuthn()
     }
     
     init(config: WKWebViewConfiguration, processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -138,9 +163,11 @@ class WebViewModel: NSObject, ObservableObject {
         self.webView?.uiDelegate = self
         self.webView?.navigationDelegate = self
         self.webView?.allowsLinkPreview = true
+        self.webView?.isInspectable = true
         
         setupBindings()
         injectJavaScript()
+        injectCustomWebAuthn()
     }
     
     func deinitialize() {
@@ -338,34 +365,14 @@ class WebViewModel: NSObject, ObservableObject {
             .store(in: &cancellables)
     }
     
-    func enablePictureInPicture() {
-        let script = """
-        (function() {
-            var video = document.querySelector('video');
-            if (video) {
-                if (document.pictureInPictureElement) {
-                    document.exitPictureInPicture();
-                } else if (video.requestPictureInPicture) {
-                    video.requestPictureInPicture().catch(function(error) {
-                        console.error('PiP Error:', error);
-                    });
-                } else {
-                    console.log('PiP not supported');
-                }
-            } else {
-                console.log('No video found');
-            }
-            return true;
-        })();
-        """
-        
-        webView?.evaluateJavaScript(script) { (result, error) in
-            if let error = error {
-                print("JavaScript Execution Error: \(error.localizedDescription)")
-            }
-            if let result = result {
-                print("PiP Script Result: \(result)")
-            }
-        }
+}
+
+extension WebViewModel: WKScriptMessageHandlerWithReply {
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) async -> (Any?, String?) {
+        print(message.body)
+        return (false, "whatever")
     }
+    
+    
 }
