@@ -15,7 +15,7 @@ struct ShortDownloadOverview {
     
     func updateDisplayedItems() {
         let active = appViewModel.downloadManager?.activeDownloads.prefix(4).map { item in
-            DownloadItem(name: item.value.targetURL.lastPathComponent, dateCreated: Date.now.timeIntervalSinceReferenceDate, progress: item.value.progress, url: nil, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(item.value.targetURL.pathExtension) ?? .data)))
+            DownloadItem(name: item.value.targetURL.lastPathComponent, dateCreated: Date.now.timeIntervalSinceReferenceDate, progress: item.value.progress, url: nil, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(item.value.targetURL.pathExtension) ?? .data)), info: item.value)
         }
         var newest: [DownloadItem] = []
         
@@ -41,7 +41,7 @@ struct ShortDownloadOverview {
                 context.delete(item)
                 continue
             }
-            newest.append(DownloadItem(name: name, dateCreated: item.createdAt, progress: nil, url: url, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(typeIdentifier) ?? .data))))
+            newest.append(DownloadItem(name: name, dateCreated: item.createdAt, progress: nil, url: url, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(typeIdentifier) ?? .data)), info: nil))
             
             
         }

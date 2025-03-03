@@ -11,7 +11,7 @@ extension ShortDownloadOverview: View {
     var body: some View {
         VStack(alignment: .leading) {
             if !displayedItems.isEmpty {
-                ForEach(displayedItems, id: \.name) { item in
+                ForEach($displayedItems, id: \.self) { item in
                     ShortDownloadOverviewItem(item: item)
                 }
             }

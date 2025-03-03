@@ -21,16 +21,7 @@ class Progress: Equatable {
 }
 
 @Observable
-class DownloadManager: NSObject, URLSessionDownloadDelegate {
-    struct DownloadInfo {
-        let originalURL: URL
-        let targetURL: URL
-        let downloadURL: URL
-        var progress: Progress
-        var totalBytes: Int64
-        var downloadedBytes: Int64
-    }
-    
+class DownloadManager: NSObject, URLSessionDownloadDelegate {    
     var activeDownloads: [URLSessionTask: DownloadInfo] = [:]
     private var session: URLSession!
         
@@ -55,7 +46,8 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
             downloadURL: downloadSidecarURL,
             progress: Progress(value: 0.0),
             totalBytes: 0,
-            downloadedBytes: 0
+            downloadedBytes: 0,
+            task: downloadTask
         )
         
         downloadTask.resume()
@@ -68,6 +60,7 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
         downloadInfo.downloadedBytes = downloadedBytes
         downloadInfo.totalBytes = totalBytes
         activeDownloads[task] = downloadInfo
+        
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {

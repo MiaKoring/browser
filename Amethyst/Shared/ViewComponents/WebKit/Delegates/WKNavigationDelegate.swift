@@ -5,7 +5,7 @@
 //  Created by Mia Koring on 04.12.24.
 //
 import SwiftData
-import WebKit
+@preconcurrency import WebKit
 
 extension WebViewModel: WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
@@ -22,7 +22,6 @@ extension WebViewModel: WKNavigationDelegate {
                 cache = nil
                 break
             }
-            print(url.absoluteString)
         }
         if navigationAction.shouldPerformDownload {
             return .download
@@ -31,13 +30,15 @@ extension WebViewModel: WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        print((navigationResponse.response as? HTTPURLResponse)?.allHeaderFields)
         if let response = navigationResponse.response as? HTTPURLResponse,
            let mimeType = response.mimeType,
-           mimeType == "application/octet-stream" {
-            print("octet download")
+           blockDownloadCheckforURL != navigationResponse.response.url,
+           (mimeType == "application/octet-stream" || mimeType == "binary/octet-stream" || (response.allHeaderFields["Content-Disposition"] as? String)?.contains("attachment") ?? false || (response.allHeaderFields["Content-Type"] as? String)?.contains("application") ?? false) {
             decisionHandler(.cancel)
-            downloadBinary(from: navigationResponse.response.url, withName: navigationResponse.response.suggestedFilename)
+            pendingDownload = PendingDownload(navigationResponse: navigationResponse)
         } else {
+            blockDownloadCheckforURL = nil
             decisionHandler(.allow)
         }
     }

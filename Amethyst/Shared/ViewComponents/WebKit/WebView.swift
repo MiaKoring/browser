@@ -10,6 +10,7 @@ struct WebView: View {
     let tabID: UUID
     @ObservedObject var webViewModel: WebViewModel
     @Environment(ContentViewModel.self) var contentViewModel
+    @State var showDownloadAlert: Bool = false
     var body: some View {
         ZStack {
             WebViewNS(viewModel: webViewModel)
@@ -68,5 +69,27 @@ struct WebView: View {
         .allowsHitTesting(tabID == contentViewModel.currentTab)
         .clipShape(RoundedRectangle(cornerRadius: 5))
         .padding(10)
+        .onChange(of: webViewModel.pendingDownload) {
+            if let pendingDownload = webViewModel.pendingDownload {
+                showDownloadAlert = true
+            }
+        }
+        .alert("Download \(webViewModel.pendingDownload?.navigationResponse.response.suggestedFilename ?? "Unknown")", isPresented: $showDownloadAlert) {
+            Button("Download") {
+                if let url = webViewModel.pendingDownload?.navigationResponse.response.url, let suggestedFileName = webViewModel.pendingDownload?.navigationResponse.response.suggestedFilename {
+                    webViewModel.appViewModel.downloadManager?.downloadFile(from: url, withName: suggestedFileName)
+                }
+            }
+            Button("Show in Amethyst") {
+                if let urlStr =
+                    webViewModel.pendingDownload?.navigationResponse.response.url?.absoluteString {
+                    webViewModel.blockDownloadCheckforURL = webViewModel.pendingDownload?.navigationResponse.response.url
+                    webViewModel.load(urlString: urlStr)
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                webViewModel.pendingDownload = nil
+            }
+        }
     }
 }

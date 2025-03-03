@@ -20,6 +20,8 @@ class WebViewModel: NSObject, ObservableObject {
     @Published var isUsingCamera: WKMediaCaptureState = .none
     @Published var isUsingMicrophone: WKMediaCaptureState = .none
     @Published var error: (any Error)? = nil
+    @Published var pendingDownload: PendingDownload? = nil
+    @Published var blockDownloadCheckforURL: URL? = nil
     @ObservedObject var contentViewModel: ContentViewModel
     @ObservedObject var appViewModel: AppViewModel
     
@@ -240,11 +242,6 @@ class WebViewModel: NSObject, ObservableObject {
         
     func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
         download.delegate = downloadDelegate
-    }
-
-    func downloadBinary(from url: URL?, withName name: String?) {
-        guard let url = url else { return }
-        appViewModel.downloadManager?.downloadFile(from: url, withName: name)
     }
     
     func appendHistory() {

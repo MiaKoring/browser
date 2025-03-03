@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct ShortDownloadOverviewItem: View {
-    let item: DownloadItem
+    @Binding var item: DownloadItem
     @State var isHovered: Bool = false
+    @Environment(AppViewModel.self) var appViewModel
     var body: some View {
         HStack {
             item.icon
@@ -23,7 +24,23 @@ struct ShortDownloadOverviewItem: View {
                 }
             Text(item.name)
                 .lineLimit(1)
+                .foregroundStyle(item.info != nil ? item.info?.task.state == .running ? .primary: Color.red: .primary)
             Spacer()
+            if item.progress != nil && item.info?.task.state == .running {
+                Button {
+                    guard let downloadManager = appViewModel.downloadManager, let task = item.info?.task
+                    else {
+                        return
+                    }
+                    downloadManager.activeDownloads.removeValue(forKey: task)
+                    task.cancel()
+                    
+                    
+                } label: {
+                    Image(systemName: "xmark.circle")
+                }
+                .foregroundStyle(.gray)
+            }
         }
         .onHover { hovering in
             isHovered = hovering
@@ -43,5 +60,8 @@ struct ShortDownloadOverviewItem: View {
                 }
             }
         }
+        
+        
     }
 }
+

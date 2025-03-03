@@ -6,12 +6,18 @@
 //
 import SwiftUI
 
-struct DownloadItem: Hashable {
+struct DownloadItem: Hashable, Observable {
+    static func == (lhs: DownloadItem, rhs: DownloadItem) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
+    
+    let id = UUID()
     let name: String
     let dateCreated: Double
-    let progress: Progress?
+    var progress: Progress?
     let url: URL?
     let icon: Image
+    var info: DownloadInfo?
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(name + dateCreated.description)
