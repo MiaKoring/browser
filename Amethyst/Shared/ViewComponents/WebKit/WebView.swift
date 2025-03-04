@@ -77,7 +77,7 @@ struct WebView: View {
         .alert("Download \(webViewModel.pendingDownload?.navigationResponse.response.suggestedFilename ?? "Unknown")", isPresented: $showDownloadAlert) {
             Button("Download") {
                 if let url = webViewModel.pendingDownload?.navigationResponse.response.url, let suggestedFileName = webViewModel.pendingDownload?.navigationResponse.response.suggestedFilename {
-                    webViewModel.appViewModel.downloadManager?.downloadFile(from: url, withName: suggestedFileName)
+                    webViewModel.appViewModel.downloadManager?.downloadFile(from: url, withName: suggestedFileName, referedBy: webViewModel.referer)
                 }
             }
             Button("Show in Amethyst") {

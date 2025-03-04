@@ -21,23 +21,44 @@ class Progress: Equatable {
 }
 
 @Observable
-class DownloadManager: NSObject, URLSessionDownloadDelegate {    
+class DownloadManager: NSObject, URLSessionDownloadDelegate {
     var activeDownloads: [URLSessionTask: DownloadInfo] = [:]
     private var session: URLSession!
+    private var resumeData: [URLSessionTask: Data] = [:]
         
     override init() {
         super.init()
         let config = URLSessionConfiguration.default
-        session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
+        config.timeoutIntervalForRequest = 60  // Längeres Request-Timeout
+        config.timeoutIntervalForResource = 600  // 10 Minuten Gesamttimeout
+        config.waitsForConnectivity = true
+        config.httpMaximumConnectionsPerHost = 1 // Für stabilere große Downloads
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        
+        session = URLSession(
+            configuration: config,
+            delegate: self,
+            delegateQueue: .main
+        )
     }
     
-    func downloadFile(from url: URL, withName name: String?) {
-        let downloadTask = session.downloadTask(with: url)
+    func downloadFile(from url: URL, withName name: String?, referedBy: String? = nil) {
+        var request = URLRequest(url: url)
+        
+        // Headers für große Downloads
+        request.setValue("bytes=0-", forHTTPHeaderField: "Range")
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
+        
+        if let referedBy {
+            request.setValue(referedBy, forHTTPHeaderField: "Referer")
+        }
+        
+        let downloadTask = session.downloadTask(with: request)
         
         let downloadsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
-        
-        let filename = url.lastPathComponent
-        let targetURL: URL = downloadsDirectory.appendingPathComponent(name ?? filename)
+        let filename = name ?? url.lastPathComponent
+        let targetURL = downloadsDirectory.appendingPathComponent(filename)
         let downloadSidecarURL = targetURL.appendingPathExtension("download")
 
         activeDownloads[downloadTask] = DownloadInfo(
@@ -53,78 +74,113 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
         downloadTask.resume()
     }
     
-    private func updateDownload(for task: URLSessionTask, progress: Double, downloadedBytes: Int64, totalBytes: Int64) {
-        guard var downloadInfo = activeDownloads[task] else { return }
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        guard let error = error as NSError? else { return }
         
-        downloadInfo.progress.value = progress
-        downloadInfo.downloadedBytes = downloadedBytes
-        downloadInfo.totalBytes = totalBytes
-        activeDownloads[task] = downloadInfo
+#if DEBUG
+        print("Download-Fehler: \(error.localizedDescription)")
+        print("Error Domain: \(error.domain)")
+        print("Error Code: \(error.code)")
+#endif
         
+        // Detailed Errorhandling
+        if error.domain == NSURLErrorDomain {
+            switch error.code {
+            case NSURLErrorTimedOut,
+                 NSURLErrorCancelled,
+                 NSURLErrorNetworkConnectionLost:
+                // Try to proceed download
+                if let resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData] as? Data {
+#if DEBUG
+                    print("Try to resume download")
+#endif
+                    let newDownloadTask = session.downloadTask(withResumeData: resumeData)
+                    
+                    // copy download info
+                    if let originalTask = activeDownloads[task] {
+                        activeDownloads[newDownloadTask] = originalTask
+                    }
+                    
+                    newDownloadTask.resume()
+                }
+            default:
+                print("Unhandled Error-Code: \(error.code)")
+            }
+        }
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let downloadInfo = activeDownloads[downloadTask] else {
-            print("couldn't get active download info")
             return
         }
         
         do {
-            var targetURL = downloadInfo.targetURL
-            var suffix = 0
+            let targetURL = determineUniqueTargetURL(for: downloadInfo.targetURL)
             
-            while FileManager.default.fileExists(atPath: targetURL.path) {
-                suffix += 1
-                let fileExtension = targetURL.pathExtension
-                let fileNameWithoutExtension = targetURL.deletingPathExtension().lastPathComponent
-                
-                targetURL = downloadInfo.targetURL
-                    .deletingLastPathComponent()
-                    .appendingPathComponent("\(fileNameWithoutExtension.replacing(/\(\d*\)/, with: ""))(\(suffix))")
-                    .appendingPathExtension(fileExtension)
-            }
             try FileManager.default.moveItem(at: location, to: targetURL)
-            
             try? FileManager.default.removeItem(at: downloadInfo.downloadURL)
-            
             
             activeDownloads.removeValue(forKey: downloadTask)
             
-            guard let bookmark = try? targetURL.bookmarkData(
-                options: .withSecurityScope,
-                includingResourceValuesForKeys: [.nameKey, .contentTypeKey, .creationDateKey],
-                relativeTo: nil
-            ) else {
-                print("failed to create Bookmark")
-                return
-            }
-            DispatchQueue.main.async(execute: DispatchWorkItem(block: {
-                do {
-                    let context = try ModelContext(ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self))
-                    let downloaded = DownloadedItem(bookmark: bookmark, createdAt: Date.now.timeIntervalSinceReferenceDate)
-                    context.insert(downloaded)
-                    try context.save()
-                    print(downloaded.createdAt)
-                    print(downloaded.bookmark)
-                } catch {
-                    print("error: \(error)")
-                }
-                
-            }))
+            saveBookmark(targetURL: downloadInfo.targetURL)
         } catch {
-            print("Download-Fehler: \(error.localizedDescription)")
+            print("Error while finishing download: \(error)")
         }
     }
     
+    private func determineUniqueTargetURL(for originalURL: URL) -> URL {
+        var targetURL = originalURL
+        var suffix = 0
+        
+        while FileManager.default.fileExists(atPath: targetURL.path) {
+            suffix += 1
+            let fileExtension = targetURL.pathExtension
+            let fileNameWithoutExtension = targetURL.deletingPathExtension().lastPathComponent
+            
+            targetURL = originalURL
+                .deletingLastPathComponent()
+                .appendingPathComponent("\(fileNameWithoutExtension)(\(suffix))")
+                .appendingPathExtension(fileExtension)
+        }
+        
+        return targetURL
+    }
+    
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard let originalURL = downloadTask.originalRequest?.url else { return }
-                
-        let downloadsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
-        let filename = originalURL.lastPathComponent
-        
         let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        guard var item = activeDownloads[downloadTask] else {
+            return
+        }
         
-        updateDownload(for: downloadTask, progress: progress, downloadedBytes: totalBytesWritten, totalBytes: totalBytesExpectedToWrite)
+        item.progress.value = progress
+        item.downloadedBytes = totalBytesWritten
+        item.totalBytes = totalBytesExpectedToWrite
+        
+        activeDownloads[downloadTask] = item
+    }
+    
+    func saveBookmark(targetURL: URL) {
+        guard let bookmark = try? targetURL.bookmarkData(
+            options: .withSecurityScope,
+            includingResourceValuesForKeys: [.nameKey, .contentTypeKey, .creationDateKey],
+            relativeTo: nil
+        ) else {
+            print("failed to create Bookmark")
+            return
+        }
+        
+        DispatchQueue.main.async(execute: DispatchWorkItem(block: {
+            do {
+                let context = try ModelContext(ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self))
+                let downloaded = DownloadedItem(bookmark: bookmark, createdAt: Date.now.timeIntervalSinceReferenceDate)
+                context.insert(downloaded)
+                try context.save()
+                print(downloaded.createdAt)
+                print(downloaded.bookmark)
+            } catch {
+                print("error: \(error)")
+            }
+            
+        }))
     }
 }
-

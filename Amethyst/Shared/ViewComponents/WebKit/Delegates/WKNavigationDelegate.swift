@@ -9,6 +9,12 @@ import SwiftData
 
 extension WebViewModel: WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        
+        //safes referer, so downloads which expect a referer still work. Only updates if Referer is set in the hope, that sites which don't need a referer header also don't block if one is set.
+        if let referer = navigationAction.request.allHTTPHeaderFields?["Referer"] {
+            self.referer = referer
+        }
+        
         if let url = navigationAction.request.url, contentViewModel.isLoaded {
             switch navigationAction.navigationType {
             case .reload, .backForward, .formResubmitted, .formSubmitted:
@@ -30,7 +36,6 @@ extension WebViewModel: WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        print((navigationResponse.response as? HTTPURLResponse)?.allHeaderFields)
         if let response = navigationResponse.response as? HTTPURLResponse,
            let mimeType = response.mimeType,
            blockDownloadCheckforURL != navigationResponse.response.url,
@@ -56,6 +61,7 @@ extension WebViewModel: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: any Error) {
         if let urlStr = (error as NSError).userInfo[NSURLErrorFailingURLStringErrorKey] as? String, let url = URL(string: urlStr) {
             print("Error: \(url.absoluteString)")
+            print(error.localizedDescription)
             self.currentURL = url
         }
         

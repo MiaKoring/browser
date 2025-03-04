@@ -24,7 +24,7 @@ struct ShortDownloadOverviewItem: View {
                 }
             Text(item.name)
                 .lineLimit(1)
-                .foregroundStyle(item.info != nil ? item.info?.task.state == .running ? .primary: Color.red: .primary)
+                .foregroundStyle(item.info != nil ? item.info?.task.state == .running || item.info?.task.state == .completed ? .primary: Color.red: .primary)
             Spacer()
             if item.progress != nil && item.info?.task.state == .running {
                 Button {
@@ -40,6 +40,8 @@ struct ShortDownloadOverviewItem: View {
                     Image(systemName: "xmark.circle")
                 }
                 .foregroundStyle(.gray)
+                .buttonStyle(.plain)
+                .padding(.trailing, 10)
             }
         }
         .onHover { hovering in
@@ -60,8 +62,6 @@ struct ShortDownloadOverviewItem: View {
                 }
             }
         }
-        
-        
     }
 }
 

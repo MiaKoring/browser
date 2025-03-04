@@ -25,6 +25,8 @@ class WebViewModel: NSObject, ObservableObject {
     @ObservedObject var contentViewModel: ContentViewModel
     @ObservedObject var appViewModel: AppViewModel
     
+    var referer: String? = nil
+    
     var historyBlocked: [URL: Double] = [:]
     var webView: AWKWebView?
     var cancellables: Set<AnyCancellable> = []
