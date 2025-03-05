@@ -31,7 +31,7 @@ extension URLDisplay: View {
         .background() {
             RoundedRectangle(cornerRadius: 12)
                 .fill(.thinMaterial)
-                .background(.white.opacity(0.2))
+                .background(.mainColorMix.opacity(appearance == .dark ? 0.2: 0.05))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .onTapGesture {
                     if !showTextField {
@@ -41,7 +41,7 @@ extension URLDisplay: View {
                     }
                 }
         }
-        .foregroundStyle(.white.opacity(0.5))
+        .foregroundStyle(.mainColorMix.opacity(0.5))
         .onKeyPress(.escape) {
             showTextField = false
             return .handled

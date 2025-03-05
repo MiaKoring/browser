@@ -47,6 +47,7 @@ struct TabButton: View {
     @Environment(AppViewModel.self) var appViewModel
     @State var isHovered: Bool = false
     @Environment(ContentViewModel.self) var contentViewModel
+    @Environment(\.colorScheme) var appearance
     var body: some View {
         HStack {
             if let title = tabVM.title, !title.isEmpty {
@@ -128,14 +129,17 @@ struct TabButton: View {
         .background() {
             if contentViewModel.currentTab == id {
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(.white.opacity(0.2))
+                    .fill(appearance == .dark ? .mainColorMix.opacity(0.2): .white)
+                    .shadow(radius: appearance == .dark ? 0: 2)
             } else {
                 if isHovered {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(.white.opacity(0.1))
+                        .fill(appearance == .dark ? .mainColorMix.opacity(0.1): .mainColorMix.opacity(0.02))
                 } else {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.thinMaterial)
+                    if appearance == .dark {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.thinMaterial)
+                    }
                 }
             }
         }

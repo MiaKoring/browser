@@ -16,7 +16,7 @@ struct BackgroundView<C: View>: View {
 
     init(_ background: AngularGradient? = nil, shouldRotate: Bool = true, @ViewBuilder content: () -> C) {
         self.content = content()
-        self.background = background ?? AngularGradient(stops:[.init(color: .myPurple, location: 0), .init(color: .myPurple.mix(with: .white, by: 0.07), location: 0.5), .init(color: .myPurple, location: 1)], center: .center)
+        self.background = background ?? AngularGradient(stops:[.init(color: .myPurple, location: 0), .init(color: .myPurple.mix(with: .mainColorMix, by: 0.07), location: 0.5), .init(color: .myPurple, location: 1)], center: .center)
         self.shouldRotate = shouldRotate
     }
 
@@ -38,5 +38,11 @@ struct BackgroundView<C: View>: View {
 
             content
         }
+    }
+}
+
+#Preview {
+    BackgroundView(nil, shouldRotate: true) {
+        Text("Test")
     }
 }

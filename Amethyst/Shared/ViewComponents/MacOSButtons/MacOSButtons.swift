@@ -41,7 +41,6 @@ struct MacOSButtons: View {
                     .foregroundColor(.green)
                     .onTapGesture {
                         NSApp.keyWindow?.toggleFullScreen(nil)
-                        print(NSApp.keyWindow?.title)
                     }
             }
         }

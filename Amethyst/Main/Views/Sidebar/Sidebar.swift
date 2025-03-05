@@ -8,95 +8,102 @@ import SwiftUI
 
 extension Sidebar: View {
     var body: some View {
-        VStack {
-            HStack {
-                MacOSButtons()
-                    .padding(.trailing)
-                    .padding(.leading, 5)
-                Image(systemName: "sidebar.left")
-                    .sidebarTopButton(hovered: $isSideBarButtonHovered) {
-                        contentViewModel.isSidebarFixed.toggle()
-                        contentViewModel.isSidebarShown = false
-                    }
-                Spacer()
-                Image(systemName: "chevron.left")
-                    .sidebarTopButton(hovered: $isBackHovered) {
-                        if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
-                            tab.webViewModel.webView?.goBack()
-                        }
-                    }
-                Image(systemName: "chevron.right")
-                    .sidebarTopButton(hovered: $isForwardHovered) {
-                        if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
-                            tab.webViewModel.webView?.goForward()
-                        }
-                    }
-                Image(systemName: "arrow.trianglehead.counterclockwise.rotate.90")
-                    .sidebarTopButton(hovered: $isReloadHovered) {
-                        if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
-                            tab.webViewModel.webView?.reload()
-                        }
-                    }
-            }
-            .padding(.leading, contentViewModel.isSidebarFixed ? 5: 0)
-            .padding(.top, contentViewModel.isSidebarFixed ? 5: 0)
-            URLDisplay()
-                .padding(.top)
-            HStack{
-                VStack {
-                    Divider()
-                }
-                Button {
-                    contentViewModel.tabs = []
-                } label: {
-                    Text("clear")
-                        .font(.footnote)
-                        .foregroundStyle(.gray)
-                }
-                .buttonStyle(.plain)
-            }
-            HStack {
-                Image(systemName: "plus")
-                Text("New Tab")
-                Spacer()
-            }
-            .allowsHitTesting(false)
-            .frame(maxWidth: .infinity)
-            .padding(10)
-            .background {
+        ZStack {
+            VStack {
                 HStack {
-                    if isNewTabHovered {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.white.opacity(0.1))
-                    } else {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.ultraThinMaterial)
-                        
+                    MacOSButtons()
+                        .padding(.trailing)
+                        .padding(.leading, 5)
+                    Image(systemName: "sidebar.left")
+                        .sidebarTopButton(hovered: $isSideBarButtonHovered, appearance: appearance) {
+                            contentViewModel.isSidebarFixed.toggle()
+                            contentViewModel.isSidebarShown = false
+                        }
+                    Spacer()
+                    Image(systemName: "chevron.left")
+                        .sidebarTopButton(hovered: $isBackHovered, appearance: appearance) {
+                            if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
+                                tab.webViewModel.webView?.goBack()
+                            }
+                        }
+                    Image(systemName: "chevron.right")
+                        .sidebarTopButton(hovered: $isForwardHovered, appearance: appearance) {
+                            if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
+                                tab.webViewModel.webView?.goForward()
+                            }
+                        }
+                    Image(systemName: "arrow.trianglehead.counterclockwise.rotate.90")
+                        .sidebarTopButton(hovered: $isReloadHovered, appearance: appearance) {
+                            if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
+                                tab.webViewModel.webView?.reload()
+                            }
+                        }
+                }
+                .padding(.leading, contentViewModel.isSidebarFixed ? 5: 0)
+                .padding(.top, contentViewModel.isSidebarFixed ? 5: 0)
+                URLDisplay()
+                    .padding(.top)
+                HStack{
+                    VStack {
+                        Divider()
                     }
+                    Button {
+                        contentViewModel.tabs = []
+                    } label: {
+                        Text("clear")
+                            .font(.footnote)
+                            .foregroundStyle(appearance == .dark ? Color.gray: Color.gray.mix(with: .black, by: 0.4))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .onTapGesture {
-                    contentViewModel.triggerNewTab.toggle()
+                HStack {
+                    Image(systemName: "plus")
+                    Text("New Tab")
+                    Spacer()
                 }
-                .onHover { hovering in
-                    isNewTabHovered = hovering
-                }
-            }
-            
-            ATabView()
-                .padding(-15)
-            DownloadOverviewButton()
-            if(!AppViewModel.isDefaultBrowser()) {
-                Button("Set as default Browser") {
-                    Task {
-                        do {
-                            try await NSWorkspace.shared.setDefaultApplication(at: Bundle.main.bundleURL, toOpenURLsWithScheme: "http")
-                        } catch {
-                            print(error)
+                .allowsHitTesting(false)
+                .frame(maxWidth: .infinity)
+                .padding(10)
+                .background {
+                    HStack {
+                        if isNewTabHovered {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.mainColorMix.opacity(0.1))
+                        } else {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.ultraThinMaterial)
                         }
                     }
+                    .onTapGesture {
+                        contentViewModel.triggerNewTab.toggle()
+                    }
+                    .onHover { hovering in
+                        isNewTabHovered = hovering
+                    }
                 }
-                .buttonStyle(.borderless)
-                .padding(.bottom, 10)
+                
+                ATabView()
+                    .padding(-15)
+                if(!AppViewModel.isDefaultBrowser()) {
+                    Button("Set as default Browser") {
+                        Task {
+                            do {
+                                try await NSWorkspace.shared.setDefaultApplication(at: Bundle.main.bundleURL, toOpenURLsWithScheme: "http")
+                            } catch {
+                                print(error)
+                            }
+                        }
+                    }
+                    .buttonStyle(.borderless)
+                    .padding(.bottom, 10)
+                }
+                DownloadOverviewButton()
+                    .hidden()
+                    .padding(.top)
+            }
+            VStack {
+                Spacer()
+                DownloadOverviewButton()
             }
         }
         .frame(maxHeight: .infinity)
@@ -107,16 +114,24 @@ extension Sidebar: View {
                 if contentViewModel.isSidebarFixed {
                     RoundedRectangle(cornerRadius: 5)
                         .fill(.ultraThinMaterial)
+                        .background(appearance == .light ? .white.opacity(0.5): .clear)
                 } else {
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(.myPurple.mix(with: .white, by: 0.1))
+                        .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
                 }
             }
             .overlay {
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(lineWidth: 1)
-                    .fill(.ultraThickMaterial)
-                    .shadow(radius: 5)
+                if appearance == .light {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(lineWidth: 1)
+                        .fill(Color.gray)
+                        .shadow(radius: 5)
+                } else {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(lineWidth: 1)
+                        .fill(.ultraThickMaterial)
+                        .shadow(radius: 5)
+                }
             }
         }
         .padding(contentViewModel.isSidebarFixed ? 0: 8)

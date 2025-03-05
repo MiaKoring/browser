@@ -8,10 +8,10 @@
 import SwiftUI
 
 extension Image {
-    func sidebarTopButton(hovered: Binding<Bool>, onTap: @escaping () -> Void) -> some View {
+    func sidebarTopButton(hovered: Binding<Bool>, appearance: ColorScheme = .dark, onTap: @escaping () -> Void) -> some View {
         self
             .font(.title2)
-            .foregroundStyle(.gray)
+            .foregroundStyle(appearance == .dark ? Color.gray: Color.gray.mix(with: .black, by: 0.4))
             .padding(3)
             .background() {
                 if !hovered.wrappedValue {

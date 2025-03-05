@@ -13,6 +13,7 @@ struct URLDisplay: TabOpener {
     @Environment(AppViewModel.self) var appViewModel: AppViewModel
     @Environment(\.modelContext) var context: ModelContext
     @Environment(\.dismissWindow) var dismissWindow
+    @Environment(\.colorScheme) var appearance
     @State var showTextField: Bool = false
     @State var text: String = ""
     @State var url: String = ""

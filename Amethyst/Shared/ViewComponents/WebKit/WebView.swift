@@ -70,7 +70,7 @@ struct WebView: View {
         .clipShape(RoundedRectangle(cornerRadius: 5))
         .padding(10)
         .onChange(of: webViewModel.pendingDownload) {
-            if let pendingDownload = webViewModel.pendingDownload {
+            if let _ = webViewModel.pendingDownload {
                 showDownloadAlert = true
             }
         }

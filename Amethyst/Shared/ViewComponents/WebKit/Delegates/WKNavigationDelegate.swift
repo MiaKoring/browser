@@ -15,7 +15,7 @@ extension WebViewModel: WKNavigationDelegate {
             self.referer = referer
         }
         
-        if let url = navigationAction.request.url, contentViewModel.isLoaded {
+        if let _ = navigationAction.request.url, contentViewModel.isLoaded {
             switch navigationAction.navigationType {
             case .reload, .backForward, .formResubmitted, .formSubmitted:
                 cache = nil

@@ -11,6 +11,7 @@ struct ShortDownloadOverviewItem: View {
     @Binding var item: DownloadItem
     @State var isHovered: Bool = false
     @Environment(AppViewModel.self) var appViewModel
+    @Environment(\.colorScheme) var appearance
     var body: some View {
         HStack {
             item.icon
@@ -52,8 +53,11 @@ struct ShortDownloadOverviewItem: View {
                 NSWorkspace.shared.open(url)
             }
         }
-        .if(isHovered) { view in
+        .if(isHovered && appearance == .dark) { view in
             view.background(.regularMaterial)
+        }
+        .if(isHovered && appearance == .light) { view in
+            view.background(.white.mix(with: .gray, by: 0.05))
         }
         .contextMenu {
             Button("Show in Finder") {

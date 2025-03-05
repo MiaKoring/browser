@@ -17,7 +17,7 @@ extension InputBar: View {
                 .padding()
                 .background() {
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(selectedResult == 0 ? .myPurple.mix(with: .white, by: 0.1).opacity(0.3): .myPurple.mix(with: .white, by: 0.07).opacity(0.3))
+                        .fill(selectedResult == 0 ? .myPurple.mix(with: .mainColorMix, by: 0.1).opacity(0.3): .myPurple.mix(with: .mainColorMix, by: 0.07).opacity(0.3))
                 }
                 .onSubmit {
                     let result = selectedResult
@@ -64,7 +64,7 @@ extension InputBar: View {
                             if (quickSearchResults.firstIndex(where: {$0.id == result.id}) ?? -1) + 1 == selectedResult {
                                 RoundedRectangle(cornerRadius: 5)
                                     .stroke(lineWidth: 2)
-                                    .foregroundStyle(.myPurple.mix(with: .white, by: 0.15).opacity(0.6))
+                                    .foregroundStyle(.myPurple.mix(with: .mainColorMix, by: 0.15).opacity(0.6))
                             }
                         }
                         .contentShape(Rectangle())

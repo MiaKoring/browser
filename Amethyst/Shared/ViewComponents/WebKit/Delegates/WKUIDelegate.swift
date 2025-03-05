@@ -47,7 +47,7 @@ extension WebViewModel: WKUIDelegate {
         openPanel.allowsMultipleSelection = parameters.allowsMultipleSelection
         
         let response = await openPanel.begin()
-9
+
         if response == .OK {
             return openPanel.urls
         } else {

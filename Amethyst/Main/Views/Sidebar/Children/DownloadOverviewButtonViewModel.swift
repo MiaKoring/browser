@@ -10,6 +10,7 @@ import SwiftUI
 struct DownloadOverviewButton {
     @Environment(AppViewModel.self) var appViewModel
     @Environment(ContentViewModel.self) var contentViewModel
+    @Environment(\.colorScheme) var appearance
     @State var playAnimation: Bool = false
     @State var isHovered = false
 }
