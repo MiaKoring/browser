@@ -43,6 +43,7 @@ extension Sidebar: View {
                 .padding(.top, contentViewModel.isSidebarFixed ? 5: 0)
                 URLDisplay()
                     .padding(.top)
+                    .padding(.horizontal, 3)
                 HStack{
                     VStack {
                         Divider()
@@ -81,9 +82,11 @@ extension Sidebar: View {
                         isNewTabHovered = hovering
                     }
                 }
+                .padding(.horizontal, 3)
                 
                 ATabView()
                     .padding(-15)
+                    .padding(.horizontal, 3)
                 if(!AppViewModel.isDefaultBrowser()) {
                     Button("Set as default Browser") {
                         Task {

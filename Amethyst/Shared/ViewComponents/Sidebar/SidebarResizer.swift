@@ -20,7 +20,7 @@ struct SidebarResizer: View {
                     .onChanged { value in
                         NSCursor.frameResize(position: .right, directions: .all).set()
                         let changed = value.startLocation.x - value.location.x
-                        sidebarWidth = max(200, min(sidebarWidth - changed, 400))
+                        sidebarWidth = max(220, min(sidebarWidth - changed, 400))
                     }
                     .onEnded { _ in
                         NSCursor.arrow.set()

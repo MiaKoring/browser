@@ -45,7 +45,7 @@ extension ContentView: View, TabOpener {
                         }
                         Spacer()
                     }
-                    HStack(spacing: -1) {
+                    HStack(spacing: 0) {
                         if contentViewModel.isSidebarFixed {
                             HStack {
                                 Sidebar()
