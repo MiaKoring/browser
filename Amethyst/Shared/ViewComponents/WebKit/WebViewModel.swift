@@ -175,7 +175,7 @@ class WebViewModel: NSObject, ObservableObject {
     }
     
     func deinitialize() {
-        Task {
+        SwiftUI.Task {
             await self.webView?.pauseAllMediaPlayback()
             await self.webView?.closeAllMediaPresentations()
             await self.webView?.setCameraCaptureState(.none)
@@ -260,7 +260,7 @@ class WebViewModel: NSObject, ObservableObject {
                     case .success(let result):
                         if let res = result.hits.first {
                             let new = HistoryEntry(id: res.id, title: self.title ?? res.title, url: res.url, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: res.amount + 1)
-                            Task {
+                            SwiftUI.Task {
                                 do {
                                     _ = try await index.updateDocuments(documents: [new], primaryKey: "id")
                                 } catch {
@@ -269,7 +269,7 @@ class WebViewModel: NSObject, ObservableObject {
                             }
                         } else {
                             let new = HistoryEntry(id: UUID(), title: self.title ?? "", url: url.absoluteString, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: 1)
-                            Task {
+                            SwiftUI.Task {
                                 do {
                                     _ = try await index.addDocuments(documents: [new], primaryKey: "id")
                                 } catch {
@@ -281,7 +281,7 @@ class WebViewModel: NSObject, ObservableObject {
                         print(error.localizedDescription)
                         if error.localizedDescription.contains("MeiliSearchApiError: Index `history` not found.") ||
                             error.localizedDescription.contains("is not filterable. This index does not have configured filterable attributes."){
-                            Task {
+                            SwiftUI.Task {
                                 do {
                                     _ = try await meili.createIndex(uid: "history", primaryKey: "id")
                                     _ = try await meili.index("history").updateSearchableAttributes(["url", "title"])

@@ -9,6 +9,7 @@ import SwiftUI
 import AppKit
 import SwiftData
 import WebKit
+import AmethystAuthenticatorCore
 
 
 @main
@@ -21,10 +22,20 @@ struct AmethystApp: App {
     @State var contentViewModel3 = ContentViewModel(id: "window3")
     @Environment(\.modelContext) var context
     let container: ModelContainer
+    let passwordContainer: ModelContainer
     
     init() {
         do {
-            container = try ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self)
+            container = try ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self, configurations: ModelConfiguration(cloudKitDatabase: .none))
+            guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)de.touchthegrass.Amethyst.shared")?.appendingPathComponent("shared.sqlite") else {
+                fatalError("Couldn't find url for shared group db")
+            }
+            let configuration = ModelConfiguration(url: groupDBURL)
+            do {
+                self.passwordContainer = try ModelContainer(for: Account.self, migrationPlan: AAuthenticatorMigrations.self, configurations: configuration)
+            } catch {
+                fatalError("Couldn't create Model Container. Failed with: \(error.localizedDescription)")
+            }
             
         } catch {
             fatalError("failed to initialize model container: \(error.localizedDescription)")

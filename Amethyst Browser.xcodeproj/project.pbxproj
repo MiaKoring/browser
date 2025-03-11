@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A60A19952D04652A00F963C6 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = A60A19942D04652A00F963C6 /* KeychainAccess */; };
 		A640BCD32D05E6A1007E62E0 /* MeiliSearch in Frameworks */ = {isa = PBXBuildFile; productRef = A640BCD22D05E6A1007E62E0 /* MeiliSearch */; };
+		A671F6F12D808646008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */; };
+		A671F6F32D808657008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */; };
+		A671F6F52D80865B008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */; };
+		A671F6F82D808C14008D4E03 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F72D808C14008D4E03 /* CodeScanner */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,27 +28,56 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Authenticator Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Browser.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64E714B2CF8E3AD0045C5B0 /* Amethyst BrowserRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amethyst BrowserRelease.entitlements"; sourceTree = "<group>"; };
 		A6BB70B52CF9DC710056F80C /* Amethyst-Browser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Amethyst-Browser-Info.plist"; sourceTree = "<group>"; };
 		A6C69B732D0852F00007D944 /* Amethyst Browser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amethyst Browser.entitlements"; sourceTree = "<group>"; };
+		A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Authenticator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A60A40062D7DD48B0014E290 /* Amethyst Authenticator Mac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Amethyst Authenticator Mac";
+			sourceTree = "<group>";
+		};
 		A64A1EE32CF6936B003B8875 /* Amethyst */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Amethyst;
 			sourceTree = "<group>";
 		};
+		A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Amethyst Authenticator";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A60A40022D7DD48B0014E290 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A671F6F52D80865B008D4E03 /* AmethystAuthenticatorCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A64A1EDE2CF6936B003B8875 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A60A19952D04652A00F963C6 /* KeychainAccess in Frameworks */,
+				A671F6F32D808657008D4E03 /* AmethystAuthenticatorCore in Frameworks */,
 				A640BCD32D05E6A1007E62E0 /* MeiliSearch in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6E6D71F2D7B0B4D00E38FBB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A671F6F82D808C14008D4E03 /* CodeScanner in Frameworks */,
+				A671F6F12D808646008D4E03 /* AmethystAuthenticatorCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +91,8 @@
 				A6BB70B52CF9DC710056F80C /* Amethyst-Browser-Info.plist */,
 				A64E714B2CF8E3AD0045C5B0 /* Amethyst BrowserRelease.entitlements */,
 				A64A1EE32CF6936B003B8875 /* Amethyst */,
+				A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */,
+				A60A40062D7DD48B0014E290 /* Amethyst Authenticator Mac */,
 				A64A1EE22CF6936B003B8875 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,6 +101,8 @@
 			isa = PBXGroup;
 			children = (
 				A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */,
+				A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */,
+				A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -74,6 +110,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A60A40042D7DD48B0014E290 /* Amethyst Authenticator Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A60A40112D7DD48C0014E290 /* Build configuration list for PBXNativeTarget "Amethyst Authenticator Mac" */;
+			buildPhases = (
+				A60A40012D7DD48B0014E290 /* Sources */,
+				A60A40022D7DD48B0014E290 /* Frameworks */,
+				A60A40032D7DD48B0014E290 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A60A40062D7DD48B0014E290 /* Amethyst Authenticator Mac */,
+			);
+			name = "Amethyst Authenticator Mac";
+			packageProductDependencies = (
+				A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */,
+			);
+			productName = "Amethyst Authenticator Mac";
+			productReference = A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A64A1EE02CF6936B003B8875 /* Amethyst Browser */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A64A1EEF2CF6936C003B8875 /* Build configuration list for PBXNativeTarget "Amethyst Browser" */;
@@ -92,11 +151,35 @@
 			);
 			name = "Amethyst Browser";
 			packageProductDependencies = (
-				A60A19942D04652A00F963C6 /* KeychainAccess */,
 				A640BCD22D05E6A1007E62E0 /* MeiliSearch */,
+				A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */,
 			);
 			productName = Browser;
 			productReference = A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A6E6D7212D7B0B4D00E38FBB /* Amethyst Authenticator */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6E6D72D2D7B0B4E00E38FBB /* Build configuration list for PBXNativeTarget "Amethyst Authenticator" */;
+			buildPhases = (
+				A6E6D71E2D7B0B4D00E38FBB /* Sources */,
+				A6E6D71F2D7B0B4D00E38FBB /* Frameworks */,
+				A6E6D7202D7B0B4D00E38FBB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */,
+			);
+			name = "Amethyst Authenticator";
+			packageProductDependencies = (
+				A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */,
+				A671F6F72D808C14008D4E03 /* CodeScanner */,
+			);
+			productName = "Amethyst Authenticator";
+			productReference = A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -109,8 +192,14 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					A60A40042D7DD48B0014E290 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					A64A1EE02CF6936B003B8875 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					A6E6D7212D7B0B4D00E38FBB = {
+						CreatedOnToolsVersion = 16.2;
 					};
 				};
 			};
@@ -124,8 +213,9 @@
 			mainGroup = A64A1ED82CF6936B003B8875;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A60A19932D04652A00F963C6 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */,
+				A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */,
+				A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A64A1EE22CF6936B003B8875 /* Products */;
@@ -133,12 +223,28 @@
 			projectRoot = "";
 			targets = (
 				A64A1EE02CF6936B003B8875 /* Amethyst Browser */,
+				A6E6D7212D7B0B4D00E38FBB /* Amethyst Authenticator */,
+				A60A40042D7DD48B0014E290 /* Amethyst Authenticator Mac */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A60A40032D7DD48B0014E290 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A64A1EDF2CF6936B003B8875 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6E6D7202D7B0B4D00E38FBB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -148,7 +254,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A60A40012D7DD48B0014E290 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A64A1EDD2CF6936B003B8875 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6E6D71E2D7B0B4D00E38FBB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -158,6 +278,64 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		A60A40122D7DD48C0014E290 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator Mac/Amethyst_Authenticator_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator Mac/Preview Content\"";
+				DEVELOPMENT_TEAM = 68YWPYV749;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Amethyst-Authenticator-Mac-Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A60A40132D7DD48C0014E290 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator Mac/Amethyst_Authenticator_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator Mac/Preview Content\"";
+				DEVELOPMENT_TEAM = 68YWPYV749;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Amethyst-Authenticator-Mac-Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		A64A1EED2CF6936C003B8875 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -291,6 +469,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Amethyst/Preview Content\"";
 				DEVELOPMENT_TEAM = 68YWPYV749;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Browser-Info.plist";
@@ -334,6 +513,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Amethyst/Preview Content\"";
 				DEVELOPMENT_TEAM = 68YWPYV749;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Browser-Info.plist";
@@ -364,9 +544,94 @@
 			};
 			name = Release;
 		};
+		A6E6D72E2D7B0B4E00E38FBB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator/Amethyst Authenticator.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator/Preview Content\"";
+				DEVELOPMENT_TEAM = 68YWPYV749;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Amethyst-Authenticator-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera gets used to scan qr codes for totp or passkeys";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = NO;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A6E6D72F2D7B0B4E00E38FBB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator/Amethyst Authenticator.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator/Preview Content\"";
+				DEVELOPMENT_TEAM = 68YWPYV749;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Amethyst-Authenticator-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera gets used to scan qr codes for totp or passkeys";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = NO;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A60A40112D7DD48C0014E290 /* Build configuration list for PBXNativeTarget "Amethyst Authenticator Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A60A40122D7DD48C0014E290 /* Debug */,
+				A60A40132D7DD48C0014E290 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A64A1EDC2CF6936B003B8875 /* Build configuration list for PBXProject "Amethyst Browser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -385,17 +650,18 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A6E6D72D2D7B0B4E00E38FBB /* Build configuration list for PBXNativeTarget "Amethyst Authenticator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6E6D72E2D7B0B4E00E38FBB /* Debug */,
+				A6E6D72F2D7B0B4E00E38FBB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A60A19932D04652A00F963C6 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.2.2;
-			};
-		};
 		A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MiaKoring/meilisearch-swift.git";
@@ -404,18 +670,49 @@
 				kind = branch;
 			};
 		};
+		A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MiaKoring/AmethystAuthenticatorCore.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.0;
+			};
+		};
+		A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/twostraws/CodeScanner";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A60A19942D04652A00F963C6 /* KeychainAccess */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A60A19932D04652A00F963C6 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
-			productName = KeychainAccess;
-		};
 		A640BCD22D05E6A1007E62E0 /* MeiliSearch */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */;
 			productName = MeiliSearch;
+		};
+		A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
+		};
+		A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
+		};
+		A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
+		};
+		A671F6F72D808C14008D4E03 /* CodeScanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */;
+			productName = CodeScanner;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

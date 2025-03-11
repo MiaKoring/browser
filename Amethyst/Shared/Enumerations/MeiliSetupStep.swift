@@ -186,8 +186,7 @@ disown
                     .font(.title)
                 Text("Now lets check Meilisearch is running correctly real quick!")
                 Button {
-                    
-                    Task {
+                    SwiftUI.Task {
                         guard let url = URL(string: "http://localhost:7700/indexes") else { return }
                         var request = URLRequest(url: url)
                         request.httpMethod = "GET"
