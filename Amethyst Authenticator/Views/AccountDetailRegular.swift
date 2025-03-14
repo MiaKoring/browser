@@ -15,9 +15,14 @@ struct AccountDetailRegular: View, TOTPUser {
     @State var showPassword = false
     @State var totpTimer: Timer?
     @State var totpCode: String?
+    @Environment(\.dismiss) var dismiss
+    var showDeleted: Binding<Bool>?
+    @State var showPopup: Bool = false
+    @Environment(\.modelContext) var context
     
-    init(account: Account) {
+    init(account: Account, showDeleted: Binding<Bool>? = nil) {
         self.account = account
+        self.showDeleted = showDeleted
     }
     
     var body: some View {
@@ -65,9 +70,20 @@ struct AccountDetailRegular: View, TOTPUser {
                 }
             }
             
-            if let strength = account.strength, account.password != nil {
+            if let strength = account.strength, account.password != nil, !(showDeleted?.wrappedValue ?? false) {
                 Section("Security") {
                     AccountSecurityDisplay(strength: strength, totp: account.totp)
+                }
+            }
+            if showDeleted?.wrappedValue ?? false {
+                Section {
+                    Button("Restore", role: .cancel) {
+                        account.restore()
+                        showDeleted?.wrappedValue = false
+                    }
+                    Button("Delete permanently", role: .destructive) {
+                        showPopup = true
+                    }
                 }
             }
         }
@@ -76,21 +92,32 @@ struct AccountDetailRegular: View, TOTPUser {
                 account.strength = AccountDetail.evaluatePasswordStrength(password: password)
             }
         }
+        .confirmationDialog("Deleting this account will remove all corresponding data permanently. You can't undo this action.", isPresented: $showPopup, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                account.deleteCorrespondingKeychainData()
+                context.delete(account)
+                dismiss()
+                return
+            }
+        }
         
     }
 }
 
 struct AccountDetail: View {
     let account: Account
+    @State var showDeleted: Bool = false
     
     var body: some View {
-        AccountDetailRegular(account: account)
+        AccountDetailRegular(account: account, showDeleted: $showDeleted)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    AccountDetailEdit(account: account) 
-                } label: {
-                    Text("Edit")
+            if !showDeleted {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        AccountDetailEdit(account: account) 
+                    } label: {
+                        Text("Edit")
+                    }
                 }
             }
         }

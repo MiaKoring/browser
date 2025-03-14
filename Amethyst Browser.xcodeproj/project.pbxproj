@@ -8,13 +8,49 @@
 
 /* Begin PBXBuildFile section */
 		A640BCD32D05E6A1007E62E0 /* MeiliSearch in Frameworks */ = {isa = PBXBuildFile; productRef = A640BCD22D05E6A1007E62E0 /* MeiliSearch */; };
+		A64F20402D81F51100F36E0E /* CredentialProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64F20322D81F51100F36E0E /* CredentialProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A64F20462D81F52500F36E0E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64F20342D81F51100F36E0E /* AuthenticationServices.framework */; };
+		A64F20472D81F52500F36E0E /* AuthenticationServices.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A64F20342D81F51100F36E0E /* AuthenticationServices.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A64F204A2D81F56000F36E0E /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */; };
 		A671F6F12D808646008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */; };
 		A671F6F32D808657008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */; };
 		A671F6F52D80865B008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */; };
 		A671F6F82D808C14008D4E03 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F72D808C14008D4E03 /* CodeScanner */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A64F203E2D81F51100F36E0E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A64A1ED92CF6936B003B8875 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A64F20312D81F51100F36E0E;
+			remoteInfo = CredentialProvider;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
+		A64F20452D81F51100F36E0E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A64F20402D81F51100F36E0E /* CredentialProvider.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A64F20482D81F52500F36E0E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A64F20472D81F52500F36E0E /* AuthenticationServices.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A6C49C432D0339BF00C2C5DB /* Embed XPC Services */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -31,10 +67,22 @@
 		A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Authenticator Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Browser.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64E714B2CF8E3AD0045C5B0 /* Amethyst BrowserRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amethyst BrowserRelease.entitlements"; sourceTree = "<group>"; };
+		A64F20322D81F51100F36E0E /* CredentialProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CredentialProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A64F20342D81F51100F36E0E /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		A6BB70B52CF9DC710056F80C /* Amethyst-Browser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Amethyst-Browser-Info.plist"; sourceTree = "<group>"; };
 		A6C69B732D0852F00007D944 /* Amethyst Browser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amethyst Browser.entitlements"; sourceTree = "<group>"; };
 		A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Authenticator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A64F20412D81F51100F36E0E /* Exceptions for "CredentialProvider" folder in "CredentialProvider" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A64F20312D81F51100F36E0E /* CredentialProvider */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A60A40062D7DD48B0014E290 /* Amethyst Authenticator Mac */ = {
@@ -45,6 +93,14 @@
 		A64A1EE32CF6936B003B8875 /* Amethyst */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Amethyst;
+			sourceTree = "<group>";
+		};
+		A64F20362D81F51100F36E0E /* CredentialProvider */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A64F20412D81F51100F36E0E /* Exceptions for "CredentialProvider" folder in "CredentialProvider" target */,
+			);
+			path = CredentialProvider;
 			sourceTree = "<group>";
 		};
 		A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */ = {
@@ -72,6 +128,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A64F202F2D81F51100F36E0E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A64F204A2D81F56000F36E0E /* AmethystAuthenticatorCore in Frameworks */,
+				A64F20462D81F52500F36E0E /* AuthenticationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A6E6D71F2D7B0B4D00E38FBB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -93,6 +158,8 @@
 				A64A1EE32CF6936B003B8875 /* Amethyst */,
 				A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */,
 				A60A40062D7DD48B0014E290 /* Amethyst Authenticator Mac */,
+				A64F20362D81F51100F36E0E /* CredentialProvider */,
+				A64F20332D81F51100F36E0E /* Frameworks */,
 				A64A1EE22CF6936B003B8875 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -103,8 +170,17 @@
 				A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */,
 				A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */,
 				A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */,
+				A64F20322D81F51100F36E0E /* CredentialProvider.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A64F20332D81F51100F36E0E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A64F20342D81F51100F36E0E /* AuthenticationServices.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,6 +234,30 @@
 			productReference = A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A64F20312D81F51100F36E0E /* CredentialProvider */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A64F20422D81F51100F36E0E /* Build configuration list for PBXNativeTarget "CredentialProvider" */;
+			buildPhases = (
+				A64F202E2D81F51100F36E0E /* Sources */,
+				A64F202F2D81F51100F36E0E /* Frameworks */,
+				A64F20302D81F51100F36E0E /* Resources */,
+				A64F20482D81F52500F36E0E /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A64F20362D81F51100F36E0E /* CredentialProvider */,
+			);
+			name = CredentialProvider;
+			packageProductDependencies = (
+				A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */,
+			);
+			productName = CredentialProvider;
+			productReference = A64F20322D81F51100F36E0E /* CredentialProvider.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		A6E6D7212D7B0B4D00E38FBB /* Amethyst Authenticator */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A6E6D72D2D7B0B4E00E38FBB /* Build configuration list for PBXNativeTarget "Amethyst Authenticator" */;
@@ -165,10 +265,12 @@
 				A6E6D71E2D7B0B4D00E38FBB /* Sources */,
 				A6E6D71F2D7B0B4D00E38FBB /* Frameworks */,
 				A6E6D7202D7B0B4D00E38FBB /* Resources */,
+				A64F20452D81F51100F36E0E /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A64F203F2D81F51100F36E0E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */,
@@ -198,6 +300,9 @@
 					A64A1EE02CF6936B003B8875 = {
 						CreatedOnToolsVersion = 16.0;
 					};
+					A64F20312D81F51100F36E0E = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					A6E6D7212D7B0B4D00E38FBB = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -225,6 +330,7 @@
 				A64A1EE02CF6936B003B8875 /* Amethyst Browser */,
 				A6E6D7212D7B0B4D00E38FBB /* Amethyst Authenticator */,
 				A60A40042D7DD48B0014E290 /* Amethyst Authenticator Mac */,
+				A64F20312D81F51100F36E0E /* CredentialProvider */,
 			);
 		};
 /* End PBXProject section */
@@ -238,6 +344,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A64A1EDF2CF6936B003B8875 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A64F20302D81F51100F36E0E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -268,6 +381,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A64F202E2D81F51100F36E0E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A6E6D71E2D7B0B4D00E38FBB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -276,6 +396,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A64F203F2D81F51100F36E0E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A64F20312D81F51100F36E0E /* CredentialProvider */;
+			targetProxy = A64F203E2D81F51100F36E0E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A60A40122D7DD48C0014E290 /* Debug */ = {
@@ -544,6 +672,62 @@
 			};
 			name = Release;
 		};
+		A64F20432D81F51100F36E0E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = CredentialProvider/CredentialProvider.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 68YWPYV749;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CredentialProvider/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CredentialProvider;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.CredentialProvider";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A64F20442D81F51100F36E0E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = CredentialProvider/CredentialProvider.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 68YWPYV749;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CredentialProvider/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CredentialProvider;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.CredentialProvider";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		A6E6D72E2D7B0B4E00E38FBB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -650,6 +834,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A64F20422D81F51100F36E0E /* Build configuration list for PBXNativeTarget "CredentialProvider" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A64F20432D81F51100F36E0E /* Debug */,
+				A64F20442D81F51100F36E0E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A6E6D72D2D7B0B4E00E38FBB /* Build configuration list for PBXNativeTarget "Amethyst Authenticator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -693,6 +886,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */;
 			productName = MeiliSearch;
+		};
+		A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
 		};
 		A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */ = {
 			isa = XCSwiftPackageProductDependency;

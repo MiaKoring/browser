@@ -20,6 +20,12 @@ struct HomeView: View {
             } label: {
                 Text("Passwords")
             }
+            NavigationLink {
+                PasswordList(selectedAccount: $selectedAccount, showDeleted: true)
+                    .navigationTitle("Trash")
+            } label: {
+                Text("Deleted")
+            }
         }
     }
 }

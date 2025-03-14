@@ -96,4 +96,12 @@ struct TOTPSection: View, TOTPUser {
             showScanner = false
         }
     }
+    
+    func getCurrentTOTP() -> String {
+        guard var code  = account.getCurrentTOTPCode() else {
+            return "Error"
+        }
+        code.insert(" ", at: code.index(code.startIndex, offsetBy: 3))
+        return code
+    }
 }

@@ -2,20 +2,14 @@
 //  AccountDisplay.swift
 //  Amethyst Browser
 //
-//  Created by Mia Koring on 09.03.25.
+//  Created by Mia Koring on 12.03.25.
 //
-
 import SwiftUI
-import SwiftData
 import AmethystAuthenticatorCore
-
 import AuthenticationServices
 
 struct AccountDisplay: View {
     let account: Account
-    @Environment(\.modelContext) var context
-    var showDeleted: Bool = false
-    @State var showPopup: Bool = false
     var body: some View {
         HStack {
             ZStack {
@@ -36,33 +30,16 @@ struct AccountDisplay: View {
                 if let title = account.title {
                     Text(title)
                         .bold()
+                        .lineLimit(1)
                 } else {
                     Text(account.service)
                         .bold()
+                        .lineLimit(1)
                 }
                 Text(account.username)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-            }
-        }
-        .contextMenu {
-            if showDeleted {
-                Button("Restore", role: .cancel) {
-                    account.restore()
-                }
-            }
-            Button("Delete", role: .destructive) {
-                showPopup = true
-            }
-        }
-        .confirmationDialog(showDeleted ? "Deleting this account will remove all corresponding data permanently. You can't undo this action.": "Are you sure you want to delete this Account? It will be restorable for 30 days.", isPresented: $showPopup, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                guard !showDeleted else {
-                    account.deleteCorrespondingKeychainData()
-                    context.delete(account)
-                    return
-                }
-                account.delete()
+                    .lineLimit(1)
             }
         }
     }
