@@ -12,6 +12,7 @@ import SwiftData
 @main
 struct Amethyst_AuthenticatorApp: App {
     let container: ModelContainer
+    
     init() {
         guard let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.touchthegrass.AmethystAuthenticator")?.appendingPathComponent("shared.sqlite") else {
             fatalError("Couldn't find url for shared group db")

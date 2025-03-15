@@ -5,6 +5,7 @@
 //  Created by Mia Koring on 13.03.25.
 //
 
+/*
 import SwiftUI
 import AmethystAuthenticatorCore
 import AuthenticationServices
@@ -85,3 +86,4 @@ struct TOTPDisplay: View {
         return code
     }
 }
+*/

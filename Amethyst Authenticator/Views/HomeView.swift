@@ -10,21 +10,39 @@ import AmethystAuthenticatorCore
 
 struct HomeView: View {
     @State var selectedAccount: Account?
-    @State var displayedContent: DisplayedContent = .passwords
+    @State var showTOTPSetup: Bool = false
+    @State var recievedURL: URL? = nil
+    @State var showSelector: Bool = false
+    @State var showAccountList: Bool = false
     
     var body: some View {
-        NavigationStack {
-            NavigationLink {
-                PasswordList(selectedAccount: $selectedAccount)
-                    .navigationTitle("Passwords")
-            } label: {
-                Text("Passwords")
+        TabView() {
+            ForEach(TabCase.allCases, id: \.hashValue) { tab in
+                Tab {
+                    NavigationStack {
+                        tab.view(selectedAccount: $selectedAccount)
+                    }
+                } label: {
+                    Image(systemName: tab.imageName)
+                }
             }
-            NavigationLink {
-                PasswordList(selectedAccount: $selectedAccount, showDeleted: true)
-                    .navigationTitle("Trash")
-            } label: {
-                Text("Deleted")
+        }
+        .fullScreenCover(item: $recievedURL) { url in
+            Text(url.absoluteString)
+        }
+        .onOpenURL { url in
+            showSelector = true
+        }
+        .alert("Add OTP to existing Account?", isPresented: $showSelector) {
+            Button ("Yes") {
+                
+            }
+            Button("Create New") {
+                
+            }
+            Button("Cancel", role: .cancel) {
+                showSelector = false
+                recievedURL = nil
             }
         }
     }

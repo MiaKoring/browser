@@ -19,41 +19,54 @@ struct PasswordList: View {
     @State var sortFilter: SortFilter = .title
     var showDeleted = false
     @State var showClearConfirmation: Bool = false
+    var showTOTP = false
     
     var body: some View {
-        List(searchText.isEmpty ?
-             accounts.filter({showDeleted ? ($0.deletedAt != nil): ($0.deletedAt == nil)})
-            .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) }):
-                accounts.filter({
-                (
-                    $0.username.contains(searchText) ||
-                    $0.service.contains(searchText)
-                ) &&
-                showDeleted ? ($0.deletedAt != nil): ($0.deletedAt == nil)
+        List(accounts
+            .filter({ account in
+                let passesDeletedFilter = showDeleted ? (account.deletedAt != nil) : (account.deletedAt == nil)
+                
+                let passesSearchFilter = searchText.isEmpty ||
+                                        account.username.localizedCaseInsensitiveContains(searchText) ||
+                                        account.service.localizedCaseInsensitiveContains(searchText) ||
+                                        account.title?.localizedCaseInsensitiveContains(searchText) ?? false
+                
+                let passesTOTPFilter = !showTOTP ||
+                                        account.totp
+                
+                return passesDeletedFilter && passesSearchFilter && passesTOTPFilter
             })
             .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
         ) { account in
-            NavigationLink {
-                AccountDetail(account: account, showDeleted: showDeleted)
-            } label: {
-                AccountDisplay(account: account, showDeleted: showDeleted)
+            if !showTOTP {
+                NavigationLink {
+                    AccountDetail(account: account, showDeleted: showDeleted)
+                } label: {
+                    AccountDisplay(account: account, showDeleted: showDeleted)
+                }
+            } else {
+                TOTPDisplay(account: account)
             }
         }
+        .searchable(text: $searchText)
         .listStyle(.plain)
         .toolbar {
-            ToolbarItem(placement: .navigation) {
+            ToolbarItem(placement: .topBarLeading) {
+                !showDeleted ? !showTOTP ? Text("Passwords").font(.title).bold(): Text("TOTP").font(.title).bold(): Text("Trash").font(.title).bold()
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 SelectionMenu(sortDirectionAcending: $sortDirectionAcending, sortFilter: $sortFilter)
             }
-            if !showDeleted {
-                ToolbarItem(placement: .navigation) {
+            if !showDeleted && !showTOTP {
+                ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
                         AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation)
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
-            } else {
-                ToolbarItem(placement: .navigation) {
+            } else if showDeleted {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button(role: .destructive) {
                         showClearConfirmation = true
                     } label: {
@@ -117,7 +130,7 @@ struct PasswordList: View {
                     Button {
                         sortDirectionAcending = true
                     } label: {
-                        Label("Descending", systemImage: !sortDirectionAcending ? "arrow.down": "checkmark")
+                        Label("Ascending", systemImage: !sortDirectionAcending ? "arrow.down": "checkmark")
                     }
                 }
                 Section {

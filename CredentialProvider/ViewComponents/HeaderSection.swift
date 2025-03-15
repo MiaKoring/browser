@@ -7,13 +7,18 @@
 import SwiftUI
 import AmethystAuthenticatorCore
 
-struct HeaderSection: View {
+public struct HeaderSection: View {
     @Bindable var account: Account
     @Binding var title: String
     @Binding var username: String
     var editable = true
-    
-    var body: some View {
+    public init(account: Account, title: Binding<String>, username: Binding<String>, editable: Bool = true) {
+        self.account = account
+        self._title = title
+        self._username = username
+        self.editable = editable
+    }
+    public var body: some View {
         HStack {
             if let data = account.image, let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)

@@ -9,7 +9,6 @@
 import SwiftUI
 import AmethystAuthenticatorCore
 import SwiftData
-import KeychainAccess
 
 extension AccountDetailEdit: View {
     var body: some View {
@@ -141,17 +140,8 @@ extension AccountDetailEdit: View {
                 HStack {
                     Text("Website")
                     Spacer()
-                    Menu {
-                        Button("Open Website") {
-                            guard let url = URL(string: "https://\(account.service)") else { return }
-                            UIApplication.shared.open(url)
-                        }
-                    } label: {
-                        Text("\(account.service)\(account.aliases.count > 0 ? " and \(account.aliases.count) more": "")")
-                            .foregroundStyle(.secondary)
-                    }
-                    .menuStyle(.button)
-                    .buttonStyle(.plain)
+                    Text("\(account.service)\(account.aliases.count > 0 ? " and \(account.aliases.count) more": "")")
+                        .foregroundStyle(.secondary)
                 }
             }
         }

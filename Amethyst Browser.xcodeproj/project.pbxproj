@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A640BCD32D05E6A1007E62E0 /* MeiliSearch in Frameworks */ = {isa = PBXBuildFile; productRef = A640BCD22D05E6A1007E62E0 /* MeiliSearch */; };
+		A64536A92D85B45A0067BC82 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A64536A82D85B45A0067BC82 /* CodeScanner */; };
 		A64F20402D81F51100F36E0E /* CredentialProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64F20322D81F51100F36E0E /* CredentialProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A64F20462D81F52500F36E0E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64F20342D81F51100F36E0E /* AuthenticationServices.framework */; };
 		A64F20472D81F52500F36E0E /* AuthenticationServices.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A64F20342D81F51100F36E0E /* AuthenticationServices.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -134,6 +135,7 @@
 			files = (
 				A64F204A2D81F56000F36E0E /* AmethystAuthenticatorCore in Frameworks */,
 				A64F20462D81F52500F36E0E /* AuthenticationServices.framework in Frameworks */,
+				A64536A92D85B45A0067BC82 /* CodeScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +255,7 @@
 			name = CredentialProvider;
 			packageProductDependencies = (
 				A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */,
+				A64536A82D85B45A0067BC82 /* CodeScanner */,
 			);
 			productName = CredentialProvider;
 			productReference = A64F20322D81F51100F36E0E /* CredentialProvider.appex */;
@@ -682,6 +685,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CredentialProvider/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = CredentialProvider;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Used only to setup One Time Codes through Camera";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -710,6 +714,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CredentialProvider/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = CredentialProvider;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Used only to setup One Time Codes through Camera";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -745,6 +750,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = telephony;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
@@ -783,6 +789,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = telephony;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
@@ -886,6 +893,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */;
 			productName = MeiliSearch;
+		};
+		A64536A82D85B45A0067BC82 /* CodeScanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */;
+			productName = CodeScanner;
 		};
 		A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */ = {
 			isa = XCSwiftPackageProductDependency;

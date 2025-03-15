@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/MiaKoring/AmethystAuthenticatorCore.git",
       "state" : {
-        "revision" : "830b61595d93d9cce6f064dec9299d8378fa84ef",
-        "version" : "0.1.1"
+        "revision" : "7bf3a27fdd55075ec61c4b89c8e1b26a0dec1d3a",
+        "version" : "0.3.0"
       }
     },
     {

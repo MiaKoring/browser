@@ -19,13 +19,7 @@ struct AccountList: View {
   
     var body: some View {
         VStack(alignment: .leading) {
-            Button {
-                cancel()
-            } label: {
-                Text("Cancel")
-                    .font(.title3)
-            }
-            .padding()
+            
             List {
                 Section("Most likely") {
                     ForEach(accounts.filter { account in
@@ -35,11 +29,11 @@ struct AccountList: View {
                         })
                     }, id: \.id) { account in
                         if type == .passwordList {
-                            AccountDisplay(account: account)
-                                .onTapGesture {
-                                    let service = account.service
-                                    provideCredentials(account.username, account.password ?? "", service, account.id, account.totp)
-                                }
+                            AccountDisplay(account: account) {
+                                let service = account.service
+                                provideCredentials(account.username, account.password ?? "", service, account.id, account.totp)
+                            }
+                                
                         } else if type == .totpList {
                             
                         }
@@ -47,11 +41,10 @@ struct AccountList: View {
                 }
                 Section("All Passwords") {
                     ForEach(accounts, id: \.id) { account in
-                        AccountDisplay(account: account)
-                            .onTapGesture {
-                                let service = identifiers.sorted(by: {$0.count > $1.count}).first ?? account.service
-                                provideCredentials(account.username, account.password ?? "", service, account.id, account.totp)
-                            }
+                        AccountDisplay(account: account) {
+                            let service = identifiers.sorted(by: {$0.count > $1.count}).first ?? account.service
+                            provideCredentials(account.username, account.password ?? "", service, account.id, account.totp)
+                        }
                     }
                 }
             }
@@ -67,6 +60,16 @@ struct AccountList: View {
                 }
             }
         }
-        #endif
+#endif
+        .toolbar{
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    cancel()
+                } label: {
+                    Text("Cancel")
+                        .font(.title3)
+                }
+            }
+        }
     }
 }
