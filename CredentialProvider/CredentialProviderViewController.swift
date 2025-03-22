@@ -11,6 +11,7 @@ import SwiftUI
 import SwiftData
 
 class CredentialProviderViewController: ASCredentialProviderViewController, ObservableObject {
+    
     @Published var identifiers: [String] = []
     @Published var type: UIType = .passwordList
 

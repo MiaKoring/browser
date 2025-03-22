@@ -14,6 +14,7 @@ struct HomeView: View {
     @State var recievedURL: URL? = nil
     @State var showSelector: Bool = false
     @State var showAccountList: Bool = false
+    @Binding var isAuthenticated: Bool
     
     var body: some View {
         TabView() {
@@ -26,9 +27,6 @@ struct HomeView: View {
                     Image(systemName: tab.imageName)
                 }
             }
-        }
-        .fullScreenCover(item: $recievedURL) { url in
-            Text(url.absoluteString)
         }
         .onOpenURL { url in
             showSelector = true

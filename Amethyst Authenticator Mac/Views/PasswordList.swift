@@ -14,64 +14,150 @@ struct PasswordList: View {
     @Binding var selectedAccount: Account?
     @State var searchText: String = ""
     @Environment(\.modelContext) var context
+    @State var accountAfterCreation: Account?
+    @State var sortDirectionAcending: Bool = true
+    @State var sortFilter: SortFilter = .title
+    var showDeleted = false
+    @State var showClearConfirmation: Bool = false
+    var showTOTP = false
+    
     var body: some View {
-        List(searchText.isEmpty ? accounts: accounts.filter({
-            $0.username.contains(searchText) || $0.service.contains(searchText)
-        })) { account in
-            HStack {
-                if let data = account.image, let nsImage = NSImage(data: data) {
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30)
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                } else {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(.tertiary)
-                        .frame(width: 30, height: 30)
+        List(accounts
+            .filter({ account in
+                let passesDeletedFilter = showDeleted ? (account.deletedAt != nil) : (account.deletedAt == nil)
+                
+                let passesSearchFilter = searchText.isEmpty ||
+                                        account.username.localizedCaseInsensitiveContains(searchText) ||
+                                        account.service.localizedCaseInsensitiveContains(searchText) ||
+                                        account.title?.localizedCaseInsensitiveContains(searchText) ?? false
+                
+                let passesTOTPFilter = !showTOTP ||
+                                        account.totp
+                
+                return passesDeletedFilter && passesSearchFilter && passesTOTPFilter
+            })
+            .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
+        ) { account in
+            if !showTOTP {
+                NavigationLink {
+                    AccountDetail(account: account, showDeleted: showDeleted)
+                } label: {
+                    AccountDisplay(account: account, showDeleted: showDeleted)
                 }
-                VStack(alignment: .leading) {
-                    if let title = account.title {
-                        Text(title)
-                            .bold()
-                    } else {
-                        Text(account.service)
-                            .bold()
-                    }
-                    Text(account.username)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
+            } else {
+                TOTPDisplay(account: account)
             }
-            .contextMenu {
-                Button("Delete") {
-                    context.delete(account)
+        }
+        .searchable(text: $searchText)
+        .listStyle(.plain)
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                !showDeleted ? !showTOTP ? Text("Passwords").font(.title).bold(): Text("TOTP").font(.title).bold(): Text("Trash").font(.title).bold()
+            }
+            ToolbarItem(placement: .navigation) {
+                SelectionMenu(sortDirectionAcending: $sortDirectionAcending, sortFilter: $sortFilter)
+            }
+            if !showDeleted && !showTOTP {
+                ToolbarItem(placement: .navigation) {
+                    NavigationLink {
+                        AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation)
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            } else if showDeleted {
+                ToolbarItem(placement: .navigation) {
+                    Button(role: .destructive) {
+                        showClearConfirmation = true
+                    } label: {
+                        Image(systemName: "trash")
+                    }
                 }
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button(action: {
-                    do {
-                        let account = try Account(service: "amethystbrowser.de", username: "koring.mia@gmail.com", comment: "Test", password: "Test", allAccounts: accounts, strength: 0.7)
-                        Task {
-                            if let title = try? await Account.getTitle(from: account.service) {
-                                account.setTitle(to: title)
-                            }
-                            if let image = try? await Account.getImage(for: account.service) {
-                                account.setImage(to: image)
-                            }
-                        }
-                        context.insert(account)
-                    } catch {
-                        print(error.localizedDescription)
+        .sheet(item: $accountAfterCreation) { account in
+            FullScreenCoverView(account: account)
+        }
+        .confirmationDialog("Are you sure you want to permanently remove all Accounts from the trash? This action will irreversible remove all associated data from all your devices.", isPresented: $showClearConfirmation, titleVisibility: .visible) {
+            Button("Remove all", role: .destructive) {
+                try? context.transaction {
+                    let allAccounts = accounts.filter({$0.deletedAt != nil})
+                    for account in allAccounts {
+                        account.deleteCorrespondingKeychainData()
+                        context.delete(account)
                     }
-                }) {
-                    Image(systemName: "plus")
                 }
+                
             }
         }
     }
     
-   
+    struct FullScreenCoverView: View {
+        @Bindable var account: Account
+        @Environment(\.dismiss) var dismiss
+        var body: some View {
+            NavigationStack {
+                AccountDetail(account: account)
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            Button {
+                                dismiss()
+                            } label: {
+                                HStack {
+                                    Image(systemName: "chevron.left")
+                                        .bold()
+                                    Text("Back")
+                                }
+                            }
+                        }
+                    }
+            }
+        }
+        
+    }
+    
+    struct SelectionMenu: View {
+        @Binding var sortDirectionAcending: Bool
+        @Binding var sortFilter: SortFilter
+        var body: some View {
+            Menu {
+                Section {
+                    Button {
+                        sortDirectionAcending = false
+                    } label: {
+                        Label("Descending", systemImage: sortDirectionAcending ? "arrow.up": "checkmark")
+                    }
+                    Button {
+                        sortDirectionAcending = true
+                    } label: {
+                        Label("Ascending", systemImage: !sortDirectionAcending ? "arrow.down": "checkmark")
+                    }
+                }
+                Section {
+                    Button {
+                        sortFilter = .edited
+                    } label: {
+                        Label("Date Edited", systemImage: sortFilter == .edited ? "checkmark": "pencil.line")
+                    }
+                    Button {
+                        sortFilter = .created
+                    } label: {
+                        Label("Date Created", systemImage: sortFilter == .created ? "checkmark": "plus.circle")
+                    }
+                    Button {
+                        sortFilter = .website
+                    } label: {
+                        Label("Website", systemImage: sortFilter == .website ? "checkmark": "safari")
+                    }
+                    Button {
+                        sortFilter = .title
+                    } label: {
+                        Label("Title", systemImage: sortFilter == .title ? "checkmark": "textformat")
+                    }
+                }
+            } label: {
+                Image(systemName: "line.3.horizontal.decrease")
+            }
+        }
+    }
 }
