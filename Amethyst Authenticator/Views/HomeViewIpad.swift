@@ -36,7 +36,3 @@ enum DisplayedContent {
     case totp
     case security
 }
-
-#Preview {
-    HomeView()
-}

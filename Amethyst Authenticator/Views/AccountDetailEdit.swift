@@ -26,6 +26,10 @@ extension AccountDetailEdit: View {
                 WebsiteSection(account: account)
             }
             
+            if createWithCode != nil {
+                Text("TOTP Code will be available on creation")
+            }
+            
             Button(account.deletedAt != nil ? "Restore Account": "Delete Account" , role: account.deletedAt != nil ? .cancel: .destructive) {
                 handleDeletionAndRestoration()
             }
@@ -46,7 +50,14 @@ extension AccountDetailEdit: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .navigation) {
+            if showCancelButton {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     if !create {
                         save()
@@ -63,6 +74,9 @@ extension AccountDetailEdit: View {
                                 if let title {
                                     newAccount.setTitle(to: title )
                                 }
+                            }
+                            if let createWithCode {
+                                newAccount.setTOTPSecret(to: createWithCode)
                             }
                             context.insert(newAccount)
                             accountAfterCreation?.wrappedValue = newAccount

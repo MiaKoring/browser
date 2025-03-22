@@ -18,13 +18,15 @@ struct AccountDetailEdit {
     @State var title: String
     @State var deleteAction: DeleteAction?
     @Environment(\.modelContext) var context
+    @Environment(\.dismiss) var dismiss
     @State var error: AAuthenticationError? = nil
     @State var totpCode: String?
-    @Environment(\.dismiss) var dismiss
     @State var create: Bool
     var accountAfterCreation: Binding<Account?>?
+    var createWithCode: String?
+    var showCancelButton: Bool
     
-    init(account: Account, create: Bool = false, accountAfterCreation: Binding<Account?>? = nil) {
+    init(account: Account, create: Bool = false, accountAfterCreation: Binding<Account?>? = nil, createWithCode: String? = nil, showCancelButton: Bool = false) {
         self.account = account
         self.username = account.username
         if !create {
@@ -35,6 +37,8 @@ struct AccountDetailEdit {
         self.title = account.title ?? ""
         self.create = create
         self.accountAfterCreation = accountAfterCreation
+        self.createWithCode = createWithCode
+        self.showCancelButton = showCancelButton
     }
     
     func save() {

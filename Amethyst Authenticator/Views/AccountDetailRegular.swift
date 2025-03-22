@@ -107,10 +107,19 @@ struct AccountDetailRegular: View, TOTPUser {
 struct AccountDetail: View {
     let account: Account
     @State var showDeleted: Bool = false
+    @Environment(\.dismiss) var dismiss
+    var showCancelButton: Bool = false
     
     var body: some View {
         AccountDetailRegular(account: account, showDeleted: $showDeleted)
         .toolbar {
+            if showCancelButton {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
             if !showDeleted {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
