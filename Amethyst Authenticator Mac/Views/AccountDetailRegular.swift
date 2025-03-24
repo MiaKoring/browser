@@ -28,45 +28,33 @@ struct AccountDetailRegular: View, TOTPUser {
     var body: some View {
         Form {
             Section {
-                HeaderSection(account: account, title: .constant(account.title ?? account.service), username: .constant(account.username), editable: false)
-                HStack {
-                    Text("Password")
-                    Spacer()
-                    Menu {
-                        Button("Copy Password") {
-                            NSPasteboard.general.setString(account.password ?? "", forType: .string)
-                        }
-                        .onAppear() {
-                            showPassword = true
-                        }
-                    } label: {
+                VStack(spacing: 5) {
+                    HeaderSection(account: account, title: .constant(account.title ?? account.service), username: .constant(account.username), editable: false)
+                    HStack {
+                        Text("Password")
                         if let password = account.password {
-                            Text(showPassword ? password: Array(repeating: "•", count: password.count).joined())
+                            CopyOnClickView(text: password, shouldObfuscate: true)
                                 .monospaced()
-                                .fontWeight(showPassword ? .regular: .heavy)
+                        }
+                    }
+                    if account.totp {
+                        TOTPSection(account: account, deleteAction: .constant(nil), totpCode: $totpCode, editable: false)
+                    }
+                    HStack {
+                        Text("Website")
+                        Spacer()
+                        Menu {
+                            Button("Open Website") {
+                                guard let url = URL(string: "https://\(account.service)") else { return }
+                                NSWorkspace.shared.open(url)
+                            }
+                        } label: {
+                            Text("\(account.service)\(account.aliases.count > 0 ? " and \(account.aliases.count) more": "")")
                                 .foregroundStyle(.secondary)
                         }
+                        .menuStyle(.button)
+                        .buttonStyle(.plain)
                     }
-                    .menuStyle(.button)
-                    .buttonStyle(.plain)
-                }
-                if account.totp {
-                    TOTPSection(account: account, deleteAction: .constant(nil), totpCode: $totpCode, editable: false)
-                }
-                HStack {
-                    Text("Website")
-                    Spacer()
-                    Menu {
-                        Button("Open Website") {
-                            guard let url = URL(string: "https://\(account.service)") else { return }
-                            NSWorkspace.shared.open(url)
-                        }
-                    } label: {
-                        Text("\(account.service)\(account.aliases.count > 0 ? " and \(account.aliases.count) more": "")")
-                            .foregroundStyle(.secondary)
-                    }
-                    .menuStyle(.button)
-                    .buttonStyle(.plain)
                 }
             }
             
@@ -87,6 +75,7 @@ struct AccountDetailRegular: View, TOTPUser {
                 }
             }
         }
+        .formStyle(.grouped)
         .onAppear() {
             if let password = account.password, account.strength == nil, !password.isEmpty {
                 account.strength = AccountDetail.evaluatePasswordStrength(password: password)
@@ -107,18 +96,25 @@ struct AccountDetailRegular: View, TOTPUser {
 struct AccountDetail: View {
     let account: Account
     @State var showDeleted: Bool = false
+    @State var edit: Bool = false
     
     var body: some View {
-        AccountDetailRegular(account: account, showDeleted: $showDeleted)
-        .toolbar {
-            if !showDeleted {
-                ToolbarItem(placement: .navigation) {
-                    NavigationLink {
-                        AccountDetailEdit(account: account) 
-                    } label: {
-                        Text("Edit")
+        if !edit {
+            AccountDetailRegular(account: account, showDeleted: $showDeleted)
+                .toolbar {
+                    if !showDeleted {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button {
+                                edit = true
+                            } label: {
+                                Text("Edit")
+                            }
+                        }
                     }
                 }
+        } else {
+            AccountDetailEdit(account: account) {
+                edit = false
             }
         }
     }

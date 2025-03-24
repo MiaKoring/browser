@@ -19,11 +19,11 @@ struct AccountDetailEdit {
     @Environment(\.modelContext) var context
     @State var error: AAuthenticationError? = nil
     @State var totpCode: String?
-    @Environment(\.dismiss) var dismiss
     @State var create: Bool
     var accountAfterCreation: Binding<Account?>?
+    var onClose: () -> Void
     
-    init(account: Account, create: Bool = false, accountAfterCreation: Binding<Account?>? = nil) {
+    init(account: Account, create: Bool = false, accountAfterCreation: Binding<Account?>? = nil, onClose: @escaping () -> Void) {
         self.account = account
         self.username = account.username
         if !create {
@@ -34,6 +34,7 @@ struct AccountDetailEdit {
         self.title = account.title ?? ""
         self.create = create
         self.accountAfterCreation = accountAfterCreation
+        self.onClose = onClose
     }
     
     func save() {
@@ -61,7 +62,7 @@ struct AccountDetailEdit {
                 return
             }
         }
-        dismiss()
+        onClose()
     }
     
     func handleDeletionAndRestoration() {

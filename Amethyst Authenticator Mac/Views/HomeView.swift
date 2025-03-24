@@ -14,18 +14,23 @@ struct HomeView: View {
     @State var recievedURL: URL? = nil
     @State var showSelector: Bool = false
     @State var showAccountList: Bool = false
+    @State var selectedTab: TabCase = .passwords
     
     var body: some View {
-        TabView() {
-            ForEach(TabCase.allCases, id: \.hashValue) { tab in
-                Tab {
-                    NavigationStack {
-                        tab.view(selectedAccount: $selectedAccount)
+        NavigationSplitView {
+            LazyHStack {
+                ForEach(TabCase.allCases, id: \.self) { tab in
+                    Button {
+                        selectedTab = tab
+                    } label: {
+                        Image(systemName: tab.imageName)
                     }
-                } label: {
-                    Image(systemName: tab.imageName)
                 }
             }
+        } content: {
+            selectedTab.view(selectedAccount: $selectedAccount)
+        } detail: {
+            Text("detail")
         }
         .onOpenURL { url in
             showSelector = true
@@ -43,4 +48,8 @@ struct HomeView: View {
             }
         }
     }
+}
+
+#Preview {
+    HomeView()
 }

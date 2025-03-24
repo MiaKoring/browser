@@ -30,6 +30,7 @@ extension AccountDetailEdit: View {
                 handleDeletionAndRestoration()
             }
         }
+        .formStyle(.grouped)
         .alert("Are you sure you want to delete \(deleteAction?.rawValue ?? "Empty")", isPresented: .constant(deleteAction != nil)) {
             Button("Delete", role: .destructive) {
                 executeDeletion()
@@ -46,7 +47,7 @@ extension AccountDetailEdit: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .navigation) {
+            ToolbarItem(placement: .confirmationAction) {
                 Button {
                     if !create {
                         save()
@@ -74,7 +75,7 @@ extension AccountDetailEdit: View {
                             print(error)
                         }
                     }
-                    dismiss()
+                    onClose()
                 } label: {
                     Text(create ? "Create": "Save")
                 }
@@ -89,11 +90,10 @@ extension AccountDetailEdit: View {
         @Binding var deleteAction: DeleteAction?
         @Binding var password: String
         let create: Bool
+        
         var body: some View {
             Section {
                 HStack {
-                    Text("Password")
-                    Spacer()
                     TextField("Password", text: $password)
                         .multilineTextAlignment(.trailing)
                 }

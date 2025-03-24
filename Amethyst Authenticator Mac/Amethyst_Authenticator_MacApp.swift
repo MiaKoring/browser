@@ -28,5 +28,6 @@ struct Amethyst_Authenticator_MacApp: App {
             ContentView()
                 .modelContainer(container)
         }
+        .windowStyle(HiddenTitleBarWindowStyle())
     }
 }

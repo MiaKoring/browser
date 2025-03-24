@@ -26,35 +26,54 @@ struct HeaderSection: View {
                     .frame(width: 40, height: 40)
             }
             VStack(alignment: .leading) {
-                TextField(!account.service.isEmpty ? account.service: "Website", text: $title)
-                    .font(.title3)
-                    .bold()
-                    .disabled(!editable)
+                if editable {
+                    HStack {
+                        if title.isEmpty {
+                            Text("Website")
+                                .bold()
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                                .padding(.leading, 3)
+                        } else {
+                            Text("Website")
+                                .bold()
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                                .padding(.leading, 3)
+                                .hidden()
+                        }
+                        Spacer()
+                    }
+                    .overlay {
+                        TextEditor(text: $title)
+                            .lineLimit(1)
+                            .textEditorStyle(.plain)
+                            .font(.title3)
+                            .bold()
+                    }
+                } else {
+                    Text(title)
+                        .font(.title3)
+                        .bold()
+                }
                 if let edited = account.editedAt {
                     Text("Last modified at \(edited.formatted(date: .numeric, time: .omitted))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             }
+            Spacer()
         }
         HStack {
-            Text("User Name")
-            Spacer()
             if editable {
                 TextField("User Name", text: $username)
                     .multilineTextAlignment(.trailing)
                     .disabled(!editable)
             } else {
-                Menu {
-                    Button("Copy Username") {
-                        NSPasteboard.general.setString(account.username, forType: .string)
-                    }
-                } label: {
-                    Text(username)
-                        .foregroundStyle(.secondary)
+                HStack {
+                    Text("Username")
+                    CopyOnClickView(text: username, shouldObfuscate: false)
                 }
-                .menuStyle(.button)
-                .buttonStyle(.plain)
             }
         }
     }

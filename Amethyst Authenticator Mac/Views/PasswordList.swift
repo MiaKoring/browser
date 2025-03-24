@@ -20,21 +20,15 @@ struct PasswordList: View {
     var showDeleted = false
     @State var showClearConfirmation: Bool = false
     var showTOTP = false
+    @State var showAccountCreation: Bool = false
     
     var body: some View {
+        TextField("Search", text: $searchText)
+            .textFieldStyle(.roundedBorder)
+            .padding(.horizontal, 10)
         List(accounts
             .filter({ account in
-                let passesDeletedFilter = showDeleted ? (account.deletedAt != nil) : (account.deletedAt == nil)
-                
-                let passesSearchFilter = searchText.isEmpty ||
-                                        account.username.localizedCaseInsensitiveContains(searchText) ||
-                                        account.service.localizedCaseInsensitiveContains(searchText) ||
-                                        account.title?.localizedCaseInsensitiveContains(searchText) ?? false
-                
-                let passesTOTPFilter = !showTOTP ||
-                                        account.totp
-                
-                return passesDeletedFilter && passesSearchFilter && passesTOTPFilter
+                passesFilter(account)
             })
             .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
         ) { account in
@@ -48,31 +42,40 @@ struct PasswordList: View {
                 TOTPDisplay(account: account)
             }
         }
-        .searchable(text: $searchText)
         .listStyle(.plain)
         .toolbar {
-            ToolbarItem(placement: .navigation) {
-                !showDeleted ? !showTOTP ? Text("Passwords").font(.title).bold(): Text("TOTP").font(.title).bold(): Text("Trash").font(.title).bold()
+            ToolbarItem(placement: .primaryAction) {
+                VStack(alignment: .leading) {
+                    !showDeleted ? !showTOTP ? Text("Passwords").bold(): Text("TOTP").bold(): Text("Trash").bold()
+                    Text("\(accounts.count(where: { passesFilter($0) })) Items")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
-            ToolbarItem(placement: .navigation) {
+            ToolbarItem(placement: .primaryAction) {
                 SelectionMenu(sortDirectionAcending: $sortDirectionAcending, sortFilter: $sortFilter)
             }
             if !showDeleted && !showTOTP {
-                ToolbarItem(placement: .navigation) {
-                    NavigationLink {
-                        AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation)
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showAccountCreation = true
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             } else if showDeleted {
-                ToolbarItem(placement: .navigation) {
+                ToolbarItem(placement: .primaryAction) {
                     Button(role: .destructive) {
                         showClearConfirmation = true
                     } label: {
                         Image(systemName: "trash")
                     }
                 }
+            }
+        }
+        .sheet(isPresented: $showAccountCreation) {
+            AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation) {
+                showAccountCreation = false
             }
         }
         .sheet(item: $accountAfterCreation) { account in
@@ -99,7 +102,7 @@ struct PasswordList: View {
             NavigationStack {
                 AccountDetail(account: account)
                     .toolbar {
-                        ToolbarItem(placement: .navigation) {
+                        ToolbarItem(placement: .cancellationAction) {
                             Button {
                                 dismiss()
                             } label: {
@@ -159,5 +162,19 @@ struct PasswordList: View {
                 Image(systemName: "line.3.horizontal.decrease")
             }
         }
+    }
+    
+    func passesFilter(_ account: Account) -> Bool {
+        let passesDeletedFilter = showDeleted ? (account.deletedAt != nil) : (account.deletedAt == nil)
+        
+        let passesSearchFilter = searchText.isEmpty ||
+                                account.username.localizedCaseInsensitiveContains(searchText) ||
+                                account.service.localizedCaseInsensitiveContains(searchText) ||
+                                account.title?.localizedCaseInsensitiveContains(searchText) ?? false
+        
+        let passesTOTPFilter = !showTOTP ||
+                                account.totp
+        
+        return passesDeletedFilter && passesSearchFilter && passesTOTPFilter
     }
 }
