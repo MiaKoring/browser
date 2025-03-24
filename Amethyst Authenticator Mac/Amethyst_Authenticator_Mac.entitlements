@@ -16,7 +16,8 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>$(TeamIdentifierPrefix)de.touchthegrass.Amethyst.shared</string>
+		<string>$(TeamIdentifierPrefix)group.de.touchthegrass.AmethystAuthenticator</string>
+		<string>$(TeamIdentifierPrefix)group.de.touchthegrass.AmethystAuthenticator.dev</string>
 	</array>
 	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>
@@ -26,7 +27,7 @@
 	<true/>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)de.touchthegrass.AmethystAuthenticator.shared</string>
+		<string>$(AppIdentifierPrefix)$(KEYCHAIN_GROUP)</string>
 	</array>
 </dict>
 </plist>

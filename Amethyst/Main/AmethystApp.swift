@@ -27,9 +27,15 @@ struct AmethystApp: App {
     init() {
         do {
             container = try ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self, configurations: ModelConfiguration(cloudKitDatabase: .none))
+#if RELEASE
             guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)de.touchthegrass.Amethyst.shared")?.appendingPathComponent("shared.sqlite") else {
                 fatalError("Couldn't find url for shared group db")
             }
+#elseif DEBUG
+            guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)de.touchthegrass.Amethyst.shared.dev")?.appendingPathComponent("shared.sqlite") else {
+                fatalError("Couldn't find url for shared group db")
+            }
+#endif
             let configuration = ModelConfiguration(url: groupDBURL)
             do {
                 self.passwordContainer = try ModelContainer(for: Account.self, migrationPlan: AAuthenticatorMigrations.self, configurations: configuration)

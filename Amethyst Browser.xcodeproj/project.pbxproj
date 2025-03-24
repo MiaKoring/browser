@@ -16,8 +16,6 @@
 		A671F6F32D808657008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */; };
 		A671F6F52D80865B008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */; };
 		A671F6F82D808C14008D4E03 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F72D808C14008D4E03 /* CodeScanner */; };
-		A6B38BCD2D8B1D3700FE1839 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64F20342D81F51100F36E0E /* AuthenticationServices.framework */; };
-		A6B38BD82D8B1D3700FE1839 /* Autofill Mac.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A6B38BCC2D8B1D3700FE1839 /* Autofill Mac.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,13 +25,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = A64F20312D81F51100F36E0E;
 			remoteInfo = CredentialProvider;
-		};
-		A6B38BD62D8B1D3700FE1839 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A64A1ED92CF6936B003B8875 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A6B38BCB2D8B1D3700FE1839;
-			remoteInfo = "Autofill Mac";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -65,7 +56,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				A6B38BD82D8B1D3700FE1839 /* Autofill Mac.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,7 +78,6 @@
 		A64E714B2CF8E3AD0045C5B0 /* Amethyst BrowserRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amethyst BrowserRelease.entitlements"; sourceTree = "<group>"; };
 		A64F20322D81F51100F36E0E /* CredentialProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CredentialProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64F20342D81F51100F36E0E /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
-		A6B38BCC2D8B1D3700FE1839 /* Autofill Mac.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Autofill Mac.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6BB70B52CF9DC710056F80C /* Amethyst-Browser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Amethyst-Browser-Info.plist"; sourceTree = "<group>"; };
 		A6C69B732D0852F00007D944 /* Amethyst Browser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amethyst Browser.entitlements"; sourceTree = "<group>"; };
 		A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Authenticator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,13 +90,6 @@
 				Info.plist,
 			);
 			target = A64F20312D81F51100F36E0E /* CredentialProvider */;
-		};
-		A6B38BD92D8B1D3700FE1839 /* Exceptions for "Autofill Mac" folder in "Autofill Mac" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A6B38BCB2D8B1D3700FE1839 /* Autofill Mac */;
 		};
 		A6B38C4D2D8B221400FE1839 /* Exceptions for "Amethyst Authenticator" folder in "CredentialProvider" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -139,9 +121,6 @@
 		};
 		A6B38BCE2D8B1D3700FE1839 /* Autofill Mac */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A6B38BD92D8B1D3700FE1839 /* Exceptions for "Autofill Mac" folder in "Autofill Mac" target */,
-			);
 			path = "Autofill Mac";
 			sourceTree = "<group>";
 		};
@@ -183,14 +162,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A6B38BC92D8B1D3700FE1839 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A6B38BCD2D8B1D3700FE1839 /* AuthenticationServices.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A6E6D71F2D7B0B4D00E38FBB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -226,7 +197,6 @@
 				A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */,
 				A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */,
 				A64F20322D81F51100F36E0E /* CredentialProvider.appex */,
-				A6B38BCC2D8B1D3700FE1839 /* Autofill Mac.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -254,7 +224,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A6B38BD72D8B1D3700FE1839 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A60A40062D7DD48B0014E290 /* Amethyst Authenticator Mac */,
@@ -317,28 +286,6 @@
 			productReference = A64F20322D81F51100F36E0E /* CredentialProvider.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		A6B38BCB2D8B1D3700FE1839 /* Autofill Mac */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A6B38BDA2D8B1D3700FE1839 /* Build configuration list for PBXNativeTarget "Autofill Mac" */;
-			buildPhases = (
-				A6B38BC82D8B1D3700FE1839 /* Sources */,
-				A6B38BC92D8B1D3700FE1839 /* Frameworks */,
-				A6B38BCA2D8B1D3700FE1839 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				A6B38BCE2D8B1D3700FE1839 /* Autofill Mac */,
-			);
-			name = "Autofill Mac";
-			packageProductDependencies = (
-			);
-			productName = "Autofill Mac";
-			productReference = A6B38BCC2D8B1D3700FE1839 /* Autofill Mac.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		A6E6D7212D7B0B4D00E38FBB /* Amethyst Authenticator */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A6E6D72D2D7B0B4E00E38FBB /* Build configuration list for PBXNativeTarget "Amethyst Authenticator" */;
@@ -384,9 +331,6 @@
 					A64F20312D81F51100F36E0E = {
 						CreatedOnToolsVersion = 16.2;
 					};
-					A6B38BCB2D8B1D3700FE1839 = {
-						CreatedOnToolsVersion = 16.2;
-					};
 					A6E6D7212D7B0B4D00E38FBB = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -413,9 +357,8 @@
 			targets = (
 				A64A1EE02CF6936B003B8875 /* Amethyst Browser */,
 				A6E6D7212D7B0B4D00E38FBB /* Amethyst Authenticator */,
-				A60A40042D7DD48B0014E290 /* Amethyst Authenticator Mac */,
 				A64F20312D81F51100F36E0E /* CredentialProvider */,
-				A6B38BCB2D8B1D3700FE1839 /* Autofill Mac */,
+				A60A40042D7DD48B0014E290 /* Amethyst Authenticator Mac */,
 			);
 		};
 /* End PBXProject section */
@@ -436,13 +379,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A64F20302D81F51100F36E0E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A6B38BCA2D8B1D3700FE1839 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -480,13 +416,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A6B38BC82D8B1D3700FE1839 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A6E6D71E2D7B0B4D00E38FBB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -502,11 +431,6 @@
 			target = A64F20312D81F51100F36E0E /* CredentialProvider */;
 			targetProxy = A64F203E2D81F51100F36E0E /* PBXContainerItemProxy */;
 		};
-		A6B38BD72D8B1D3700FE1839 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A6B38BCB2D8B1D3700FE1839 /* Autofill Mac */;
-			targetProxy = A6B38BD62D8B1D3700FE1839 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -521,6 +445,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator Mac/Preview Content\"";
 				DEVELOPMENT_TEAM = 68YWPYV749;
+				DISPLAY_NAME = "DevAmethyst Authenticator";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -528,13 +453,14 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Amethyst Authenticator";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.dev.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac.dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -552,6 +478,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator Mac/Preview Content\"";
 				DEVELOPMENT_TEAM = 68YWPYV749;
+				DISPLAY_NAME = "Amethyst Authenticator";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -559,6 +486,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Amethyst Authenticator";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -795,13 +723,15 @@
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use FaceID to protect your credentials";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.dev.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.CredentialProvider";
+				NEW_SETTING = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.dev.CredentialProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -825,12 +755,14 @@
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use FaceID to protect your credentials";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.CredentialProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -838,60 +770,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		A6B38BDB2D8B1D3700FE1839 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Autofill Mac/Autofill_Mac.entitlements";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 68YWPYV749;
-				ENABLE_HARDENED_RUNTIME = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Autofill Mac/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Autofill Mac";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac.Autofill-Mac";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		A6B38BDC2D8B1D3700FE1839 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Autofill Mac/Autofill_Mac.entitlements";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 68YWPYV749;
-				ENABLE_HARDENED_RUNTIME = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Autofill Mac/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Autofill Mac";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac.Autofill-Mac";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -905,9 +783,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator/Preview Content\"";
 				DEVELOPMENT_TEAM = 68YWPYV749;
+				DISPLAY_NAME = "Amethyst Authenticator Dev";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Authenticator-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "DevAmethyst Authenticator";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera gets used to scan qr codes for totp or passkeys";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use FaceID to secure your Authentication Data";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -916,12 +796,13 @@
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = telephony;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.dev.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = NO;
 				SDKROOT = iphoneos;
@@ -945,9 +826,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Amethyst Authenticator/Preview Content\"";
 				DEVELOPMENT_TEAM = 68YWPYV749;
+				DISPLAY_NAME = "Amethyst Authenticator";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Authenticator-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Amethyst Authenticator";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera gets used to scan qr codes for totp or passkeys";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use FaceID to secure your Authentication Data";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -956,6 +839,7 @@
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = telephony;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1010,15 +894,6 @@
 			buildConfigurations = (
 				A64F20432D81F51100F36E0E /* Debug */,
 				A64F20442D81F51100F36E0E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A6B38BDA2D8B1D3700FE1839 /* Build configuration list for PBXNativeTarget "Autofill Mac" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A6B38BDB2D8B1D3700FE1839 /* Debug */,
-				A6B38BDC2D8B1D3700FE1839 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

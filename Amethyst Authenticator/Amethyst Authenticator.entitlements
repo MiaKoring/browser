@@ -16,11 +16,12 @@
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
+		<string>group.de.touchthegrass.AmethystAuthenticator.dev</string>
 		<string>group.de.touchthegrass.AmethystAuthenticator</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)de.touchthegrass.AmethystAuthenticator.shared</string>
+		<string>$(AppIdentifierPrefix)$(KEYCHAIN_GROUP)</string>
 	</array>
 </dict>
 </plist>
