@@ -16,6 +16,7 @@ struct AccountDisplay: View {
     @Environment(\.modelContext) var context
     var showDeleted: Bool = false
     @State var showPopup: Bool = false
+    var interactionDisabled: Bool = false
     var body: some View {
         HStack {
             ZStack {
@@ -33,7 +34,7 @@ struct AccountDisplay: View {
             }
             .padding(.trailing, 5)
             VStack(alignment: .leading) {
-                if let title = account.title {
+                if let title = account.title, !title.isEmpty {
                     Text(title)
                         .bold()
                 } else {
@@ -46,13 +47,15 @@ struct AccountDisplay: View {
             }
         }
         .contextMenu {
-            if showDeleted {
-                Button("Restore", role: .cancel) {
-                    account.restore()
+            if !interactionDisabled {
+                if showDeleted {
+                    Button("Restore", role: .cancel) {
+                        account.restore()
+                    }
                 }
-            }
-            Button("Delete", role: .destructive) {
-                showPopup = true
+                Button("Delete", role: .destructive) {
+                    showPopup = true
+                }
             }
         }
         .confirmationDialog(showDeleted ? "Deleting this account will remove all corresponding data permanently. You can't undo this action.": "Are you sure you want to delete this Account? It will be restorable for 30 days.", isPresented: $showPopup, titleVisibility: .visible) {

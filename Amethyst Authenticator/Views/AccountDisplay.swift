@@ -33,7 +33,7 @@ struct AccountDisplay: View {
             }
             .padding(.trailing, 5)
             VStack(alignment: .leading) {
-                if let title = account.title {
+                if let title = account.title, !title.isEmpty {
                     Text(title)
                         .bold()
                 } else {

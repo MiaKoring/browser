@@ -15,22 +15,48 @@ struct HomeView: View {
     @State var showSelector: Bool = false
     @State var showAccountList: Bool = false
     @State var selectedTab: TabCase = .passwords
+    @Environment(\.modelContext) var context
     
     var body: some View {
         NavigationSplitView {
-            LazyHStack {
+            LazyVGrid(columns: [.init(spacing: 20), .init(spacing: 20)]) {
                 ForEach(TabCase.allCases, id: \.self) { tab in
                     Button {
                         selectedTab = tab
                     } label: {
-                        Image(systemName: tab.imageName)
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Image(systemName: tab.imageName)
+                                Spacer()
+                                tab.countView
+                            }
+                            Text(tab.rawValue)
+                        }
+                        .frame(width: 70, height: 50)
+                        .padding(.horizontal)
+                        .background {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(tab.color)
+                                .overlay {
+                                    if tab == selectedTab {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(style: .init(lineWidth: 3))
+                                            .fill(tab.color.mix(with: .secondary, by: 0.4))
+                                    }
+                                }
+                        }
                     }
+                    .buttonStyle(.plain)
+                    .focusable(false)
                 }
             }
+            .padding()
+            Spacer()
+            .navigationSplitViewColumnWidth(230)
         } content: {
             selectedTab.view(selectedAccount: $selectedAccount)
         } detail: {
-            Text("detail")
+            ContentUnavailableView("No Item Selected", systemImage: "key.2.on.ring.fill")
         }
         .onOpenURL { url in
             showSelector = true

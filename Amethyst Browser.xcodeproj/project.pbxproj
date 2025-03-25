@@ -119,11 +119,6 @@
 			path = CredentialProvider;
 			sourceTree = "<group>";
 		};
-		A6B38BCE2D8B1D3700FE1839 /* Autofill Mac */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Autofill Mac";
-			sourceTree = "<group>";
-		};
 		A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -184,7 +179,6 @@
 				A6E6D7232D7B0B4D00E38FBB /* Amethyst Authenticator */,
 				A60A40062D7DD48B0014E290 /* Amethyst Authenticator Mac */,
 				A64F20362D81F51100F36E0E /* CredentialProvider */,
-				A6B38BCE2D8B1D3700FE1839 /* Autofill Mac */,
 				A64F20332D81F51100F36E0E /* Frameworks */,
 				A64A1EE22CF6936B003B8875 /* Products */,
 			);
@@ -776,7 +770,7 @@
 		A6E6D72E2D7B0B4E00E38FBB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator/Amethyst Authenticator.entitlements";
 				CODE_SIGN_STYLE = Automatic;

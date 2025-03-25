@@ -32,14 +32,14 @@ struct PasswordList: View {
             })
             .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
         ) { account in
-            if !showTOTP {
-                NavigationLink {
-                    AccountDetail(account: account, showDeleted: showDeleted)
-                } label: {
+            NavigationLink {
+                AccountDetail(account: account, showDeleted: showDeleted)
+            } label: {
+                if showTOTP {
+                    TOTPDisplay(account: account)
+                } else {
                     AccountDisplay(account: account, showDeleted: showDeleted)
                 }
-            } else {
-                TOTPDisplay(account: account)
             }
         }
         .listStyle(.plain)
