@@ -31,7 +31,7 @@ struct AmethystApp: App {
             guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)de.touchthegrass.Amethyst.shared")?.appendingPathComponent("shared.sqlite") else {
                 fatalError("Couldn't find url for shared group db")
             }
-#elseif DEBUG
+#else
             guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)de.touchthegrass.Amethyst.dev.shared")?.appendingPathComponent("shared.sqlite") else {
                 fatalError("Couldn't find url for shared group db")
             }
