@@ -50,6 +50,11 @@ struct HeaderSection: View {
                             .textEditorStyle(.plain)
                             .font(.title3)
                             .bold()
+                            .onChange(of: title) {
+                                if title.contains("\n") {
+                                    title = title.replacingOccurrences(of: "\n", with: "")
+                                }
+                            }
                     }
                 } else {
                     Text(title)

@@ -84,6 +84,7 @@ struct ImportView: View {
                         stage = .complete
                     case .failure(let error):
                         importError = error
+                        print(error.localizedDescription)
                         stage = .complete
                     }
                 }

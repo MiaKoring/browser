@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A614710F2D9480E9001BB587 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A614710E2D9480E9001BB587 /* AmethystAuthenticatorCore */; };
+		A61471112D9480F3001BB587 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A61471102D9480F3001BB587 /* AmethystAuthenticatorCore */; };
+		A61471132D9480FA001BB587 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A61471122D9480FA001BB587 /* AmethystAuthenticatorCore */; };
+		A61471152D948799001BB587 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A61471142D948799001BB587 /* AmethystAuthenticatorCore */; };
 		A640BCD32D05E6A1007E62E0 /* MeiliSearch in Frameworks */ = {isa = PBXBuildFile; productRef = A640BCD22D05E6A1007E62E0 /* MeiliSearch */; };
 		A64536A92D85B45A0067BC82 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A64536A82D85B45A0067BC82 /* CodeScanner */; };
 		A64F20402D81F51100F36E0E /* CredentialProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64F20322D81F51100F36E0E /* CredentialProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A64F20462D81F52500F36E0E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64F20342D81F51100F36E0E /* AuthenticationServices.framework */; };
-		A64F204A2D81F56000F36E0E /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */; };
-		A671F6F12D808646008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */; };
-		A671F6F32D808657008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */; };
-		A671F6F52D80865B008D4E03 /* AmethystAuthenticatorCore in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */; };
 		A671F6F82D808C14008D4E03 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F72D808C14008D4E03 /* CodeScanner */; };
 /* End PBXBuildFile section */
 
@@ -134,7 +134,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A671F6F52D80865B008D4E03 /* AmethystAuthenticatorCore in Frameworks */,
+				A61471132D9480FA001BB587 /* AmethystAuthenticatorCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,7 +142,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A671F6F32D808657008D4E03 /* AmethystAuthenticatorCore in Frameworks */,
+				A61471152D948799001BB587 /* AmethystAuthenticatorCore in Frameworks */,
 				A640BCD32D05E6A1007E62E0 /* MeiliSearch in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -151,7 +151,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A64F204A2D81F56000F36E0E /* AmethystAuthenticatorCore in Frameworks */,
+				A61471112D9480F3001BB587 /* AmethystAuthenticatorCore in Frameworks */,
 				A64F20462D81F52500F36E0E /* AuthenticationServices.framework in Frameworks */,
 				A64536A92D85B45A0067BC82 /* CodeScanner in Frameworks */,
 			);
@@ -161,8 +161,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A614710F2D9480E9001BB587 /* AmethystAuthenticatorCore in Frameworks */,
 				A671F6F82D808C14008D4E03 /* CodeScanner in Frameworks */,
-				A671F6F12D808646008D4E03 /* AmethystAuthenticatorCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,7 +224,7 @@
 			);
 			name = "Amethyst Authenticator Mac";
 			packageProductDependencies = (
-				A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */,
+				A61471122D9480FA001BB587 /* AmethystAuthenticatorCore */,
 			);
 			productName = "Amethyst Authenticator Mac";
 			productReference = A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */;
@@ -249,7 +249,7 @@
 			name = "Amethyst Browser";
 			packageProductDependencies = (
 				A640BCD22D05E6A1007E62E0 /* MeiliSearch */,
-				A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */,
+				A61471142D948799001BB587 /* AmethystAuthenticatorCore */,
 			);
 			productName = Browser;
 			productReference = A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */;
@@ -273,8 +273,8 @@
 			);
 			name = CredentialProvider;
 			packageProductDependencies = (
-				A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */,
 				A64536A82D85B45A0067BC82 /* CodeScanner */,
+				A61471102D9480F3001BB587 /* AmethystAuthenticatorCore */,
 			);
 			productName = CredentialProvider;
 			productReference = A64F20322D81F51100F36E0E /* CredentialProvider.appex */;
@@ -299,8 +299,8 @@
 			);
 			name = "Amethyst Authenticator";
 			packageProductDependencies = (
-				A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */,
 				A671F6F72D808C14008D4E03 /* CodeScanner */,
+				A614710E2D9480E9001BB587 /* AmethystAuthenticatorCore */,
 			);
 			productName = "Amethyst Authenticator";
 			productReference = A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */;
@@ -341,8 +341,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */,
-				A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */,
 				A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */,
+				A614710D2D9480E9001BB587 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A64A1EE22CF6936B003B8875 /* Products */;
@@ -795,7 +795,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = NO;
@@ -838,7 +838,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = NO;
@@ -904,20 +904,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A614710D2D9480E9001BB587 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MiaKoring/AmethystAuthenticatorCore.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.0;
+			};
+		};
 		A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MiaKoring/meilisearch-swift.git";
 			requirement = {
 				branch = main;
 				kind = branch;
-			};
-		};
-		A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/MiaKoring/AmethystAuthenticatorCore.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.0;
 			};
 		};
 		A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
@@ -931,6 +931,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A614710E2D9480E9001BB587 /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A614710D2D9480E9001BB587 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
+		};
+		A61471102D9480F3001BB587 /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A614710D2D9480E9001BB587 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
+		};
+		A61471122D9480FA001BB587 /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A614710D2D9480E9001BB587 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
+		};
+		A61471142D948799001BB587 /* AmethystAuthenticatorCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A614710D2D9480E9001BB587 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
+			productName = AmethystAuthenticatorCore;
+		};
 		A640BCD22D05E6A1007E62E0 /* MeiliSearch */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */;
@@ -940,26 +960,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */;
 			productName = CodeScanner;
-		};
-		A64F20492D81F56000F36E0E /* AmethystAuthenticatorCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
-			productName = AmethystAuthenticatorCore;
-		};
-		A671F6F02D808646008D4E03 /* AmethystAuthenticatorCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
-			productName = AmethystAuthenticatorCore;
-		};
-		A671F6F22D808657008D4E03 /* AmethystAuthenticatorCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
-			productName = AmethystAuthenticatorCore;
-		};
-		A671F6F42D80865B008D4E03 /* AmethystAuthenticatorCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A671F6EF2D808646008D4E03 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */;
-			productName = AmethystAuthenticatorCore;
 		};
 		A671F6F72D808C14008D4E03 /* CodeScanner */ = {
 			isa = XCSwiftPackageProductDependency;

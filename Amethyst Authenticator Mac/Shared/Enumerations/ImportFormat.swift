@@ -29,181 +29,154 @@ extension ImportFormat {
         var failed = [Account]()
         var imported = 0
         
-        
-        stage.wrappedValue = .readFile
-        let lines = csvLines(url: url)
-        
-        if lines.first != #""Group","Title","Username","Password","URL","Notes","TOTP","Icon","Last Modified","Created""# {
-            return .failure(.formatMatch)
-        }
-        
-        stage.wrappedValue = .parseData
-        let processedLines = processLines(Array(lines.dropFirst()))
-        
         stage.wrappedValue = .fetchExistingAccounts
         guard let existingAccounts = fetchExistingAccounts(context: context) else {
             return .failure(.failedAccountFetch)
         }
         
-        stage.wrappedValue = .importAccounts
-        
-        for i in 0..<processedLines.count {
-            importProcess.wrappedValue = Double( i + 1 ) / Double( processedLines.count )
-            
-            if await createAccount(line: processedLines[i]) {
-                imported += 1
+        stage.wrappedValue = .parseData
+        switch getCSV(url: url) {
+        case .success(let data):
+            stage.wrappedValue = .importAccounts
+            for index in data.startIndex..<data.endIndex {
+                importProcess.wrappedValue = Double( index + 1 ) / Double( data.endIndex )
+                
+                switch await create(line: data[index]) {
+                case .success(let bool):
+                    if bool {
+                        imported += 1
+                    }
+                case .failure(let error):
+                    return .failure(error)
+                }
             }
+        case .failure(let error):
+            return.failure(error)
         }
+        /*
+        if lines.first != #""Group","Title","Username","Password","URL","Notes","TOTP","Icon","Last Modified","Created""# {
+            return .failure(.formatMatch)
+        }*/
         
         return .success((imported: imported, failed: failed))
         
-        
-        func processLines(_ lines: [String]) -> [[String]] {
-            lines.map { line in
-                line.split(separator: ",").dropFirst().map { part in //drops "Group" parameter
-                    let partString = part.dropFirst().dropLast() // remove leading and trailing "
-                    return String(partString)
-                }
-            }
-        }
-        
-        func createAccount(line: [String]) async -> Bool {
-            let notes = options.transferNotes ? line[4]: ""
-            
-            guard let account = try? Account(service: line[3],
-                                             username: line[1],
-                                             comment: notes,
-                                             password: line[2],
-                                             allAccounts: existingAccounts,
-                                             strength: nil)
+        func create(line: [String: String]) async -> Result<Bool, ImportError> {
+            guard let notes = options.transferNotes ? line["Notes"]: "",
+                  let service = line["URL"],
+                  let username = line["Username"],
+                  let password = line["Password"],
+                  let totp = line["TOTP"],
+                  let title = line["Title"]
             else {
-                failed.append(Account(service: line[3], username: line[1], totp: false))
-                return false
+                return .failure(.formatMatch)
             }
             
-            if options.transferTitle {
-                account.setTitle(to: line[0])
-            } else if options.fetchServiceData {
-                if let title = try? await Account.getTitle(from: account.service) {
-                    account.setTitle(to: title)
-                }
-            }
-            if options.fetchServiceData {
-                let image = try? await Account.getImage(for: account.service)
-                account.setImage(to: image)
-            }
-            let totp = line[5]
-            if !totp.isEmpty, let url = URL(string: totp), var secret = extractTOTPSecret(url: url) {
-                while secret.hasSuffix("%3D") {
-                    secret = String(secret.dropLast(3))
-                }
-                account.setTOTPSecret(to: secret)
-            }
-            context.insert(account)
-            return true
+            
+            return await createAccount(notes: notes, service: service, username: username, password: password, totp: totp, title: title, existingAccounts: existingAccounts, options: options, failed: &failed, context: context)
         }
     }
     
+    @MainActor
     private func processApple(url: URL, stage: Binding<ImportStage>, importProcess: Binding<Double>, context: ModelContext, options: ImportOptions) async -> Result<(imported: Int, failed: [Account]), ImportError> {
-        stage.wrappedValue = .readFile
         var failed = [Account]()
         var imported = 0
         
-        
-        stage.wrappedValue = .readFile
-        let lines = csvLines(url: url)
-        
-        if lines.first != "Title,URL,Username,Password,Notes,OTPAuth" {
-            return .failure(.formatMatch)
-        }
-        
-        stage.wrappedValue = .parseData
-        let processedLines = processLines(Array(lines.dropFirst()))
-        
         stage.wrappedValue = .fetchExistingAccounts
         guard let existingAccounts = fetchExistingAccounts(context: context) else {
             return .failure(.failedAccountFetch)
         }
         
-        stage.wrappedValue = .importAccounts
-        
-        for i in 0..<processedLines.count {
-            importProcess.wrappedValue = Double( i + 1 ) / Double( processedLines.count )
-            
-            if await createAccount(line: processedLines[i]) {
-                imported += 1
+        stage.wrappedValue = .parseData
+        switch getCSV(url: url) {
+        case .success(let data):
+            stage.wrappedValue = .importAccounts
+            for index in data.startIndex..<data.endIndex {
+                importProcess.wrappedValue = Double( index + 1 ) / Double( data.endIndex )
+                
+                switch await create(line: data[index]) {
+                case .success(let bool):
+                    if bool {
+                        imported += 1
+                    }
+                case .failure(let error):
+                    return .failure(error)
+                }
             }
+        case .failure(let error):
+            return.failure(error)
         }
         
         return .success((imported: imported, failed: failed))
         
-        func processLines(_ lines: [String]) -> [[String]] {
-            lines.map { line in
-                if !line.contains("\"") {
-                    line.split(separator: ",").dropFirst().map { part in //drops "Group" parameter
-                        let partString = part
-                        return String(partString)
-                    }
-                }
-            }
-        }
-        
-        func traverseLine(_ string: String) {
-            
-        }
-        
-        func createAccount(line: [String]) async -> Bool {
-            let notes = options.transferNotes ? line[4]: ""
-            
-            guard let account = try? Account(service: line[3],
-                                             username: line[1],
-                                             comment: notes,
-                                             password: line[2],
-                                             allAccounts: existingAccounts,
-                                             strength: nil)
+        func create(line: [String: String]) async -> Result<Bool, ImportError> {
+            guard let notes = options.transferNotes ? line["Notes"]: "",
+                  let service = line["URL"],
+                  let username = line["Username"],
+                  let password = line["Password"],
+                  let totp = line["OTPAuth"],
+                  let title = line["Title"]
             else {
-                failed.append(Account(service: line[3], username: line[1], totp: false))
-                return false
+                return .failure(.formatMatch)
             }
             
-            if options.transferTitle {
-                account.setTitle(to: line[0])
-            } else if options.fetchServiceData {
-                if let title = try? await Account.getTitle(from: account.service) {
-                    account.setTitle(to: title)
-                }
-            }
-            if options.fetchServiceData {
-                let image = try? await Account.getImage(for: account.service)
-                account.setImage(to: image)
-            }
-            let totp = line[5]
-            if !totp.isEmpty, let url = URL(string: totp), var secret = extractTOTPSecret(url: url) {
-                while secret.hasSuffix("%3D") {
-                    secret = String(secret.dropLast(3))
-                }
-                account.setTOTPSecret(to: secret)
-            }
-            context.insert(account)
-            return true
+            
+            return await createAccount(notes: notes, service: service, username: username, password: password, totp: totp, title: title, existingAccounts: existingAccounts, options: options, failed: &failed, context: context)
         }
     }
     
-    private func csvLines(url: URL) -> [String] {
-        var usedEncoding: String.Encoding = .utf8
+    @MainActor
+    private func createAccount(notes: String,
+                               service: String,
+                               username: String,
+                               password: String,
+                               totp: String,
+                               title: String,
+                               existingAccounts: [Account],
+                               options: ImportOptions,
+                               failed: inout [Account],
+                               context: ModelContext
+    ) async -> Result<Bool, ImportError> {
+        guard let account = try? Account(service: service,
+                                         username: username,
+                                         comment: notes,
+                                         password: password,
+                                         allAccounts: existingAccounts,
+                                         strength: nil)
+        else {
+            failed.append(Account(service: service, username: username, totp: false))
+            return .success(false)
+        }
+        
+        if options.transferTitle {
+            account.setTitle(to: title)
+        } else if options.fetchServiceData, let host = URL(string: account.service)?.host(), let title = try? await Account.getTitle(from: host) {
+            account.setTitle(to: title.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+        if options.fetchServiceData,
+           let host = URL(string: account.service)?.host(),
+           let image = try? await Account.getImage(for: host) {
+            account.setImage(to: image)
+        }
+        account.strength = AccountDetail.evaluatePasswordStrength(password: password)
+    
+        if !totp.isEmpty, let url = URL(string: totp), var secret = extractTOTPSecret(url: url) {
+            while secret.hasSuffix("%3D") {
+                secret = String(secret.dropLast(3))
+            }
+            account.setTOTPSecret(to: secret)
+        }
+        context.insert(account)
+        return .success(true)
+    }
+    
+    private func getCSV(url: URL) -> Result<[[String: String]], ImportError> {
         do {
-            let fileContents = try String(contentsOf: url, usedEncoding: &usedEncoding)
-            let parsed = fileContents
-                .split(separator: "\n")
-                .map {
-                    String($0)
-                }
-            print(parsed)
-            
-            return parsed
+            let csv = try CSV<Named>(url: url)
+            return .success(csv.rows)
+        } catch let parseError as CSVParseError {
+            return.failure(.parseError(parseError))
         } catch {
-            print("failed to get file: \(error.localizedDescription)")
-            return []
+            return .failure(.anyParseError(error))
         }
     }
     

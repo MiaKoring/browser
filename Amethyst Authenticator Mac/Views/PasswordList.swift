@@ -44,6 +44,16 @@ struct PasswordList: View {
         }
         .listStyle(.plain)
         .toolbar {
+#if DEBUG
+            ToolbarItem(placement: .primaryAction) {
+                Button("Delete All", role: .destructive) {
+                    for account in accounts {
+                        account.delete()
+                    }
+                }
+            }
+#endif
+            
             ToolbarItem(placement: .primaryAction) {
                 VStack(alignment: .leading) {
                     !showDeleted ? !showTOTP ? Text("Passwords").bold(): Text("TOTP").bold(): Text("Trash").bold()

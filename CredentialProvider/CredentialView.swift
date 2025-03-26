@@ -23,7 +23,7 @@ struct CredentialView: View {
         guard let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.touchthegrass.AmethystAuthenticator")?.appendingPathComponent("shared.sqlite") else {
             fatalError("Couldn't find url for shared group db")
         }
-#elseif DEBUG
+#else
         guard let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.touchthegrass.AmethystAuthenticator.dev")?.appendingPathComponent("shared.sqlite") else {
             fatalError("Couldn't find url for shared group db")
         }
