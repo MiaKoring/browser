@@ -16,7 +16,7 @@ struct ImportView: View {
     @State var importFormat = ImportFormat.apple
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var context
-    @State var showFetchError: Bool = false
+    @State var importError: ImportError?
     @State var failedAccounts: [Account]?
     @State var importedAccounts: Int?
     
@@ -64,9 +64,14 @@ struct ImportView: View {
                         ProgressView(value: progress)
                             .progressViewStyle(.linear)
                     case .complete:
-                        ImportResultView(importedAccounts: importedAccounts ?? 0, failedAccounts: failedAccounts ?? [])
-                        Button("Close") {
-                            dismiss()
+                        if let importError {
+                            Text("An Error occured")
+                            Text(importError.localizedDescription)
+                        } else {
+                            ImportResultView(importedAccounts: importedAccounts ?? 0, failedAccounts: failedAccounts ?? [])
+                            Button("Close") {
+                                dismiss()
+                            }
                         }
                     }
                 }
@@ -77,8 +82,9 @@ struct ImportView: View {
                         failedAccounts = result.failed
                         importedAccounts = result.imported
                         stage = .complete
-                    case .failure:
-                        showFetchError = true
+                    case .failure(let error):
+                        importError = error
+                        stage = .complete
                     }
                 }
             }

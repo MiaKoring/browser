@@ -18,7 +18,7 @@ extension ImportFormat {
     func process(url: URL, stage: Binding<ImportStage>, importProcess: Binding<Double>, context: ModelContext, options: ImportOptions = ImportOptions()) async -> Result<(imported: Int, failed: [Account]), ImportError> {
         switch self {
         case .apple:
-            return processApple(url: url, stage: stage, importProcess: importProcess, context: context, options: options)
+            return await processApple(url: url, stage: stage, importProcess: importProcess, context: context, options: options)
         case .keepassxc:
             return await processKeePassCX(url: url, stage: stage, importProcess: importProcess, context: context, options: options)
         }
@@ -33,8 +33,12 @@ extension ImportFormat {
         stage.wrappedValue = .readFile
         let lines = csvLines(url: url)
         
+        if lines.first != #""Group","Title","Username","Password","URL","Notes","TOTP","Icon","Last Modified","Created""# {
+            return .failure(.formatMatch)
+        }
+        
         stage.wrappedValue = .parseData
-        let processedLines = processLines(lines)
+        let processedLines = processLines(Array(lines.dropFirst()))
         
         stage.wrappedValue = .fetchExistingAccounts
         guard let existingAccounts = fetchExistingAccounts(context: context) else {
@@ -100,9 +104,89 @@ extension ImportFormat {
         }
     }
     
-    private func processApple(url: URL, stage: Binding<ImportStage>, importProcess: Binding<Double>, context: ModelContext, options: ImportOptions) -> Result<(imported: Int, failed: [Account]), ImportError> {
+    private func processApple(url: URL, stage: Binding<ImportStage>, importProcess: Binding<Double>, context: ModelContext, options: ImportOptions) async -> Result<(imported: Int, failed: [Account]), ImportError> {
         stage.wrappedValue = .readFile
-        return .failure(.failedAccountFetch)
+        var failed = [Account]()
+        var imported = 0
+        
+        
+        stage.wrappedValue = .readFile
+        let lines = csvLines(url: url)
+        
+        if lines.first != "Title,URL,Username,Password,Notes,OTPAuth" {
+            return .failure(.formatMatch)
+        }
+        
+        stage.wrappedValue = .parseData
+        let processedLines = processLines(Array(lines.dropFirst()))
+        
+        stage.wrappedValue = .fetchExistingAccounts
+        guard let existingAccounts = fetchExistingAccounts(context: context) else {
+            return .failure(.failedAccountFetch)
+        }
+        
+        stage.wrappedValue = .importAccounts
+        
+        for i in 0..<processedLines.count {
+            importProcess.wrappedValue = Double( i + 1 ) / Double( processedLines.count )
+            
+            if await createAccount(line: processedLines[i]) {
+                imported += 1
+            }
+        }
+        
+        return .success((imported: imported, failed: failed))
+        
+        func processLines(_ lines: [String]) -> [[String]] {
+            lines.map { line in
+                if !line.contains("\"") {
+                    line.split(separator: ",").dropFirst().map { part in //drops "Group" parameter
+                        let partString = part
+                        return String(partString)
+                    }
+                }
+            }
+        }
+        
+        func traverseLine(_ string: String) {
+            
+        }
+        
+        func createAccount(line: [String]) async -> Bool {
+            let notes = options.transferNotes ? line[4]: ""
+            
+            guard let account = try? Account(service: line[3],
+                                             username: line[1],
+                                             comment: notes,
+                                             password: line[2],
+                                             allAccounts: existingAccounts,
+                                             strength: nil)
+            else {
+                failed.append(Account(service: line[3], username: line[1], totp: false))
+                return false
+            }
+            
+            if options.transferTitle {
+                account.setTitle(to: line[0])
+            } else if options.fetchServiceData {
+                if let title = try? await Account.getTitle(from: account.service) {
+                    account.setTitle(to: title)
+                }
+            }
+            if options.fetchServiceData {
+                let image = try? await Account.getImage(for: account.service)
+                account.setImage(to: image)
+            }
+            let totp = line[5]
+            if !totp.isEmpty, let url = URL(string: totp), var secret = extractTOTPSecret(url: url) {
+                while secret.hasSuffix("%3D") {
+                    secret = String(secret.dropLast(3))
+                }
+                account.setTOTPSecret(to: secret)
+            }
+            context.insert(account)
+            return true
+        }
     }
     
     private func csvLines(url: URL) -> [String] {
@@ -111,7 +195,6 @@ extension ImportFormat {
             let fileContents = try String(contentsOf: url, usedEncoding: &usedEncoding)
             let parsed = fileContents
                 .split(separator: "\n")
-                .dropFirst()
                 .map {
                     String($0)
                 }

@@ -7,4 +7,5 @@
 
 enum ImportError: Error {
     case failedAccountFetch
+    case formatMatch
 }

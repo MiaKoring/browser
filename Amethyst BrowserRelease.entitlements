@@ -19,6 +19,7 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>$(TeamIdentifierPrefix)de.touchthegrass.Amethyst.shared</string>
+		<string>$(TeamIdentifierPrefix)de.touchthegrass.Amethyst.dev.shared</string>
 	</array>
 	<key>com.apple.security.device.audio-input</key>
 	<true/>
