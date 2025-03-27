@@ -19,12 +19,12 @@ struct CredentialView: View {
     
     init(viewController: CredentialProviderViewController) {
         self._viewController = StateObject(wrappedValue: viewController)
-#if RELEASE
-        guard let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.touchthegrass.AmethystAuthenticator")?.appendingPathComponent("shared.sqlite") else {
+#if DEBUG
+        guard let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.touchthegrass.AmethystAuthenticator.dev")?.appendingPathComponent("shared.sqlite") else {
             fatalError("Couldn't find url for shared group db")
         }
 #else
-        guard let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.touchthegrass.AmethystAuthenticator.dev")?.appendingPathComponent("shared.sqlite") else {
+        guard let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.touchthegrass.AmethystAuthenticator")?.appendingPathComponent("shared.sqlite") else {
             fatalError("Couldn't find url for shared group db")
         }
 #endif
