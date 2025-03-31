@@ -10,22 +10,24 @@ import SwiftData
 import AmethystAuthenticatorCore
 
 struct AccountList: View {
-    @Query(FetchDescriptor<Account>(predicate: #Predicate { $0.deletedAt == nil })) var accounts: [Account]
+    @Query(FetchDescriptor<Account>(predicate: #Predicate { $0.deletedAt == nil }, sortBy: [SortDescriptor(\.service)])) var accounts: [Account]
     var identifiers: [String]
     var type: UIType
     var provideCredentials: (String, String, String, UUID, Bool) -> Void
     var cancel: () -> Void
+    @State var searchText = ""
     @Environment(\.modelContext) var context
   
     var body: some View {
         VStack(alignment: .leading) {
-            
+            TextField("Search", text: $searchText)
+                .textFieldStyle(.roundedBorder)
+                .padding(.horizontal)
             List {
                 Section("Most likely") {
                     ForEach(accounts.filter { account in
-                        identifiers.contains(account.service) ||
                         identifiers.contains(where: {
-                            account.aliases.contains($0)
+                            account.aliases.contains($0) || account.service.contains($0)
                         })
                     }, id: \.id) { account in
                         if type == .passwordList {
@@ -40,7 +42,9 @@ struct AccountList: View {
                     }
                 }
                 Section("All Passwords") {
-                    ForEach(accounts, id: \.id) { account in
+                    ForEach(accounts.filter({ account in
+                        filter(account: account)
+                    }), id: \.id) { account in
                         AccountDisplay(account: account) {
                             let service = identifiers.sorted(by: {$0.count > $1.count}).first ?? account.service
                             provideCredentials(account.username, account.password ?? "", service, account.id, account.totp)
@@ -59,6 +63,7 @@ struct AccountList: View {
                     context.insert(account)
                 }
             }
+            print("Identifiers: \(identifiers)")
         }
 #endif
         .toolbar{
@@ -71,5 +76,10 @@ struct AccountList: View {
                 }
             }
         }
+    }
+    
+    func filter(account: Account) -> Bool {
+        guard !searchText.isEmpty else { return true }
+        return account.title?.localizedCaseInsensitiveContains(searchText) ?? false || account.service.localizedCaseInsensitiveContains(searchText) || account.username.localizedCaseInsensitiveContains(searchText) 
     }
 }

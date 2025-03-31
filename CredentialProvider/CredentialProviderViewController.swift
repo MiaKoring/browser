@@ -32,7 +32,6 @@ class CredentialProviderViewController: ASCredentialProviderViewController, Obse
             guard let subdomainless = removeSubdomain(from: identifier) else {
                 return
             }
-            print(subdomainless)
             urlSet.insert(subdomainless)
         }
         identifiers = Array(urlSet)

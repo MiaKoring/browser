@@ -25,6 +25,18 @@ struct AccountDisplay: View {
                         RoundedRectangle(cornerRadius: 5)
                             .fill(.tertiary)
                             .frame(width: 40, height: 40)
+                            .overlay {
+                                {
+                                    if let title = account.title, !title.isEmpty {
+                                        Text("\(title.first?.uppercased() ?? "")")
+                                    } else if let url = URL(string: account.service) {
+                                        Text(url.host()?.first?.uppercased() ?? account.service.first?.uppercased() ?? "")
+                                    } else {
+                                        Text(account.service.first?.uppercased() ?? "")
+                                    }
+                                }()
+                                    .font(.title)
+                            }
                     }
                 }
                 .padding(.trailing, 5)

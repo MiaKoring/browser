@@ -716,7 +716,7 @@
 		A64F20432D81F51100F36E0E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = CredentialProvider/CredentialProvider.entitlements;
+				CODE_SIGN_ENTITLEMENTS = CredentialProvider/CredentialProviderDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 68YWPYV749;
@@ -733,7 +733,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.dev.CredentialProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -765,7 +765,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.CredentialProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -805,7 +805,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator.dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = NO;
@@ -848,7 +848,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = NO;
