@@ -39,6 +39,8 @@ struct CopyOnClickView: View {
             }
         }
             .onTapGesture {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(text, forType: .string)
                 withAnimation(.linear(duration: 0.15)) {
                     showCopiedLabel = true
                 }
@@ -52,7 +54,6 @@ struct CopyOnClickView: View {
                     }
                     timer.invalidate()
                 }
-                NSPasteboard.general.setString(text, forType: .string)
             }
             .contentShape(Rectangle())
             .onHover { hovering in
