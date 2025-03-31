@@ -164,7 +164,7 @@ extension AccountDetailEdit: View {
     NavigationStack {
         VStack {
             if let account {
-                AccountDetail(account: account)
+                AccountDetail(account: account, showDeleted: .constant(false))
             } else {
                 Text("no account")
                     .task {

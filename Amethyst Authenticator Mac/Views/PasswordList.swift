@@ -17,7 +17,7 @@ struct PasswordList: View {
     @State var accountAfterCreation: Account?
     @State var sortDirectionAcending: Bool = true
     @State var sortFilter: SortFilter = .title
-    var showDeleted = false
+    @State var showDeleted = false
     @State var showClearConfirmation: Bool = false
     var showTOTP = false
     @State var showAccountCreation: Bool = false
@@ -33,7 +33,7 @@ struct PasswordList: View {
             .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
         ) { account in
             NavigationLink {
-                AccountDetail(account: account, showDeleted: showDeleted)
+                AccountDetail(account: account, showDeleted: $showDeleted)
             } label: {
                 if showTOTP {
                     TOTPDisplay(account: account)
@@ -110,7 +110,7 @@ struct PasswordList: View {
         @Environment(\.dismiss) var dismiss
         var body: some View {
             NavigationStack {
-                AccountDetail(account: account)
+                AccountDetail(account: account, showDeleted: .constant(false))
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button {
@@ -138,34 +138,52 @@ struct PasswordList: View {
                     Button {
                         sortDirectionAcending = false
                     } label: {
-                        Label("Descending", systemImage: sortDirectionAcending ? "arrow.up": "checkmark")
+                        HStack {
+                            Image(systemName: sortDirectionAcending ? "arrow.up": "checkmark")
+                            Text("Descending")
+                        }
                     }
                     Button {
                         sortDirectionAcending = true
                     } label: {
-                        Label("Ascending", systemImage: !sortDirectionAcending ? "arrow.down": "checkmark")
+                        HStack {
+                            Image(systemName: !sortDirectionAcending ? "arrow.down": "checkmark")
+                            Text("Ascending")
+                        }
                     }
                 }
                 Section {
                     Button {
                         sortFilter = .edited
                     } label: {
-                        Label("Date Edited", systemImage: sortFilter == .edited ? "checkmark": "pencil.line")
+                        HStack {
+                            Image(systemName: sortFilter == .edited ? "checkmark": "pencil.line")
+                            Text("Date Edited")
+                        }
                     }
                     Button {
                         sortFilter = .created
                     } label: {
-                        Label("Date Created", systemImage: sortFilter == .created ? "checkmark": "plus.circle")
+                        HStack {
+                            Image(systemName: sortFilter == .created ? "checkmark": "plus.circle")
+                            Text("Date Created")
+                        }
                     }
                     Button {
                         sortFilter = .website
                     } label: {
-                        Label("Website", systemImage: sortFilter == .website ? "checkmark": "safari")
+                        HStack {
+                            Image(systemName: sortFilter == .website ? "checkmark": "safari")
+                            Text("Website")
+                        }
                     }
                     Button {
                         sortFilter = .title
                     } label: {
-                        Label("Title", systemImage: sortFilter == .title ? "checkmark": "textformat")
+                        HStack {
+                            Image(systemName: sortFilter == .title ? "checkmark": "textformat")
+                            Text("Title")
+                        }
                     }
                 }
             } label: {

@@ -75,7 +75,7 @@ struct TOTPDisplay: View, TOTPUser {
         }
         .contextMenu {
             NavigationLink {
-                AccountDetail(account: account)
+                AccountDetail(account: account, showDeleted: .constant(false))
             } label: {
                 Text("Show Account")
             }

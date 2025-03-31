@@ -58,21 +58,6 @@ struct HomeView: View {
         } detail: {
             ContentUnavailableView("No Item Selected", systemImage: "key.2.on.ring.fill")
         }
-        .onOpenURL { url in
-            showSelector = true
-        }
-        .alert("Add OTP to existing Account?", isPresented: $showSelector) {
-            Button ("Yes") {
-                
-            }
-            Button("Create New") {
-                
-            }
-            Button("Cancel", role: .cancel) {
-                showSelector = false
-                recievedURL = nil
-            }
-        }
     }
 }
 

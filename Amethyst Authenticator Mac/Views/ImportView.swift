@@ -67,6 +67,9 @@ struct ImportView: View {
                         if let importError {
                             Text("An Error occured")
                             Text(importError.localizedDescription)
+                            Button("Close") {
+                                dismiss()
+                            }
                         } else {
                             ImportResultView(importedAccounts: importedAccounts ?? 0, failedAccounts: failedAccounts ?? [])
                             Button("Close") {

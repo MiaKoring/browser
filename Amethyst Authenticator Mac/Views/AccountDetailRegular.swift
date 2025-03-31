@@ -58,16 +58,15 @@ struct AccountDetailRegular: View, TOTPUser {
                 }
             }
             
-            if let strength = account.strength, account.password != nil, !(showDeleted?.wrappedValue ?? false) {
+            if let strength = account.strength, account.password != nil, account.deletedAt == nil {
                 Section("Security") {
                     AccountSecurityDisplay(strength: strength, totp: account.totp)
                 }
             }
-            if showDeleted?.wrappedValue ?? false {
+            if account.deletedAt != nil {
                 Section {
                     Button("Restore", role: .cancel) {
                         account.restore()
-                        showDeleted?.wrappedValue = false
                     }
                     Button("Delete permanently", role: .destructive) {
                         showPopup = true
@@ -95,14 +94,14 @@ struct AccountDetailRegular: View, TOTPUser {
 
 struct AccountDetail: View {
     let account: Account
-    @State var showDeleted: Bool = false
+    @Binding var showDeleted: Bool
     @State var edit: Bool = false
-    
+     
     var body: some View {
         if !edit {
             AccountDetailRegular(account: account, showDeleted: $showDeleted)
                 .toolbar {
-                    if !showDeleted {
+                    if !showDeleted && account.deletedAt == nil {
                         ToolbarItem(placement: .cancellationAction) {
                             Button {
                                 edit = true
@@ -110,10 +109,19 @@ struct AccountDetail: View {
                                 Text("Edit")
                             }
                         }
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button ("Delete", role: .destructive) {
+                                account.delete()
+                            }
+                            .keyboardShortcut(.delete, modifiers: .shift)
+                        }
                     }
                 }
         } else {
             AccountDetailEdit(account: account) {
+                edit = false
+            }
+            .onChange(of: account.persistentModelID) {
                 edit = false
             }
         }
@@ -136,7 +144,7 @@ struct AccountDetail: View {
     @Previewable @State var account: Account?
     VStack {
         if let account {
-            AccountDetail(account: account)
+            AccountDetail(account: account, showDeleted: .constant(false))
         } else {
             Text("no account")
                 .task {
