@@ -76,7 +76,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Authenticator Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A60A40052D7DD48B0014E290 /* Amethyst Authenticator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Authenticator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Amethyst Browser.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64E714B2CF8E3AD0045C5B0 /* Amethyst BrowserRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amethyst BrowserRelease.entitlements"; sourceTree = "<group>"; };
 		A64F20322D81F51100F36E0E /* CredentialProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CredentialProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -197,7 +197,7 @@
 			children = (
 				A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */,
 				A6E6D7222D7B0B4D00E38FBB /* Amethyst Authenticator.app */,
-				A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */,
+				A60A40052D7DD48B0014E290 /* Amethyst Authenticator.app */,
 				A64F20322D81F51100F36E0E /* CredentialProvider.appex */,
 			);
 			name = Products;
@@ -237,7 +237,7 @@
 				A61471122D9480FA001BB587 /* AmethystAuthenticatorCore */,
 			);
 			productName = "Amethyst Authenticator Mac";
-			productReference = A60A40052D7DD48B0014E290 /* Amethyst Authenticator Mac.app */;
+			productReference = A60A40052D7DD48B0014E290 /* Amethyst Authenticator.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A64A1EE02CF6936B003B8875 /* Amethyst Browser */ = {
@@ -340,7 +340,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A64A1EDC2CF6936B003B8875 /* Build configuration list for PBXProject "Amethyst Browser" */;
+			buildConfigurationList = A64A1EDC2CF6936B003B8875 /* Build configuration list for PBXProject "Amethyst Project" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -443,7 +443,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator Mac/Amethyst_Authenticator_Mac.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator Mac/Amethyst_Authenticator.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -454,7 +454,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Authenticator-Mac-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "$(DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = "DevAmethyst Authenticator";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.dev.shared;
@@ -465,7 +465,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac.dev";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Amethyst Authenticator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -476,7 +476,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator Mac/Amethyst_Authenticator_Mac.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Amethyst Authenticator Mac/Amethyst_Authenticator.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -487,7 +487,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Authenticator-Mac-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "$(DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = "DevAmethyst Authenticator";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.shared;
@@ -498,7 +498,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.touchthegrass.Amethyst-Authenticator-Mac";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Amethyst Authenticator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -875,7 +875,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A64A1EDC2CF6936B003B8875 /* Build configuration list for PBXProject "Amethyst Browser" */ = {
+		A64A1EDC2CF6936B003B8875 /* Build configuration list for PBXProject "Amethyst Project" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A64A1EED2CF6936C003B8875 /* Debug */,

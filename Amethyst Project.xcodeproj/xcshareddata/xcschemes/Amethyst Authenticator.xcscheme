@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A60A40042D7DD48B0014E290"
-               BuildableName = "Amethyst Authenticator Mac.app"
-               BlueprintName = "Amethyst Authenticator Mac"
-               ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+               BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+               BuildableName = "Amethyst Authenticator.app"
+               BlueprintName = "Amethyst Authenticator"
+               ReferencedContainer = "container:Amethyst Project.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -44,19 +44,19 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A60A40042D7DD48B0014E290"
-            BuildableName = "Amethyst Authenticator Mac.app"
-            BlueprintName = "Amethyst Authenticator Mac"
-            ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+            BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+            BuildableName = "Amethyst Authenticator.app"
+            BlueprintName = "Amethyst Authenticator"
+            ReferencedContainer = "container:Amethyst Project.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-com.apple.CoreData.CloudKitDebug 0"
+            argument = "-com.apple.CoreData.Logging.stderr 0"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-com.apple.CoreData.Logging.stderr 0"
+            argument = "-com.apple.CoreData.CloudKitDebug 0"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -71,10 +71,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A60A40042D7DD48B0014E290"
-            BuildableName = "Amethyst Authenticator Mac.app"
-            BlueprintName = "Amethyst Authenticator Mac"
-            ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+            BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+            BuildableName = "Amethyst Authenticator.app"
+            BlueprintName = "Amethyst Authenticator"
+            ReferencedContainer = "container:Amethyst Project.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

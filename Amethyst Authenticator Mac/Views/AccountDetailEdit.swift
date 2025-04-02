@@ -139,7 +139,7 @@ extension AccountDetailEdit: View {
         var body: some View {
             Section {
                 HStack {
-                    Text("Website")
+                    Text("website.com")
                     Spacer()
                     Menu {
                         Button("Open Website") {

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1620"
-   wasCreatedForAppExtension = "YES"
-   version = "2.0">
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
@@ -16,24 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A64F20312D81F51100F36E0E"
-               BuildableName = "CredentialProvider.appex"
-               BlueprintName = "CredentialProvider"
-               ReferencedContainer = "container:Amethyst Browser.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+               BlueprintIdentifier = "A60A40042D7DD48B0014E290"
                BuildableName = "Amethyst Authenticator.app"
-               BlueprintName = "Amethyst Authenticator"
-               ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+               BlueprintName = "Amethyst Authenticator Mac"
+               ReferencedContainer = "container:Amethyst Project.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,36 +31,26 @@
       shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = ""
-      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      buildConfiguration = "Release"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      askForAppToLaunch = "Yes"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES"
-      launchAutomaticallySubstyle = "2">
-      <RemoteRunnable
-         runnableDebuggingMode = "0"
-         BundleIdentifier = "com.apple.mobilesafari"
-         RemotePath = "/var/containers/Bundle/Application/1AE25C6B-2FDA-4391-A02B-0374B7FE092D/MobileSafari.app">
-      </RemoteRunnable>
-      <MacroExpansion>
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+            BlueprintIdentifier = "A60A40042D7DD48B0014E290"
             BuildableName = "Amethyst Authenticator.app"
-            BlueprintName = "Amethyst Authenticator"
-            ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+            BlueprintName = "Amethyst Authenticator Mac"
+            ReferencedContainer = "container:Amethyst Project.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-com.apple.AuthenticationServices.debugLogging YES"
-            isEnabled = "YES">
-         </CommandLineArgument>
          <CommandLineArgument
             argument = "-com.apple.CoreData.CloudKitDebug 0"
             isEnabled = "YES">
@@ -91,17 +66,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "YES"
-      askForAppToLaunch = "Yes"
-      launchAutomaticallySubstyle = "2">
+      debugDocumentVersioning = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+            BlueprintIdentifier = "A60A40042D7DD48B0014E290"
             BuildableName = "Amethyst Authenticator.app"
-            BlueprintName = "Amethyst Authenticator"
-            ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+            BlueprintName = "Amethyst Authenticator Mac"
+            ReferencedContainer = "container:Amethyst Project.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
@@ -110,6 +83,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "Amethyst Authenticator"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

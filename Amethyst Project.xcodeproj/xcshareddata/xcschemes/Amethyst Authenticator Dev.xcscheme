@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A64A1EE02CF6936B003B8875"
-               BuildableName = "Amethyst Browser.app"
-               BlueprintName = "Amethyst Browser"
-               ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+               BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+               BuildableName = "Amethyst Authenticator.app"
+               BlueprintName = "Amethyst Authenticator"
+               ReferencedContainer = "container:Amethyst Project.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -44,18 +44,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A64A1EE02CF6936B003B8875"
-            BuildableName = "Amethyst Browser.app"
-            BlueprintName = "Amethyst Browser"
-            ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+            BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+            BuildableName = "Amethyst Authenticator.app"
+            BlueprintName = "Amethyst Authenticator"
+            ReferencedContainer = "container:Amethyst Project.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = ""
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -67,10 +61,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A64A1EE02CF6936B003B8875"
-            BuildableName = "Amethyst Browser.app"
-            BlueprintName = "Amethyst Browser"
-            ReferencedContainer = "container:Amethyst Browser.xcodeproj">
+            BlueprintIdentifier = "A6E6D7212D7B0B4D00E38FBB"
+            BuildableName = "Amethyst Authenticator.app"
+            BlueprintName = "Amethyst Authenticator"
+            ReferencedContainer = "container:Amethyst Project.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
