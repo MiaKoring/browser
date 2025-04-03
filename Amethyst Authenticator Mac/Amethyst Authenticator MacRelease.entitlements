@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.de.touchthegrass.amethyst-authenticator-dev</string>
+		<string>iCloud.de.touchthegrass.amethyst.password-manager.cloudkit</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>
