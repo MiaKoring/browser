@@ -487,7 +487,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Authenticator-Mac-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "DevAmethyst Authenticator";
+				INFOPLIST_KEY_CFBundleDisplayName = "Amethyst Authenticator";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.shared;
@@ -642,7 +642,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Browser-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Amethyst Browser";
+				INFOPLIST_KEY_CFBundleDisplayName = "DevAmethyst Browser";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to pass video to websites";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Used to pass audio to websites";
@@ -651,6 +651,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.dev.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -695,6 +696,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				KEYCHAIN_GROUP = de.touchthegrass.AmethystAuthenticator.shared;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

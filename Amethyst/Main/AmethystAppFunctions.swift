@@ -41,6 +41,25 @@ extension AmethystApp {
         }
     }
     
+    func togglePasswordSidebar(fix: Bool = false) {
+        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId) else { return }
+        if !fix {
+            withAnimation(.linear(duration: 0.1)) {
+                if contentViewModel.isPasswordFixed {
+                    contentViewModel.isPasswordFixed = false
+                    contentViewModel.isPasswordShown = false
+                } else {
+                    contentViewModel.isPasswordShown.toggle()
+                }
+            }
+            return
+        }
+        contentViewModel.isPasswordShown = false
+        withAnimation(.linear(duration: 0.1)) {
+            contentViewModel.isPasswordFixed.toggle()
+        }
+    }
+    
     func newTab() {
         guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId) else { return }
         contentViewModel.triggerNewTab.toggle()
@@ -300,6 +319,12 @@ extension AmethystApp {
             return nil
         }
         
+        //toggle password sidebar
+        if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.togglePasswordsShortcut.shortcut.key, modifiers: UDKey.togglePasswordsShortcut.shortcut.modifier), event: event) {
+            togglePasswordSidebar()
+            return nil
+        }
+        
         //document search
         if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.openInlineSearchShortcut.shortcut.key, modifiers: UDKey.openInlineSearchShortcut.shortcut.modifier), event: event) {
             
@@ -310,6 +335,12 @@ extension AmethystApp {
         //toggle sidebar fixed
         if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.toggleSidebarFixedShortcut.shortcut.key, modifiers: UDKey.toggleSidebarFixedShortcut.shortcut.modifier), event: event) {
             toggleSidebar(fix: true)
+            return nil
+        }
+        
+        //toggle password sidebar fixed
+        if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.togglePasswordsFixedShortcut.shortcut.key, modifiers: UDKey.togglePasswordsFixedShortcut.shortcut.modifier), event: event) {
+            togglePasswordSidebar(fix: true)
             return nil
         }
         

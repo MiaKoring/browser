@@ -63,6 +63,18 @@ extension ContentView: View, TabOpener {
                                 WebView(tabID: tab.id, webViewModel: tab.webViewModel)
                             }
                         }
+                        if contentViewModel.isPasswordFixed {
+                            HStack {
+                                if contentViewModel.tabs.isEmpty {
+                                    Spacer()
+                                }
+                                PasswordSidebar()
+                                    .frame(maxWidth: passwordsWidth)
+                                    .overlay(alignment: .leading) {
+                                        SidebarResizer(sidebarWidth: $passwordsWidth, trailing: true)
+                                    }
+                            }
+                        }
                     }
                     if contentViewModel.showInlineSearch, let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
                         VStack {
@@ -82,6 +94,10 @@ extension ContentView: View, TabOpener {
                                 .transition(.move(edge: .leading))
                         }
                         Spacer()
+                        if contentViewModel.isPasswordShown && !contentViewModel.isPasswordFixed {
+                            PasswordSidebar()
+                                .transition(.move(edge: .trailing))
+                        }
                     }
                     if (showMacosWindowIconsAreaHovered || macosWindowIconsHovered) && !contentViewModel.isSidebarShown && !contentViewModel.isSidebarFixed {
                         

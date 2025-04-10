@@ -10,9 +10,13 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case dontAnimateBackground
     case searchEngine
     case wasMeiliSetupOnce
+    case lastAuthTime
+    
     case newWindowShortcut
     case toggleSidebarShortcut
     case toggleSidebarFixedShortcut
+    case togglePasswordsShortcut
+    case togglePasswordsFixedShortcut
     case openSearchbarShortcut
     case openInlineSearchShortcut
     case goBackShortcut
@@ -53,6 +57,10 @@ extension UDKey {
             Shortcut(key: "e", modifier: .command)
         case .toggleSidebarFixedShortcut:
             Shortcut(key: "e", modifier: [.command, .shift])
+        case .togglePasswordsShortcut:
+            Shortcut(key: "p", modifier: .command)
+        case .togglePasswordsFixedShortcut:
+            Shortcut(key: "p", modifier: [.command, .shift])
         case .openSearchbarShortcut:
             Shortcut(key: "t", modifier: .command)
         case .openInlineSearchShortcut:
@@ -91,6 +99,8 @@ extension UDKey {
         case .newWindowShortcut: "Open New Window"
         case .toggleSidebarShortcut: "Toggle Sidebar"
         case .toggleSidebarFixedShortcut: "Fix Sidebar"
+        case .togglePasswordsShortcut: "Toggle Password Sidebar"
+        case .togglePasswordsFixedShortcut: "Fix Password Sidebar"
         case .openSearchbarShortcut: "Open Searchbar"
         case .openInlineSearchShortcut: "Document Search"
         case .goBackShortcut: "Go Back"

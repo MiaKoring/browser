@@ -22,26 +22,10 @@ struct AmethystApp: App {
     @State var contentViewModel3 = ContentViewModel(id: "window3")
     @Environment(\.modelContext) var context
     let container: ModelContainer
-    let passwordContainer: ModelContainer
     
     init() {
         do {
             container = try ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self, configurations: ModelConfiguration(cloudKitDatabase: .none))
-#if RELEASE
-            guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)de.touchthegrass.Amethyst.shared")?.appendingPathComponent("shared.sqlite") else {
-                fatalError("Couldn't find url for shared group db")
-            }
-#else
-            guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)de.touchthegrass.Amethyst.dev.shared")?.appendingPathComponent("shared.sqlite") else {
-                fatalError("Couldn't find url for shared group db")
-            }
-#endif
-            let configuration = ModelConfiguration(url: groupDBURL)
-            do {
-                self.passwordContainer = try ModelContainer(for: Account.self, migrationPlan: AAuthenticatorMigrations.self, configurations: configuration)
-            } catch {
-                fatalError("Couldn't create Model Container. Failed with: \(error.localizedDescription)")
-            }
             
         } catch {
             fatalError("failed to initialize model container: \(error.localizedDescription)")
@@ -91,6 +75,14 @@ struct AmethystApp: App {
                         toggleSidebar(fix: true)
                     }
                     .keyboardShortcut(UDKey.toggleSidebarFixedShortcut.shortcut.key, modifiers: UDKey.toggleSidebarFixedShortcut.shortcut.modifier)
+                    Button("Toggle Passwords") {
+                        togglePasswordSidebar()
+                    }
+                    .keyboardShortcut(UDKey.togglePasswordsShortcut.shortcut.key, modifiers: UDKey.togglePasswordsShortcut.shortcut.modifier)
+                    Button("Fix Passwords") {
+                        togglePasswordSidebar(fix: true)
+                    }
+                    .keyboardShortcut(UDKey.togglePasswordsFixedShortcut.shortcut.key, modifiers: UDKey.togglePasswordsFixedShortcut.shortcut.modifier)
                 }
                 CommandMenu("Find") {
                     Button("Open Searchbar") {

@@ -15,6 +15,8 @@ class ContentViewModel: NSObject, ObservableObject {
     var triggerNewTab: Bool = false
     var isSidebarShown: Bool = false
     var isSidebarFixed: Bool = false
+    var isPasswordShown: Bool = false
+    var isPasswordFixed: Bool = false
     var currentTab: UUID?
     var tabs: [ATab] = []
     var wkProcessPool = WKProcessPool()
@@ -52,12 +54,13 @@ class ContentViewModel: NSObject, ObservableObject {
 }
 struct ContentView {
     @Environment(AppViewModel.self) var appViewModel: AppViewModel
-    @Environment(ContentViewModel.self) var contentViewModel: ContentViewModel
+@Environment(ContentViewModel.self) var contentViewModel: ContentViewModel
     @Environment(\.modelContext) var context: ModelContext
     @Environment(\.dismissWindow) var dismissWindow
     @State var showInputBar: Bool = false
     @State var inputBarText: String = ""
     @State var sidebarWidth: CGFloat = 308
+    @State var passwordsWidth: CGFloat = 308
     @State var showMacosWindowIconsAreaHovered: Bool = false
     @State var macosWindowIconsHovered: Bool = false
     @State var window: NSWindow? = nil
@@ -69,9 +72,6 @@ struct ContentView {
     
     
     func onAppear() {
-        UserDefaults.standard.set(true, forKey: "WebKitLoggingEnabled")
-        UserDefaults.standard.set("WebAuthn,Authenticator", forKey: "WebKitLogLevel")
-
         NotificationCenter.default.addObserver(
             forName: NSWindow.didBecomeMainNotification,
             object: nil,
@@ -93,7 +93,12 @@ struct ContentView {
         let fetchDescriptor = FetchDescriptor(predicate: #Predicate<SavedTab>{ return $0.windowID == id}, sortBy: [SortDescriptor(\SavedTab.sortingID, order: .forward)])
         do {
             let savedTabs = try context.fetch(fetchDescriptor)
+            var memoizedIDs = [UUID]()
             for savedTab in savedTabs {
+                guard !memoizedIDs.contains(savedTab.id) else {
+                    continue
+                }
+                memoizedIDs.append(savedTab.id)
                 let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
                 vm.load(urlString: savedTab.url?.absoluteString ?? "https://miakoring.de")
                 let newTab = ATab(id: savedTab.id, webViewModel: vm, restoredURLs: savedTab.backForwardList)

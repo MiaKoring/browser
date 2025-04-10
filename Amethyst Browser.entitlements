@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.de.touchthegrass.amethyst.password-manager.cloudkit</string>
+		<string>iCloud.de.touchthegrass.amethyst-authenticator-dev</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>
@@ -18,8 +18,8 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>$(TeamIdentifierPrefix)de.touchthegrass.Amethyst.shared</string>
-		<string>$(TeamIdentifierPrefix)de.touchthegrass.Amethyst.dev.shared</string>
+		<string>$(TeamIdentifierPrefix)group.de.touchthegrass.AmethystAuthenticator</string>
+		<string>$(TeamIdentifierPrefix)group.de.touchthegrass.AmethystAuthenticator.dev</string>
 	</array>
 	<key>com.apple.security.device.audio-input</key>
 	<true/>
@@ -35,7 +35,7 @@
 	<true/>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)de.touchthegrass.AmethystAuthenticator.shared</string>
+		<string>$(AppIdentifierPrefix)$(KEYCHAIN_GROUP)</string>
 	</array>
 </dict>
 </plist>
