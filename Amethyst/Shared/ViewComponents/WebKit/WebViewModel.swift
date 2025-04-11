@@ -58,7 +58,6 @@ class WebViewModel: NSObject, ObservableObject {
         webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
         
         let contentController = WKUserContentController()
-        contentController.addScriptMessageHandler(self, contentWorld: .defaultClient, name: "webauthn")
         webConfiguration.userContentController = contentController
         
         self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
@@ -73,6 +72,7 @@ class WebViewModel: NSObject, ObservableObject {
         injectJavaScript()
         injectCSSGlobally()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     init(processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -112,6 +112,7 @@ class WebViewModel: NSObject, ObservableObject {
         injectJavaScript()
         injectCSSGlobally()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     init(processPool: WKProcessPool, restore tab: SavedTab, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -154,6 +155,7 @@ class WebViewModel: NSObject, ObservableObject {
         injectJavaScript()
         injectCSSGlobally()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     init(config: WKWebViewConfiguration, processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -172,6 +174,7 @@ class WebViewModel: NSObject, ObservableObject {
         setupBindings()
         injectJavaScript()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     func deinitialize() {

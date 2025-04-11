@@ -18,9 +18,10 @@ struct AccountDetailRegular: View, TOTPUser {
     @Environment(\.dismiss) var dismiss
     var showDeleted: Binding<Bool>?
     @State var showPopup: Bool = false
-    @Environment(\.modelContext) var context
+    var context: ModelContext
     
-    init(account: Account, showDeleted: Binding<Bool>? = nil) {
+    init(account: Account, context: ModelContext, showDeleted: Binding<Bool>? = nil) {
+        self.context = context
         self.account = account
         self.showDeleted = showDeleted
     }
@@ -96,11 +97,12 @@ struct AccountDetail: View {
     let account: Account
     @Binding var showDeleted: Bool
     @State var edit: Bool = false
+    var context: ModelContext
      
     var body: some View {
         if !edit {
-            AccountDetailRegular(account: account, showDeleted: $showDeleted)
-                .toolbar {
+            AccountDetailRegular(account: account, context: context, showDeleted: $showDeleted)
+               /* .toolbar {
                     if !showDeleted && account.deletedAt == nil {
                         ToolbarItem(placement: .cancellationAction) {
                             Button {
@@ -116,9 +118,9 @@ struct AccountDetail: View {
                             .keyboardShortcut(.delete, modifiers: .shift)
                         }
                     }
-                }
+                }*/
         } else {
-            AccountDetailEdit(account: account) {
+            AccountDetailEdit(account: account, context: context) {
                 edit = false
             }
             .onChange(of: account.persistentModelID) {
@@ -139,12 +141,12 @@ struct AccountDetail: View {
         return Int((timeStep - elapsedTime).rounded(.toNearestOrEven))
     }
 }
-
+/*
 #Preview {
     @Previewable @State var account: Account?
     VStack {
         if let account {
-            AccountDetail(account: account, showDeleted: .constant(false))
+            AccountDetail(account: account, showDeleted: .constant(false), context: <#ModelContext#>)
         } else {
             Text("no account")
                 .task {
@@ -170,3 +172,5 @@ struct AccountDetail: View {
         }
     }
 }
+
+*/

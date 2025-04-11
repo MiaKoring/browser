@@ -236,7 +236,6 @@ extension AmethystApp {
                 .frame(minWidth: 600, minHeight: 600)
                 .ignoresSafeArea(.container, edges: .top)
                 .modelContainer(container)
-                .modelContext(context)
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == id }) {

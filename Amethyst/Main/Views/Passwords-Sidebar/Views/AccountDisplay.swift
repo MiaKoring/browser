@@ -13,7 +13,7 @@ import AuthenticationServices
 
 struct AccountDisplay: View {
     let account: Account
-    @Environment(\.modelContext) var context
+    var context: ModelContext
     @State var showPopup: Bool = false
     var interactionDisabled: Bool = false
     var body: some View {
@@ -27,7 +27,7 @@ struct AccountDisplay: View {
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                 } else {
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(.tertiary)
+                        .fill(.tertiary.opacity(0.5))
                         .frame(width: 40, height: 40)
                         .overlay {
                             {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import AmethystAuthenticatorCore
 
 struct HomeView: View {
@@ -13,13 +14,10 @@ struct HomeView: View {
     @State var showTOTPSetup: Bool = false
     @State var showSelector: Bool = false
     @State var showAccountList: Bool = false
-    @Environment(\.modelContext) var context
+    var context: ModelContext
     
     var body: some View {
-        PasswordList(selectedAccount: $selectedAccount)
+        PasswordList(selectedAccount: $selectedAccount, context: context)
     }
 }
 
-#Preview {
-    HomeView()
-}

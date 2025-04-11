@@ -14,11 +14,31 @@ struct PasswordSidebar: View {
     @Environment(AppViewModel.self) var appViewModel
     @Environment(\.colorScheme) var appearance
     @State var isSideBarButtonHovered: Bool = false
-    
-    @State var showImportAlert: Bool = false
-    @State var showFileProvider: Bool = false
-    @State var fileImportURL: URL?
+
     @State var error: Error?
+    @State var isPlusButtonHovered: Bool = false
+    @State var showAccountCreationSheet: Bool = false
+    @State var currentIdentifier: String?
+    
+    let container: ModelContainer
+    
+    init() {
+#if DEBUG
+        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)group.de.touchthegrass.AmethystAuthenticator.dev")?.appendingPathComponent("shared.sqlite") else {
+            fatalError("Couldn't find url for shared group db")
+        }
+#else
+        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)group.de.touchthegrass.AmethystAuthenticator")?.appendingPathComponent("shared.sqlite") else {
+            fatalError("Couldn't find url for shared group db")
+        }
+#endif
+        let configuration = ModelConfiguration(url: groupDBURL)
+        do {
+            self.container = try ModelContainer(for: Account.self, migrationPlan: AAuthenticatorMigrations.self, configurations: configuration)
+        } catch {
+            fatalError("Couldn't create Model Container. Failed with: \(error.localizedDescription)")
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -30,11 +50,15 @@ struct PasswordSidebar: View {
                             contentViewModel.isPasswordShown = false
                         }
                     Spacer()
+                    Image(systemName: "plus")
+                        .sidebarTopButton(hovered: $isPlusButtonHovered) {
+                            prepareCreationSheet()
+                        }
                 }
                 .padding(.leading, contentViewModel.isPasswordFixed ? 5: 0)
                 .padding(.top, contentViewModel.isPasswordFixed ? 5: 0)
                 .padding(.horizontal, 3)
-                PasswordsContentView()
+                PasswordsContentView(context: ModelContext(container))
             }
         }
         .frame(maxHeight: .infinity)
@@ -66,18 +90,6 @@ struct PasswordSidebar: View {
             }
         }
         .padding(contentViewModel.isPasswordFixed ? 0: 8)
-        .sheet(item: $fileImportURL) { url in
-            ImportView(url: url)
-                .interactiveDismissDisabled()
-        }
-        .alert("Import Items", isPresented: $showImportAlert) {
-            Button("Cancel", role: .cancel) {
-                showImportAlert = false
-            }
-            Button("Import") {
-                showFileProvider = true
-            }
-        }
         .alert("An Error occured", isPresented: .constant(error != nil)) {
             Button("OK", role: .cancel) {
                 error = nil
@@ -85,15 +97,24 @@ struct PasswordSidebar: View {
         } message: {
             Text(error?.localizedDescription ?? "")
         }
-        .fileImporter(isPresented: $showFileProvider, allowedContentTypes: [.init(filenameExtension: "csv") ?? .spreadsheet]) { result in
-            switch result {
-            case .success(let url):
-                url.startAccessingSecurityScopedResource()
-                fileImportURL = url
-            case .failure(let error):
-                self.error = error
+        .sheet(item: $currentIdentifier ) { identifier in
+            AccountDetailEdit(service: identifier, context: ModelContext(container)) {
+                showAccountCreationSheet = false
+                currentIdentifier = nil
             }
         }
+        .modelContainer(container)
+        
+    }
+    
+    
+    func prepareCreationSheet() {
+        guard let tabID = contentViewModel.currentTab, let tab = contentViewModel.tabs.first(where: {$0.id == tabID }), let currentURL = tab.webViewModel.currentURL else {
+           currentIdentifier = nil
+            return
+        }
+        let identifier = IdentifierHandler.getIdentifiers(urlString: currentURL.absoluteString).sorted(by: {$0.count > $1.count }).first
+        currentIdentifier = identifier
+        showAccountCreationSheet = true
     }
 }
-

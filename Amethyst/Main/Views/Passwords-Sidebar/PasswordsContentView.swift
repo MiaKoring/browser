@@ -15,30 +15,12 @@ struct PasswordsContentView: View {
     @State var tryCode = false
     @State var timer: Timer?
     @State var isCanceled = false
+    var context: ModelContext
     
-    let container: ModelContainer
-    
-    init() {
-#if DEBUG
-        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)group.de.touchthegrass.AmethystAuthenticator.dev")?.appendingPathComponent("shared.sqlite") else {
-            fatalError("Couldn't find url for shared group db")
-        }
-#else
-        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)group.de.touchthegrass.AmethystAuthenticator")?.appendingPathComponent("shared.sqlite") else {
-            fatalError("Couldn't find url for shared group db")
-        }
-#endif
-        let configuration = ModelConfiguration(url: groupDBURL)
-        do {
-            self.container = try ModelContainer(for: Account.self, migrationPlan: AAuthenticatorMigrations.self, configurations: configuration)
-        } catch {
-            fatalError("Couldn't create Model Container. Failed with: \(error.localizedDescription)")
-        }
-    }
     var body: some View {
         ZStack {
             if isAuthenticated {
-                HomeView()
+                HomeView(context: context)
             }
             if !isAuthenticated {
                 MeshGradient(width: 2, height: 2, points: [
@@ -79,7 +61,6 @@ struct PasswordsContentView: View {
                 }
             }
         }
-        .modelContainer(container)
     }
     
     func authenticate(withPasscode: Bool = false) {

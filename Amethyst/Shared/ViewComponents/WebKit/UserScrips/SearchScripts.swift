@@ -134,4 +134,9 @@ extension WebViewModel {
             completion(result, error)
         }
     }
+    
+    func injectAutofillCode() {
+        let userScript = WKUserScript(source: credentialAutofillJS, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        webView?.configuration.userContentController.addUserScript(userScript)
+    }
 }

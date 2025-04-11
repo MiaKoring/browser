@@ -14,7 +14,7 @@ struct PasswordList: View {
     @Query var accounts: [Account]
     @Binding var selectedAccount: Account?
     @State var searchText: String = ""
-    @Environment(\.modelContext) var context
+    var context: ModelContext
     @State var accountAfterCreation: Account?
     @State var sortDirectionAcending: Bool = true
     @State var sortFilter: SortFilter = .title
@@ -39,7 +39,15 @@ struct PasswordList: View {
                     ForEach( accounts.filter { account in
                         passesFilter(account, isLikely: true)
                     }) { account in
-                        AccountDisplay(account: account)
+                        AccountDisplay(account: account, context: context)
+                            .onTapGesture {
+                                if let webView = currentTabWebViewModel?.webView {
+                                    webView.evaluateJavaScript("amethystAutofillCredentials(\"\(account.username)\", \"\(account.password ?? "")\");")
+                                    print("called")
+                                } else {
+                                    print("webView is nil")
+                                }
+                            }
                     }
                     Text("remaining")
                         .bold()
@@ -50,19 +58,24 @@ struct PasswordList: View {
                         })
                             .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
                     ) { account in
-                        AccountDisplay(account: account)
+                        AccountDisplay(account: account, context: context)
+                            .onTapGesture {
+                                if let webView = currentTabWebViewModel?.webView {
+                                    webView.evaluateJavaScript("amethystAutofillCredentials(\"\(account.username)\", \"\(account.password ?? "")\");")
+                                    print("called")
+                                } else {
+                                    print("webView is nil")
+                                }
+                            }
                     }
                 }
                 .padding(.horizontal, 10)
             }
         }
         .sheet(isPresented: $showAccountCreation) {
-            AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation) {
+            AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation, context: context) {
                 showAccountCreation = false
             }
-        }
-        .sheet(item: $accountAfterCreation) { account in
-            FullScreenCoverView(account: account)
         }
         .confirmationDialog("Are you sure you want to permanently remove all Accounts from the trash? This action will irreversible remove all associated data from all your devices.", isPresented: $showClearConfirmation, titleVisibility: .visible) {
             Button("Remove all", role: .destructive) {
@@ -84,35 +97,11 @@ struct PasswordList: View {
                 identifiers = Set<String>()
                 return
             }
-            identifiers = getIdentifiers(urlString: url.absoluteString)
+            identifiers = IdentifierHandler.getIdentifiers(urlString: url.absoluteString)
         }
         .onAppear() {
             setIdentifiersForCurrentTab()
         }
-    }
-    
-    struct FullScreenCoverView: View {
-        @Bindable var account: Account
-        @Environment(\.dismiss) var dismiss
-        var body: some View {
-            NavigationStack {
-                AccountDetail(account: account, showDeleted: .constant(false))
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button {
-                                dismiss()
-                            } label: {
-                                HStack {
-                                    Image(systemName: "chevron.left")
-                                        .bold()
-                                    Text("Back")
-                                }
-                            }
-                        }
-                    }
-            }
-        }
-        
     }
     
     struct SelectionMenu: View {
@@ -198,107 +187,12 @@ struct PasswordList: View {
         return passesDeletedFilter && passesSearchFilter && passesTOTPFilter && !notMatchingIdentifier
     }
     
-    private func removeSubdomain(from host: String) -> String? {
-        let components = host.components(separatedBy: ".")
-        
-        guard components.count >= 3 else {
-            return host
-        }
-        
-        let knownTLDs = [
-            "ac.at",
-            "ac.be",
-            "ac.cn",
-            "ac.il",
-            "ac.in",
-            "ac.jp",
-            "ac.kr",
-            "ac.nz",
-            "ac.th",
-            "ac.uk",
-            "ac.za",
-            "co.at",
-            "co.il",
-            "co.in",
-            "co.jp",
-            "co.kr",
-            "co.nz",
-            "co.th",
-            "co.uk",
-            "co.za",
-            "com.ar",
-            "com.au",
-            "com.br",
-            "com.cn",
-            "com.co",
-            "com.hk",
-            "com.mx",
-            "com.my",
-            "com.ph",
-            "com.sg",
-            "com.tr",
-            "com.tw",
-            "edu.au",
-            "edu.cn",
-            "edu.hk",
-            "edu.sg",
-            "edu.tw",
-            "gov.au",
-            "gov.cn",
-            "gov.hk",
-            "gov.sg",
-            "gov.tw",
-            "gov.uk",
-            "gov.za",
-            "id.au",
-            "net.au",
-            "net.cn",
-            "net.hk",
-            "net.il",
-            "net.in",
-            "net.nz",
-            "net.sg",
-            "net.uk",
-            "net.za",
-            "org.au",
-            "org.cn",
-            "org.hk",
-            "org.il",
-            "org.in",
-            "org.nz",
-            "org.sg",
-            "org.tw",
-            "org.uk",
-            "org.za"
-        ]
-        let lastTwoComponents = components[components.count-2] + "." + components[components.count-1]
-        
-        if knownTLDs.contains(lastTwoComponents) && components.count >= 4 {
-            return components[components.count-3] + "." + lastTwoComponents
-        } else {
-            return components[components.count-2] + "." + components[components.count-1]
-        }
-    }
-    
-    func getIdentifiers(urlString: String) -> Set<String> {
-        var urlSet = Set<String>()
-        guard let identifier = URL(string: urlString)?.host() else {
-            return urlSet
-        }
-        urlSet.insert(identifier)
-        guard let subdomainless = removeSubdomain(from: identifier) else {
-            return urlSet
-        }
-        urlSet.insert(subdomainless)
-        return urlSet
-    }
-    
     func setIdentifiersForCurrentTab() {
         guard let currentTabId = contentViewModel.currentTab, let tab = contentViewModel.tabs.first(where: { tab in
             tab.id == currentTabId
         }) else { return }
         currentTabWebViewModel = tab.webViewModel
         guard let webViewModel = currentTabWebViewModel,  let url = webViewModel.currentURL else { return }
-        identifiers = getIdentifiers(urlString: url.absoluteString)
+        identifiers = IdentifierHandler.getIdentifiers(urlString: url.absoluteString)
     }
 }

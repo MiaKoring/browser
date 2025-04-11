@@ -11,7 +11,7 @@ import AmethystAuthenticatorCore
 
 struct TOTPDisplay: View, TOTPUser {
     let account: Account
-    @Environment(\.modelContext) var context
+    var context: ModelContext
     @State var totpCode: String?
     @State var totpTimer: Timer?
     @State var copiedTimper: Timer?
@@ -75,7 +75,7 @@ struct TOTPDisplay: View, TOTPUser {
         }
         .contextMenu {
             NavigationLink {
-                AccountDetail(account: account, showDeleted: .constant(false))
+                AccountDetail(account: account, showDeleted: .constant(false), context: context)
             } label: {
                 Text("Show Account")
             }

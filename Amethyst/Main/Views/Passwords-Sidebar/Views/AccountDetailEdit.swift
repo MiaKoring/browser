@@ -67,7 +67,6 @@ extension AccountDetailEdit: View {
                                 }
                             }
                             context.insert(newAccount)
-                            accountAfterCreation?.wrappedValue = newAccount
                         }
                     } catch {
                         if let error = error as? AAuthenticationError {
@@ -159,7 +158,7 @@ extension AccountDetailEdit: View {
     }
 }
 
-
+/*
 #Preview {
     @Previewable @State var account: Account?
     NavigationStack {
@@ -192,3 +191,4 @@ extension AccountDetailEdit: View {
         }
     }
 }
+*/
