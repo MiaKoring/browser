@@ -26,7 +26,7 @@ extension ATabView: View {
             .onAppear() {
                 let vm = WebViewModel(processPool: contentViewModel.wkProcessPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
                 vm.load(urlString: "https://google.com")
-                contentViewModel.tabs.append(ATab(webViewModel: vm, restoredURLs: []))
+                contentViewModel.tabs.append(ATab(webViewModel: vm))
                 let vm1 = WebViewModel(processPool: contentViewModel.wkProcessPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
                 vm.load(urlString: "https://miakoring.de")
                 contentViewModel.tabs.append(ATab(webViewModel: vm1))

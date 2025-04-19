@@ -251,7 +251,7 @@ class WebViewModel: NSObject, ObservableObject {
     
     func appendHistory() {
         typealias MeiliResult = Result<Searchable<HistoryEntry>, Swift.Error>
-        if let container = appViewModel.modelContainer, let url = currentURL, cache != nil {
+        if let url = currentURL, cache != nil {
             if let blockedTime = historyBlocked[url], blockedTime > Date().timeIntervalSinceReferenceDate {
                 return
             }
@@ -298,18 +298,15 @@ class WebViewModel: NSObject, ObservableObject {
                     }
                 }
             }
-            let context = ModelContext(container)
-            let rangeStart = Calendar.current.startOfDay(for: Date.now).timeIntervalSinceReferenceDate
-            var dayDescriptor = FetchDescriptor<HistoryDay>(predicate: #Predicate<HistoryDay>{$0.time >= rangeStart})
-            dayDescriptor.fetchLimit = 1
-            if let day = try? context.fetch(dayDescriptor).first {
-                day.historyItems.append(HistoryItem(time: Date.now.timeIntervalSinceReferenceDate, url: url, title: title))
-                try? context.save()
-            } else {
-                let day = HistoryDay(time: Date().timeIntervalSinceReferenceDate, historyItems: [HistoryItem(time: Date.now.timeIntervalSinceReferenceDate, url: url, title: title)])
-                context.insert(day)
-                try? context.save()
-            }
+            
+            let day = CDHistoryController.currentHistoryDay
+            let item = HistoryItem()
+            item.time = Date.now.timeIntervalSinceReferenceDate
+            item.url = url
+            item.title = title
+            day.addHistoryItem(item)
+            CDHistoryController.save()
+           
             historyBlocked[url] = Date.now.timeIntervalSinceReferenceDate + 300
         }
     }

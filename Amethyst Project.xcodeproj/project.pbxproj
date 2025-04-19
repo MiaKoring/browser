@@ -53,6 +53,16 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A6973CB22DB1459D005794DD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A6B38BDD2D8B1D3700FE1839 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -248,6 +258,7 @@
 				A64A1EDE2CF6936B003B8875 /* Frameworks */,
 				A64A1EDF2CF6936B003B8875 /* Resources */,
 				A6C49C432D0339BF00C2C5DB /* Embed XPC Services */,
+				A6973CB22DB1459D005794DD /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

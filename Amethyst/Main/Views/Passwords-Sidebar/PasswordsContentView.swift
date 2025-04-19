@@ -17,6 +17,7 @@ struct PasswordsContentView: View {
     @State var isCanceled = false
     var context: ModelContext
     
+    
     var body: some View {
         ZStack {
             if isAuthenticated {
@@ -27,16 +28,27 @@ struct PasswordsContentView: View {
                     [0, 0], [1, 0],
                     [0, 1], [1, 1]
                 ], colors: [.reverse, .myPurple, .myPurple, .reverse])
-                .ignoresSafeArea()
+                .clipShape(RoundedRectangle(cornerRadius: 5))
                 .overlay {
-                    Button("Unlock") {
+                    Button {
                         guard !isAuthenticated else { return }
                         if tryCode {
                             authenticate(withPasscode: true)
                         } else {
                             authenticate()
                         }
+                    } label: {
+                        VStack {
+                            Text("Unlock")
+                                .font(.title2)
+                                .bold()
+                            Text("\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.command) ? "⌘": "")\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.shift) ? "⇧": "")\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.option) ? "⌥": "")\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.control) ? "⌃": "")\("\(UDKey.triggerPasswordsAuth.shortcut.key.character)".uppercased())")
+                                .foregroundStyle(.secondary)
+                                .font(.title2)
+                        }
                     }
+                    .buttonStyle(.plain)
+                    .keyboardShortcut(UDKey.triggerPasswordsAuth.keyboardShortcut)
                 }
             }
         }

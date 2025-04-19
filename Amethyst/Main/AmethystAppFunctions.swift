@@ -111,19 +111,6 @@ extension AmethystApp {
         return tabCount <= 0
     }
     
-    func openTabHistory() {
-        let currentWindow = appViewModel.currentlyActiveWindowId
-        guard let contentViewModel = contentViewModel(for: currentWindow) else { return }
-        contentViewModel.triggerRestoredHistory.toggle()
-        print("shouldOpen")
-    }
-    
-    func isTabHistoryDisabled()-> Bool {
-        let currentWindow = appViewModel.currentlyActiveWindowId
-        guard let contentViewModel = contentViewModel(for: currentWindow), let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}), !tab.restoredURLs.isEmpty else { return true }
-        return false
-    }
-    
     func reload(fromSource: Bool = false) {
         guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId) else { return }
         if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
@@ -141,9 +128,8 @@ extension AmethystApp {
     }
     
     func onAppear() {
-        appViewModel.modelContainer = container
         appViewModel.showMeiliSetup = !UDKey.wasMeiliSetupOnce.boolValue
-        appDelegate.configure(appViewModel: appViewModel, contentViewModel: contentViewModel, contentViewModel2: contentViewModel2, contentViewModel3: contentViewModel3, container: container)
+        appDelegate.configure(appViewModel: appViewModel, contentViewModel: contentViewModel, contentViewModel2: contentViewModel2, contentViewModel3: contentViewModel3)
         appViewModel.openWindow = { url in
             openWindow(value: url)
         }
@@ -156,7 +142,7 @@ extension AmethystApp {
         appViewModel.openMiniInNewTab = { url, id, newTab in
             let vm = WebViewModel(processPool: contentViewModel.wkProcessPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
             vm.load(urlString: url?.absoluteString ?? "")
-            let tab = ATab(webViewModel: vm, restoredURLs: [])
+            let tab = ATab(webViewModel: vm)
             switch id {
             case "window1":
                 contentViewModel.tabs.append(tab)
@@ -231,11 +217,10 @@ extension AmethystApp {
     
     @SceneBuilder
     func createWindow(id: String, viewModel: ContentViewModel) -> some Scene {
-        Window("Amethyst Browser", id: id) {
+        Window("Amethyst Browser \(id.replacingOccurrences(of: "window", with: ""))", id: id) {
             ContentView()
                 .frame(minWidth: 600, minHeight: 600)
                 .ignoresSafeArea(.container, edges: .top)
-                .modelContainer(container)
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == id }) {
@@ -255,6 +240,7 @@ extension AmethystApp {
                         return handleAndPassCommand(event)
                     }
                 }
+                .modelContainer(container)
         }
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
         .windowStyle(.hiddenTitleBar)
@@ -367,11 +353,6 @@ extension AmethystApp {
         //show history
         if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.showHistoryShortcut.shortcut.key, modifiers: UDKey.showHistoryShortcut.shortcut.modifier), event: event) {
             showHistory()
-            return nil
-        }
-        //show tab history
-        if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.showRestoredTabhistoryShortcut.shortcut.key, modifiers: UDKey.showRestoredTabhistoryShortcut.shortcut.modifier), event: event) {
-            openTabHistory()
             return nil
         }
         return event

@@ -170,17 +170,10 @@ class DownloadManager: NSObject, URLSessionDownloadDelegate {
         }
         
         DispatchQueue.main.async(execute: DispatchWorkItem(block: {
-            do {
-                let context = try ModelContext(ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self))
-                let downloaded = DownloadedItem(bookmark: bookmark, createdAt: Date.now.timeIntervalSinceReferenceDate)
-                context.insert(downloaded)
-                try context.save()
-                print(downloaded.createdAt)
-                print(downloaded.bookmark)
-            } catch {
-                print("error: \(error)")
-            }
-            
+            let downloaded = DownloadedItem()
+            downloaded.createdAt =  Date.now.timeIntervalSinceReferenceDate
+            downloaded.bookmark = bookmark
+            CDDownloadsController.insert(downloaded)
         }))
     }
 }

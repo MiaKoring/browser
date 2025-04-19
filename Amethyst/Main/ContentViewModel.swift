@@ -21,11 +21,10 @@ class ContentViewModel: NSObject, ObservableObject {
     var tabs: [ATab] = []
     var wkProcessPool = WKProcessPool()
     var blockNotification: Bool = false
-    var triggerRestoredHistory: Bool = false
     var showInlineSearch: Bool = false
+    var showHistory: Bool = false
     var lastInlineQuery: String = ""
     var isLoaded: Bool = false
-    var showHistory: Bool = false
     
     init(id: String) {
         self.id = id
@@ -54,8 +53,7 @@ class ContentViewModel: NSObject, ObservableObject {
 }
 struct ContentView {
     @Environment(AppViewModel.self) var appViewModel: AppViewModel
-@Environment(ContentViewModel.self) var contentViewModel: ContentViewModel
-    @Environment(\.modelContext) var context: ModelContext
+    @Environment(ContentViewModel.self) var contentViewModel: ContentViewModel
     @Environment(\.dismissWindow) var dismissWindow
     @State var showInputBar: Bool = false
     @State var inputBarText: String = ""
@@ -64,14 +62,13 @@ struct ContentView {
     @State var showMacosWindowIconsAreaHovered: Bool = false
     @State var macosWindowIconsHovered: Bool = false
     @State var window: NSWindow? = nil
-    @State var showRestoredHistory: Bool = false
     @Environment(\.scenePhase) var scenePhase
     @State var showHistory = false
     @State var showMeiliSetup = false
-    @Query var downloadedItems: [DownloadedItem]
     
     
     func onAppear() {
+        CDTabController.shared.printKnownEntities()
         NotificationCenter.default.addObserver(
             forName: NSWindow.didBecomeMainNotification,
             object: nil,
@@ -89,24 +86,19 @@ struct ContentView {
         if contentViewModel.tabs.isEmpty {
             contentViewModel.isSidebarShown = true
         }
-        let id = contentViewModel.id
-        let fetchDescriptor = FetchDescriptor(predicate: #Predicate<SavedTab>{ return $0.windowID == id}, sortBy: [SortDescriptor(\SavedTab.sortingID, order: .forward)])
-        do {
-            let savedTabs = try context.fetch(fetchDescriptor)
-            var memoizedIDs = [UUID]()
-            for savedTab in savedTabs {
-                guard !memoizedIDs.contains(savedTab.id) else {
-                    continue
-                }
-                memoizedIDs.append(savedTab.id)
-                let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
-                vm.load(urlString: savedTab.url?.absoluteString ?? "https://miakoring.de")
-                let newTab = ATab(id: savedTab.id, webViewModel: vm, restoredURLs: savedTab.backForwardList)
-                print(savedTab.backForwardList)
-                contentViewModel.tabs.append(newTab)
+        
+        let savedTabs = CDTabController.fetchAll()
+        print(savedTabs)
+        var memoizedIDs = [UUID]()
+        for savedTab in savedTabs {
+            guard let id = savedTab.tabID, !memoizedIDs.contains(id) else {
+                continue
             }
-        } catch {
-            print("failed to fetch saved tabs")
+            memoizedIDs.append(id)
+            let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
+            vm.load(urlString: savedTab.url?.absoluteString ?? "https://miakoring.de")
+            let newTab = ATab(id: id, webViewModel: vm)
+            contentViewModel.tabs.append(newTab)
         }
     }
 

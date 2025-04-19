@@ -51,29 +51,39 @@ struct AccountDetailEdit {
     }
     
     func save() {
-        if account.title != title {
-            account.setTitle(to: title)
+        guard let context = account.modelContext else {
+            print("account without context")
+            return
         }
-        if !password.isEmpty {
-            let strength = AccountDetail.evaluatePasswordStrength(password: password)
-            account.strength = strength
-            account.setPassword(to: password)
-        } else {
-            if account.password != nil {
-                account.setPassword(to: nil)
-            }
-        }
-        if account.username != username && !username.isEmpty {
-            do {
-                try account.setUsername(to: username, allAccounts: accounts, context: context)
-            } catch {
-                if let error = error as? AAuthenticationError {
-                    self.error = error
-                } else {
-                    print(error)
+        do {
+            try context.transaction {
+                if account.title != title {
+                    account.setTitle(to: title)
                 }
-                return
+                if !password.isEmpty {
+                    let strength = AccountDetail.evaluatePasswordStrength(password: password)
+                    account.strength = strength
+                    account.setPassword(to: password)
+                } else {
+                    if account.password != nil {
+                        account.setPassword(to: nil)
+                    }
+                }
+                if account.username != username && !username.isEmpty {
+                    do {
+                        try account.setUsername(to: username, allAccounts: accounts, context: context)
+                    } catch {
+                        if let error = error as? AAuthenticationError {
+                            self.error = error
+                        } else {
+                            print(error)
+                        }
+                        return
+                    }
+                }
             }
+        } catch {
+            print("Save error: \(error.localizedDescription)")
         }
         onClose()
     }

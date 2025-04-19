@@ -11,34 +11,35 @@ import AmethystAuthenticatorCore
 
 struct PasswordList: View {
     @Environment(ContentViewModel.self) var contentViewModel
+    @Environment(PasswordSortData.self) var sortData
     @Query var accounts: [Account]
     @Binding var selectedAccount: Account?
     @State var searchText: String = ""
     var context: ModelContext
     @State var accountAfterCreation: Account?
-    @State var sortDirectionAcending: Bool = true
-    @State var sortFilter: SortFilter = .title
     @State var showDeleted = false
     @State var showClearConfirmation: Bool = false
     var showTOTP = false
     @State var identifiers = Set<String>()
     @State var showAccountCreation: Bool = false
     @State var currentTabWebViewModel: WebViewModel? = nil
+    @State var shouldUpdateLikely: Bool = true
+    @State var shouldUpdateRemaining: Bool = true
+    @State var updateTimer = Timer()
+    
+    @State private var likelyAccounts: [Account] = []
+    @State private var remainingAccounts: [Account] = []
     
     var body: some View {
         VStack {
-            TextField("Search", text: $searchText)
-                .textFieldStyle(.roundedBorder)
+            PasswordsSearchBar(text: $searchText)
                 .padding(.horizontal, 10)
             ScrollView {
-                
                 LazyVStack(alignment: .leading) {
                     Text("most likely")
                         .bold()
                         .foregroundStyle(.secondary)
-                    ForEach( accounts.filter { account in
-                        passesFilter(account, isLikely: true)
-                    }) { account in
+                    ForEach( likelyAccounts ) { account in
                         AccountDisplay(account: account, context: context)
                             .onTapGesture {
                                 if let webView = currentTabWebViewModel?.webView {
@@ -52,12 +53,7 @@ struct PasswordList: View {
                     Text("remaining")
                         .bold()
                         .foregroundStyle(.secondary)
-                    ForEach(accounts
-                        .filter({ account in
-                            passesFilter(account)
-                        })
-                            .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
-                    ) { account in
+                    ForEach( remainingAccounts ) { account in
                         AccountDisplay(account: account, context: context)
                             .onTapGesture {
                                 if let webView = currentTabWebViewModel?.webView {
@@ -91,6 +87,7 @@ struct PasswordList: View {
         }
         .onChange(of: contentViewModel.currentTab) {
             setIdentifiersForCurrentTab()
+            shouldUpdateLikely = true
         }
         .onChange(of: currentTabWebViewModel?.currentURL) {
             guard let url = currentTabWebViewModel?.currentURL else {
@@ -98,71 +95,41 @@ struct PasswordList: View {
                 return
             }
             identifiers = IdentifierHandler.getIdentifiers(urlString: url.absoluteString)
+            shouldUpdateLikely = true
         }
         .onAppear() {
             setIdentifiersForCurrentTab()
+            Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
+                updateAccounts(likely: shouldUpdateLikely, remaining: shouldUpdateRemaining)
+            }
+        }
+        .onChange(of: accounts) {
+            shouldUpdateLikely = true
+            shouldUpdateRemaining = true
+        }
+        .onChange(of: searchText) {
+            shouldUpdateLikely = true
+            shouldUpdateRemaining = true
+        }
+        .onChange(of: sortData.triggerSort) {
+            print("Should update")
+            shouldUpdateRemaining = true
         }
     }
     
-    struct SelectionMenu: View {
-        @Binding var sortDirectionAcending: Bool
-        @Binding var sortFilter: SortFilter
-        var body: some View {
-            Menu {
-                Section {
-                    Button {
-                        sortDirectionAcending = false
-                    } label: {
-                        HStack {
-                            Image(systemName: sortDirectionAcending ? "arrow.up": "checkmark")
-                            Text("Descending")
-                        }
-                    }
-                    Button {
-                        sortDirectionAcending = true
-                    } label: {
-                        HStack {
-                            Image(systemName: !sortDirectionAcending ? "arrow.down": "checkmark")
-                            Text("Ascending")
-                        }
-                    }
-                }
-                Section {
-                    Button {
-                        sortFilter = .edited
-                    } label: {
-                        HStack {
-                            Image(systemName: sortFilter == .edited ? "checkmark": "pencil.line")
-                            Text("Date Edited")
-                        }
-                    }
-                    Button {
-                        sortFilter = .created
-                    } label: {
-                        HStack {
-                            Image(systemName: sortFilter == .created ? "checkmark": "plus.circle")
-                            Text("Date Created")
-                        }
-                    }
-                    Button {
-                        sortFilter = .website
-                    } label: {
-                        HStack {
-                            Image(systemName: sortFilter == .website ? "checkmark": "safari")
-                            Text("Website")
-                        }
-                    }
-                    Button {
-                        sortFilter = .title
-                    } label: {
-                        HStack {
-                            Image(systemName: sortFilter == .title ? "checkmark": "textformat")
-                            Text("Title")
-                        }
-                    }
-                }
-            } label: {
-                Image(systemName: "line.3.horizontal.decrease")
+    func updateAccounts(likely: Bool = true, remaining: Bool = true) {
+        try? context.transaction {
+            if likely {
+                likelyAccounts = accounts.filter ({ account in
+                    passesFilter(account, isLikely: true)
+                })
+                shouldUpdateLikely = false
+            }
+            if remaining {
+                remainingAccounts = accounts.filter { account in
+                    passesFilter(account)
+                }.sorted(by: { sortData.filter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortData.ascending) })
+                shouldUpdateRemaining = false
             }
         }
     }

@@ -129,10 +129,6 @@ extension ContentView: View, TabOpener {
                     contentViewModel.isSidebarShown = true
                 }
             }
-            .onChange(of: contentViewModel.triggerRestoredHistory) {
-                showRestoredHistory.toggle()
-                print("triggered")
-            }
             .onAppear() {
                 onAppear()
             }
@@ -165,11 +161,6 @@ extension ContentView: View, TabOpener {
         }
         .environment(contentViewModel)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .sheet(isPresented: $showRestoredHistory) {
-            RestoredHistory()
-                .environment(contentViewModel)
-                .frame(width: 350, height: 400)
-        }
         .sheet(isPresented: $showHistory) {
             contentViewModel.showHistory = false
         } content: {
@@ -185,9 +176,6 @@ extension ContentView: View, TabOpener {
         }
         .onChange(of: appViewModel.currentlyActiveWindowId) {
             print(appViewModel.currentlyActiveWindowId)
-        }
-        .onAppear {
-            print("downloadedItems: \(downloadedItems)")
         }
     }
     
