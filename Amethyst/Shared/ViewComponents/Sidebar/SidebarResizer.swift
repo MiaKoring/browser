@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SidebarResizer: View {
     @Binding var sidebarWidth: CGFloat
+    var trailing: Bool = false
     var body: some View {
         Rectangle()
             .fill(.clear)
@@ -20,7 +21,7 @@ struct SidebarResizer: View {
                     .onChanged { value in
                         NSCursor.frameResize(position: .right, directions: .all).set()
                         let changed = value.startLocation.x - value.location.x
-                        sidebarWidth = max(220, min(sidebarWidth - changed, 400))
+                        sidebarWidth = max(220, min(trailing ? sidebarWidth + changed: sidebarWidth - changed, 400))
                     }
                     .onEnded { _ in
                         NSCursor.arrow.set()
@@ -33,6 +34,6 @@ struct SidebarResizer: View {
                     NSCursor.arrow.set()
                 }
             }
-            .offset(x: 10)
+            .offset(x: trailing ? -10: 10)
     }
 }

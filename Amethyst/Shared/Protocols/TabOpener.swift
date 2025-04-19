@@ -10,6 +10,6 @@ import SwiftUI
 protocol TabOpener {
     var contentViewModel: ContentViewModel { get }
     var appViewModel: AppViewModel { get }
-    var context: ModelContext { get }
+    //var context: ModelContext { get }
     var dismissWindow: DismissWindowAction { get }
 }

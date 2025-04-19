@@ -10,12 +10,10 @@ import WebKit
 struct ATab: Hashable, Equatable, Identifiable {
     var id: UUID
     var webViewModel: WebViewModel
-    var restoredURLs: [BackForwardListItem]
     
-    init(id: UUID = UUID(), webViewModel: WebViewModel, restoredURLs: [BackForwardListItem] = []) {
+    init(id: UUID = UUID(), webViewModel: WebViewModel) {
         self.id = id
         self.webViewModel = webViewModel
-        self.restoredURLs = restoredURLs
     }
     
     static func ==(lhs: ATab, rhs: ATab) -> Bool {

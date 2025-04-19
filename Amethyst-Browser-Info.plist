@@ -37,7 +37,7 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 			<key>CFBundleURLName</key>
 			<string>Website URL</string>
 			<key>CFBundleURLSchemes</key>
@@ -60,5 +60,7 @@
 	<array>
 		<string>NSUserActivityTypeBrowsingWeb</string>
 	</array>
+	<key>TeamID</key>
+	<string>$(TeamIdentifierPrefix)</string>
 </dict>
 </plist>

@@ -9,6 +9,7 @@ import SwiftData
 
 extension WebViewModel: WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        print("Decide Policy: \(navigationAction.request.allHTTPHeaderFields)")
         
         //safes referer, so downloads which expect a referer still work. Only updates if Referer is set in the hope, that sites which don't need a referer header also don't block if one is set.
         if let referer = navigationAction.request.allHTTPHeaderFields?["Referer"] {
@@ -45,6 +46,9 @@ extension WebViewModel: WKNavigationDelegate {
         } else {
             blockDownloadCheckforURL = nil
             decisionHandler(.allow)
+        }
+        if let response = navigationResponse.response as? HTTPURLResponse {
+            print("Decide Policy for response: \(response.allHeaderFields)")
         }
     }
     

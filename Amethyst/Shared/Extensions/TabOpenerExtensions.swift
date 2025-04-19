@@ -12,7 +12,7 @@ extension TabOpener {
     func handleInputBarSubmit(text: String, tabID: UUID? = nil) {
         do {
             if text == ":q" {
-                try context.delete(model: SavedTab.self)
+                //try context.delete(model: SavedTab.self)
                 dismissWindow()
                 return
             } else if text == ":clear" {
@@ -64,7 +64,7 @@ extension TabOpener {
                 contentViewModel.tabs[index].webViewModel.load(urlString: url?.absoluteString ?? "")
             }
         } else {
-            let tab = ATab(webViewModel: vm, restoredURLs: [])
+            let tab = ATab(webViewModel: vm)
             contentViewModel.tabs.append(tab)
             contentViewModel.currentTab = tab.id
         }

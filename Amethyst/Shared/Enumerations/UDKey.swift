@@ -10,9 +10,13 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case dontAnimateBackground
     case searchEngine
     case wasMeiliSetupOnce
+    case lastAuthTime
+    
     case newWindowShortcut
     case toggleSidebarShortcut
     case toggleSidebarFixedShortcut
+    case togglePasswordsShortcut
+    case togglePasswordsFixedShortcut
     case openSearchbarShortcut
     case openInlineSearchShortcut
     case goBackShortcut
@@ -27,6 +31,7 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case zoomInShortcut
     case zoomOutShortcut
     case resetZoomShortcut
+    case triggerPasswordsAuth
 }
 
 extension UDKey {
@@ -53,6 +58,10 @@ extension UDKey {
             Shortcut(key: "e", modifier: .command)
         case .toggleSidebarFixedShortcut:
             Shortcut(key: "e", modifier: [.command, .shift])
+        case .togglePasswordsShortcut:
+            Shortcut(key: "p", modifier: .command)
+        case .togglePasswordsFixedShortcut:
+            Shortcut(key: "p", modifier: [.command, .shift])
         case .openSearchbarShortcut:
             Shortcut(key: "t", modifier: .command)
         case .openInlineSearchShortcut:
@@ -81,9 +90,15 @@ extension UDKey {
             Shortcut(key: "-", modifier: .command)
         case .resetZoomShortcut:
             Shortcut(key: "0", modifier: .command)
+        case .triggerPasswordsAuth:
+            Shortcut(key: "u", modifier: .command)
         default:
             Shortcut(key: " ", modifier: [])
         }
+    }
+    
+    var keyboardShortcut: KeyboardShortcut {
+        KeyboardShortcut(self.shortcut.key, modifiers: self.shortcut.modifier)
     }
     
     var shortcutName: String {
@@ -91,6 +106,8 @@ extension UDKey {
         case .newWindowShortcut: "Open New Window"
         case .toggleSidebarShortcut: "Toggle Sidebar"
         case .toggleSidebarFixedShortcut: "Fix Sidebar"
+        case .togglePasswordsShortcut: "Toggle Password Sidebar"
+        case .togglePasswordsFixedShortcut: "Fix Password Sidebar"
         case .openSearchbarShortcut: "Open Searchbar"
         case .openInlineSearchShortcut: "Document Search"
         case .goBackShortcut: "Go Back"
@@ -100,11 +117,11 @@ extension UDKey {
         case .previousTabShortcut: "Previous Tab"
         case .nextTabShortcut: "Next Tab"
         case .closeCurrentTabShortcut: "Close Current Tab"
-        case .showRestoredTabhistoryShortcut: "Show Restored Tabhistory"
         case .showHistoryShortcut: "Show History"
         case .zoomInShortcut: "Zoom In"
         case .zoomOutShortcut: "Zoom Out"
         case .resetZoomShortcut: "Reset Zoom"
+        case .triggerPasswordsAuth: "Authenticate yourself"
         default: ""
         }
     }

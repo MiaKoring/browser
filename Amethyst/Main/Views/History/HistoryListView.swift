@@ -13,22 +13,15 @@ struct HistoryListView: View {
     @Environment(AppViewModel.self) var appViewModel
     let items: [HistoryItem]
     let proxy: ScrollViewProxy
-    @FocusState var focusedItem: UUID?
+    @FocusState var focusedItem: Int?
     @State var shiftPressed: Bool = false
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         LazyVStack {
-            ForEach(items) { item in
+            ForEach(items, id: \.id) { item in
                 Button {
-                    let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
-                    vm.load(urlString: item.url.absoluteString)
-                    let tab = ATab(webViewModel: vm)
-                    contentViewModel.tabs.append(tab)
-                    if !shiftPressed {
-                        contentViewModel.currentTab = tab.id
-                        dismiss()
-                    }
+                    openItem(item)
                 } label: {
                     HStack {
                         VStack(alignment: .leading) {
@@ -36,11 +29,11 @@ struct HistoryListView: View {
                                 Text(title)
                                     .font(.title2)
                                     .lineLimit(1)
-                                Text(item.url.absoluteString)
+                                Text(item.url?.absoluteString ?? "")
                                     .font(.caption)
                                     .lineLimit(1)
                             } else {
-                                Text(item.url.absoluteString)
+                                Text(item.url?.absoluteString ?? "")
                                     .font(.title2)
                                     .lineLimit(1)
                             }
@@ -70,6 +63,18 @@ struct HistoryListView: View {
                 return .ignored
             }
             return .ignored
+        }
+    }
+    
+    func openItem(_ item: HistoryItem) {
+        guard let url = item.url else { return }
+        let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
+        vm.load(urlString: url.absoluteString)
+        let tab = ATab(webViewModel: vm)
+        contentViewModel.tabs.append(tab)
+        if !shiftPressed {
+            contentViewModel.currentTab = tab.id
+            dismiss()
         }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 import AppKit
 import SwiftData
 import WebKit
+import AmethystAuthenticatorCore
 
 
 @main
@@ -19,18 +20,25 @@ struct AmethystApp: App {
     @State var contentViewModel = ContentViewModel(id: "window1")
     @State var contentViewModel2 = ContentViewModel(id: "window2")
     @State var contentViewModel3 = ContentViewModel(id: "window3")
-    @Environment(\.modelContext) var context
-    let container: ModelContainer
+    var container: ModelContainer
     
     init() {
+#if DEBUG
+        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)group.de.touchthegrass.AmethystAuthenticator.dev")?.appendingPathComponent("shared.sqlite") else {
+            fatalError("Couldn't find url for shared group db")
+        }
+#else
+        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)group.de.touchthegrass.AmethystAuthenticator")?.appendingPathComponent("shared.sqlite") else {
+            fatalError("Couldn't find url for shared group db")
+        }
+#endif
+        let configuration = ModelConfiguration(url: groupDBURL)
         do {
-            container = try ModelContainer(for: SavedTab.self, BackForwardListItem.self, HistoryItem.self, HistoryDay.self, FavouriteItem.self, DownloadedItem.self, migrationPlan: TabMigration.self)
-            
+            self.container = try ModelContainer(for: Account.self, migrationPlan: AAuthenticatorMigrations.self, configurations: configuration)
         } catch {
-            fatalError("failed to initialize model container: \(error.localizedDescription)")
+            fatalError("Couldn't create Model Container. Failed with: \(error.localizedDescription)")
         }
         self.appViewModel = AppViewModel()
-        appViewModel.modelContainer = container
         self.appViewModel.downloadManager = DownloadManager()
     }
     
@@ -52,6 +60,7 @@ struct AmethystApp: App {
                             return handleAndPassCommand(event)
                         }
                     }
+                    .modelContainer(container)
             }
         }
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
@@ -74,6 +83,14 @@ struct AmethystApp: App {
                         toggleSidebar(fix: true)
                     }
                     .keyboardShortcut(UDKey.toggleSidebarFixedShortcut.shortcut.key, modifiers: UDKey.toggleSidebarFixedShortcut.shortcut.modifier)
+                    Button("Toggle Passwords") {
+                        togglePasswordSidebar()
+                    }
+                    .keyboardShortcut(UDKey.togglePasswordsShortcut.shortcut.key, modifiers: UDKey.togglePasswordsShortcut.shortcut.modifier)
+                    Button("Fix Passwords") {
+                        togglePasswordSidebar(fix: true)
+                    }
+                    .keyboardShortcut(UDKey.togglePasswordsFixedShortcut.shortcut.key, modifiers: UDKey.togglePasswordsFixedShortcut.shortcut.modifier)
                 }
                 CommandMenu("Find") {
                     Button("Open Searchbar") {
@@ -143,11 +160,6 @@ struct AmethystApp: App {
                         showHistory()
                     }
                     .keyboardShortcut(UDKey.showHistoryShortcut.shortcut.key, modifiers: UDKey.showHistoryShortcut.shortcut.modifier)
-                    Button("Show Restored Tabhistory") {
-                        openTabHistory()
-                    }
-                    .keyboardShortcut(UDKey.showRestoredTabhistoryShortcut.shortcut.key, modifiers: UDKey.showRestoredTabhistoryShortcut.shortcut.modifier)
-                    .disabled(isTabHistoryDisabled())
                 }
             }
         Settings {

@@ -58,7 +58,6 @@ class WebViewModel: NSObject, ObservableObject {
         webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
         
         let contentController = WKUserContentController()
-        contentController.addScriptMessageHandler(self, contentWorld: .defaultClient, name: "webauthn")
         webConfiguration.userContentController = contentController
         
         self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
@@ -73,6 +72,7 @@ class WebViewModel: NSObject, ObservableObject {
         injectJavaScript()
         injectCSSGlobally()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     init(processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -112,6 +112,7 @@ class WebViewModel: NSObject, ObservableObject {
         injectJavaScript()
         injectCSSGlobally()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     init(processPool: WKProcessPool, restore tab: SavedTab, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -154,6 +155,7 @@ class WebViewModel: NSObject, ObservableObject {
         injectJavaScript()
         injectCSSGlobally()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     init(config: WKWebViewConfiguration, processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
@@ -172,10 +174,11 @@ class WebViewModel: NSObject, ObservableObject {
         setupBindings()
         injectJavaScript()
         injectCustomWebAuthn()
+        injectAutofillCode()
     }
     
     func deinitialize() {
-        Task {
+        SwiftUI.Task {
             await self.webView?.pauseAllMediaPlayback()
             await self.webView?.closeAllMediaPresentations()
             await self.webView?.setCameraCaptureState(.none)
@@ -211,7 +214,7 @@ class WebViewModel: NSObject, ObservableObject {
             return webView
         } else {
             let webConfiguration = WKWebViewConfiguration()
-            webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36"
+            webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
             webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
             webConfiguration.allowsInlinePredictions = true
             webConfiguration.allowsAirPlayForMediaPlayback = true
@@ -232,9 +235,9 @@ class WebViewModel: NSObject, ObservableObject {
     func load(urlString: String) {
         guard let url = URL(string: urlString) else { return }
         var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36", forHTTPHeaderField: "User-Agent")
-        request.setValue("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", forHTTPHeaderField: "Accept")
-        request.setValue("gzip, deflate, br, zstd", forHTTPHeaderField: "Accept-Encoding")
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
+       request.setValue("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", forHTTPHeaderField: "Accept")
+        request.setValue("https://duckduckgo.com/", forHTTPHeaderField: "Referer")
         webView?.load(request)
     }
     
@@ -248,7 +251,7 @@ class WebViewModel: NSObject, ObservableObject {
     
     func appendHistory() {
         typealias MeiliResult = Result<Searchable<HistoryEntry>, Swift.Error>
-        if let container = appViewModel.modelContainer, let url = currentURL, cache != nil {
+        if let url = currentURL, cache != nil {
             if let blockedTime = historyBlocked[url], blockedTime > Date().timeIntervalSinceReferenceDate {
                 return
             }
@@ -260,7 +263,7 @@ class WebViewModel: NSObject, ObservableObject {
                     case .success(let result):
                         if let res = result.hits.first {
                             let new = HistoryEntry(id: res.id, title: self.title ?? res.title, url: res.url, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: res.amount + 1)
-                            Task {
+                            SwiftUI.Task {
                                 do {
                                     _ = try await index.updateDocuments(documents: [new], primaryKey: "id")
                                 } catch {
@@ -269,7 +272,7 @@ class WebViewModel: NSObject, ObservableObject {
                             }
                         } else {
                             let new = HistoryEntry(id: UUID(), title: self.title ?? "", url: url.absoluteString, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: 1)
-                            Task {
+                            SwiftUI.Task {
                                 do {
                                     _ = try await index.addDocuments(documents: [new], primaryKey: "id")
                                 } catch {
@@ -281,7 +284,7 @@ class WebViewModel: NSObject, ObservableObject {
                         print(error.localizedDescription)
                         if error.localizedDescription.contains("MeiliSearchApiError: Index `history` not found.") ||
                             error.localizedDescription.contains("is not filterable. This index does not have configured filterable attributes."){
-                            Task {
+                            SwiftUI.Task {
                                 do {
                                     _ = try await meili.createIndex(uid: "history", primaryKey: "id")
                                     _ = try await meili.index("history").updateSearchableAttributes(["url", "title"])
@@ -295,18 +298,15 @@ class WebViewModel: NSObject, ObservableObject {
                     }
                 }
             }
-            let context = ModelContext(container)
-            let rangeStart = Calendar.current.startOfDay(for: Date.now).timeIntervalSinceReferenceDate
-            var dayDescriptor = FetchDescriptor<HistoryDay>(predicate: #Predicate<HistoryDay>{$0.time >= rangeStart})
-            dayDescriptor.fetchLimit = 1
-            if let day = try? context.fetch(dayDescriptor).first {
-                day.historyItems.append(HistoryItem(time: Date.now.timeIntervalSinceReferenceDate, url: url, title: title))
-                try? context.save()
-            } else {
-                let day = HistoryDay(time: Date().timeIntervalSinceReferenceDate, historyItems: [HistoryItem(time: Date.now.timeIntervalSinceReferenceDate, url: url, title: title)])
-                context.insert(day)
-                try? context.save()
-            }
+            
+            let day = CDHistoryController.currentHistoryDay
+            let item = HistoryItem()
+            item.time = Date.now.timeIntervalSinceReferenceDate
+            item.url = url
+            item.title = title
+            day.addHistoryItem(item)
+            CDHistoryController.save()
+           
             historyBlocked[url] = Date.now.timeIntervalSinceReferenceDate + 300
         }
     }

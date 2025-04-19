@@ -8,6 +8,7 @@
 enum KeybindsGroup: String, CaseIterable {
     case window = "Window"
     case sidebar = "Sidebar"
+    case passwords = "Passwords"
     case search = "Search"
     case navigation = "Navigation"
     case archive = "Archive"
@@ -21,6 +22,8 @@ extension KeybindsGroup {
             [.newWindowShortcut]
         case .sidebar:
             [.toggleSidebarShortcut, .toggleSidebarFixedShortcut]
+        case .passwords:
+            [.togglePasswordsShortcut, .togglePasswordsFixedShortcut, .triggerPasswordsAuth]
         case .search:
             [.openSearchbarShortcut, .openInlineSearchShortcut]
         case .view:

@@ -99,6 +99,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A64F20412D81F51100F36E0E /* Exceptions for "CredentialProvider" folder in "CredentialProvider" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A64F20312D81F51100F36E0E /* CredentialProvider */;
+		};
 		A6B38C4D2D8B221400FE1839 /* Exceptions for "Amethyst Authenticator" folder in "CredentialProvider" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -121,6 +128,9 @@
 		};
 		A64F20362D81F51100F36E0E /* CredentialProvider */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A64F20412D81F51100F36E0E /* Exceptions for "CredentialProvider" folder in "CredentialProvider" target */,
+			);
 			path = CredentialProvider;
 			sourceTree = "<group>";
 		};

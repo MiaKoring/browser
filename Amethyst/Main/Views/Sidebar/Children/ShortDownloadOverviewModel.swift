@@ -9,9 +9,8 @@ import SwiftData
 
 struct ShortDownloadOverview {
     @Environment(AppViewModel.self) var appViewModel
-    @Environment(\.modelContext) var context
     @State var displayedItems = [DownloadItem]()
-    @Query(sort: [SortDescriptor<DownloadedItem>(\.createdAt, order: .reverse)]) var downloadedItems: [DownloadedItem]
+    @ObservedObject var downloadsController = CDDownloadsController.shared
     
     func updateDisplayedItems() {
         let active = appViewModel.downloadManager?.activeDownloads.prefix(4).map { item in
@@ -19,12 +18,11 @@ struct ShortDownloadOverview {
         }
         var newest: [DownloadItem] = []
         
-        let newestDownloadedItems = downloadedItems.filter({$0.createdAt > Date.now.timeIntervalSinceReferenceDate - 3600 * 24 * 7}).prefix(4)
+        let newestDownloadedItems = downloadsController.latestFour.filter({$0.createdAt > Date.now.timeIntervalSinceReferenceDate - 3600 * 24 * 7}).prefix(4)
         for item in newestDownloadedItems {
             var bookmarkDataIsStale: Bool = false
-            guard let data = Data(base64Encoded: item.bookmark), let url = try? URL(resolvingBookmarkData: data, options: .withSecurityScope, bookmarkDataIsStale: &bookmarkDataIsStale) else {
+            guard let bookmark = item.bookmark, let url = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &bookmarkDataIsStale) else {
                 print("couldn't get URL")
-                context.delete(item)
                 continue
             }
             guard let activeCount = active?.count, newest.count + activeCount < 4 else { continue }
@@ -33,12 +31,12 @@ struct ShortDownloadOverview {
                 includingResourceValuesForKeys: [.nameKey, .contentTypeKey, .creationDateKey],
                 relativeTo: nil
             ) {
-                item.bookmark = bookmarkData.base64EncodedString()
+                item.bookmark = bookmarkData
             }
             
             guard !FileManager.default.isInTrash(url), let ressourceValues = try? url.resourceValues(forKeys: [.nameKey, .typeIdentifierKey]), let name = ressourceValues.name, let typeIdentifier = ressourceValues.typeIdentifier else {
                 print("failed to get ressource values")
-                context.delete(item)
+                downloadsController.delete(item)
                 continue
             }
             newest.append(DownloadItem(name: name, dateCreated: item.createdAt, progress: nil, url: url, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(typeIdentifier) ?? .data)), info: nil))
