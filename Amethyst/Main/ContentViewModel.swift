@@ -87,18 +87,20 @@ struct ContentView {
             contentViewModel.isSidebarShown = true
         }
         
-        let savedTabs = CDTabController.fetchAll()
-        print(savedTabs)
-        var memoizedIDs = [UUID]()
-        for savedTab in savedTabs {
-            guard let id = savedTab.tabID, !memoizedIDs.contains(id) else {
-                continue
+        if contentViewModel.tabs.isEmpty {
+            let savedTabs = CDTabController.fetchAll()
+            print(savedTabs)
+            var memoizedIDs = [UUID]()
+            for savedTab in savedTabs {
+                guard let id = savedTab.tabID, !memoizedIDs.contains(id) else {
+                    continue
+                }
+                memoizedIDs.append(id)
+                let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
+                vm.load(urlString: savedTab.url?.absoluteString ?? "https://miakoring.de")
+                let newTab = ATab(id: id, webViewModel: vm)
+                contentViewModel.tabs.append(newTab)
             }
-            memoizedIDs.append(id)
-            let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
-            vm.load(urlString: savedTab.url?.absoluteString ?? "https://miakoring.de")
-            let newTab = ATab(id: id, webViewModel: vm)
-            contentViewModel.tabs.append(newTab)
         }
     }
 
