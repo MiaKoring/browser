@@ -88,8 +88,10 @@ struct ContentView {
         }
         
         if contentViewModel.tabs.isEmpty {
-            let savedTabs = CDTabController.fetchAll()
-            print(savedTabs)
+            let savedTabs = CDTabController.fetchAll().filter({
+                $0.windowID == contentViewModel.id
+            })
+            
             var memoizedIDs = [UUID]()
             for savedTab in savedTabs {
                 guard let id = savedTab.tabID, !memoizedIDs.contains(id) else {
