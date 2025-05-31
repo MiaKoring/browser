@@ -183,13 +183,18 @@ class WebViewModel: NSObject, ObservableObject {
             await self.webView?.closeAllMediaPresentations()
             await self.webView?.setCameraCaptureState(.none)
             await self.webView?.setMicrophoneCaptureState(.none)
-            guard let url = URL(string: "https://bloombuddy.touchthegrass.de") else { return }
-            self.webView?.load( URLRequest(url: url))
             self.cancellables.removeAll()
             self.webView?.configuration.userContentController.removeAllUserScripts()
             self.webView?.stopLoading()
             self.webView?.removeFromSuperview()
-            
+            guard let url = URL(string: "https://bloombuddy.touchthegrass.de") else {
+                self.webView?.navigationDelegate = nil
+                self.webView?.uiDelegate = nil
+                self.webView = nil
+                return
+            }
+            self.webView?.load( URLRequest(url: url))
+        
             self.webView?.navigationDelegate = nil
             self.webView?.uiDelegate = nil
             self.webView = nil

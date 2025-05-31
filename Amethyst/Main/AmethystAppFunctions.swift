@@ -98,10 +98,14 @@ extension AmethystApp {
     }
     
     func closeCurrentTab() {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId) else {
-            return
+        
+        withAnimation(.linear(duration: 0.2)) {
+            guard let id = contentViewModel.currentTab else { return }
+            contentViewModel.tabs.first(where: {$0.id == id})?.webViewModel.deinitialize()
+            
+            contentViewModel.handleClose()
+            contentViewModel.tabs.removeAll(where: {$0.id == id})
         }
-        contentViewModel.handleClose()
     }
     
     func tabSwitchingDisabled(back: Bool = true) -> Bool {
