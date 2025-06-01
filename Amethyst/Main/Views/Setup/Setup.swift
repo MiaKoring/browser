@@ -26,7 +26,7 @@ struct Setup: View {
                     .overlay(alignment: .topTrailing) {
                         if current == .whatIs {
                             Button("Skip") {
-                                appViewModel.shouldSkipMeiliNotification = true
+                                UDKey.wasSetupOnce.boolValue = true
                                 dismiss()
                             }
                             .buttonStyle(.borderless)
