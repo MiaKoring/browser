@@ -148,8 +148,8 @@ extension ContentView: View, TabOpener {
             .onChange(of: contentViewModel.showHistory) {
                 showHistory = contentViewModel.showHistory
             }
-            .onChange(of: appViewModel.showMeiliSetup) {
-                showMeiliSetup = appViewModel.showMeiliSetup
+            .onChange(of: appViewModel.showSetup) {
+                showSetup = appViewModel.showSetup
             }
         }
         .onDisappear {
@@ -167,10 +167,10 @@ extension ContentView: View, TabOpener {
             HistoryView()
                 .frame(width: 400, height: 500)
         }
-        .sheet(isPresented: $showMeiliSetup) {
-            appViewModel.showMeiliSetup = false
+        .sheet(isPresented: $showSetup) {
+            appViewModel.showSetup = false
         } content: {
-            MeiliSetup()
+            Setup()
                 .frame(width: 700, height: 400)
                 .interactiveDismissDisabled()
         }

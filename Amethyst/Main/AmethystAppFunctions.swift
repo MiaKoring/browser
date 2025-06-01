@@ -98,7 +98,7 @@ extension AmethystApp {
     }
     
     func closeCurrentTab() {
-        
+        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId) else { return }
         withAnimation(.linear(duration: 0.2)) {
             guard let id = contentViewModel.currentTab else { return }
             contentViewModel.tabs.first(where: {$0.id == id})?.webViewModel.deinitialize()
@@ -132,7 +132,7 @@ extension AmethystApp {
     }
     
     func onAppear() {
-        appViewModel.showMeiliSetup = !UDKey.wasMeiliSetupOnce.boolValue
+        appViewModel.showSetup = !UDKey.wasSetupOnce.boolValue
         appDelegate.configure(appViewModel: appViewModel, contentViewModel: contentViewModel, contentViewModel2: contentViewModel2, contentViewModel3: contentViewModel3)
         appViewModel.openWindow = { url in
             openWindow(value: url)

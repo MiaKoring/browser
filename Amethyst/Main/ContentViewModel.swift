@@ -64,7 +64,7 @@ struct ContentView {
     @State var window: NSWindow? = nil
     @Environment(\.scenePhase) var scenePhase
     @State var showHistory = false
-    @State var showMeiliSetup = false
+    @State var showSetup = true
     
     
     func onAppear() {
@@ -82,7 +82,10 @@ struct ContentView {
                 appViewModel.displayedWindows.insert(name)
             }
         }
-        showMeiliSetup = appViewModel.showMeiliSetup
+        #if DEBUG
+        #else
+        showSetup = appViewModel.showSetup
+        #endif
         if contentViewModel.tabs.isEmpty {
             contentViewModel.isSidebarShown = true
         }

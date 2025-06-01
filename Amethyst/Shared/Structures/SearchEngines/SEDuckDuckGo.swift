@@ -18,3 +18,8 @@ struct SEDuckDuckGo: SearchEngineAdaptor {
         return data.compactMap({$0.phrase})
     }
 }
+
+
+struct DDGacResult: Codable {
+    let phrase: String
+}

@@ -9,7 +9,9 @@ import SwiftUI
 import CryptoKit
 import MeiliSearch
 
-enum MeiliSetupStep: Int, CaseIterable {
+enum SetupStep: Int, CaseIterable {
+    case welcome
+    case searchEngine
     case whatIs
     case installMeili
     case setupAutomator
@@ -18,24 +20,33 @@ enum MeiliSetupStep: Int, CaseIterable {
     case checkMeiliRunning
 }
 
-extension MeiliSetupStep: Identifiable {
+extension SetupStep: Identifiable {
     var id: Int {
         self.rawValue
     }
     
-    var next: MeiliSetupStep {
-        MeiliSetupStep(rawValue: self.rawValue + 1) ?? .checkMeiliRunning
+    var next: SetupStep {
+        SetupStep(rawValue: self.rawValue + 1) ?? .checkMeiliRunning
     }
      
-    var previous: MeiliSetupStep {
-        MeiliSetupStep(rawValue: self.rawValue - 1) ?? .whatIs
+    var previous: SetupStep {
+        SetupStep(rawValue: self.rawValue - 1) ?? .whatIs
     }
 }
 
-extension MeiliSetupStep {
+extension SetupStep {
     @ViewBuilder
-    func view() -> some View {
+    func view(current: Binding<SetupStep>) -> some View {
         switch self {
+        case .welcome:
+            WelcomeScreen(current: current)
+        case .searchEngine:
+            VStack {
+                Text("Choose your websearch engine")
+                    .font(.title)
+                    .padding(.bottom, 15)
+                SearchEngineSelectionView(maxHeight: 55)
+            }
         case .whatIs:
             VStack {
                 Text("Meilisearch")
@@ -92,7 +103,7 @@ extension MeiliSetupStep {
                     .scaledToFit()
                     .shadow(color: .myPurple, radius: 10)
                     .padding(.horizontal, 30)
-                Text("To automatically start meilisearch, click \"Copy\", then click \"Open Automator\" and choose \"Application\".")
+                Text("To automatically start meilisearch, click \"Copy\", then click \"Open Automator\", click \"New Document\" and choose \"Application\".")
                     .padding(.horizontal, 30)
                     .multilineTextAlignment(.center)
                     .padding(.top, 10)
@@ -220,7 +231,7 @@ disown
                     Button {
                         do {
                             appViewModel.meili = try MeiliSearch(host: "http://localhost:7700", apiKey: KeyChainManager.getValue(for: .meiliMasterKey))
-                            UDKey.wasMeiliSetupOnce.boolValue = true
+                            UDKey.wasSetupOnce.boolValue = true
                         } catch {
                             print(error)
                         }

@@ -9,9 +9,10 @@ import MeiliSearch
 
 extension InputBar {
     func timerSuggestionFetch() async {
+        let searchEngine = SearchEngine(rawValue: UDKey.searchEngine.intValue) ?? .duckduckgo
         if let meili = appViewModel.meili {
             typealias MeiliResult = Result<Searchable<HistoryEntryResult>, Swift.Error>
-            async let searchEngineItems = await SearchEngine.duckduckgo.quickResults(text)
+            async let searchEngineItems = await searchEngine.quickResults(text)
             let meiliItems: [SearchHit<HistoryEntryResult>] = await withCheckedContinuation { continuation in
                 meili.index("history").search(SearchParameters(
                     query: text,
@@ -39,7 +40,7 @@ extension InputBar {
                 if let _ = $0.wholeMatch(of: Regexpr.urlWithoutProtocol.regex) {
                     SearchSuggestion(title: $0, urlString: "https://\($0)", origin: .searchEngine)
                 } else {
-                    SearchSuggestion(title: $0, urlString: "https://duckduckgo.com/?q=\($0.replacingOccurrences(of: " ", with: "+"))", origin: .searchEngine)
+                    SearchSuggestion(title: $0, urlString: "\(searchEngine.makeSearchUrl($0)?.absoluteString ?? searchEngine.root)", origin: .searchEngine)
                 }
             })
             //print("DDG: \(results)")
@@ -52,7 +53,7 @@ extension InputBar {
             makeResult( searchEngineList: results, meiliList: meiliRes)
             lastInput = text
         } else {
-            async let searchEngineItems = await SearchEngine.duckduckgo.quickResults(text)
+            async let searchEngineItems = await (SearchEngine(rawValue: UDKey.searchEngine.intValue) ?? .duckduckgo).quickResults(text)
             
             let results = await Array(searchEngineItems.prefix(5)).sorted(by: {
                 let a = $0.wholeMatch(of: Regexpr.urlWithoutProtocol.regex)
@@ -62,7 +63,7 @@ extension InputBar {
                 if let _ = $0.wholeMatch(of: Regexpr.urlWithoutProtocol.regex) {
                     SearchSuggestion(title: $0, urlString: "https://\($0)", origin: .searchEngine)
                 } else {
-                    SearchSuggestion(title: $0, urlString: "https://duckduckgo.com/?q=\($0.replacingOccurrences(of: " ", with: "+"))", origin: .searchEngine)
+                    SearchSuggestion(title: $0, urlString: "\(searchEngine.makeSearchUrl($0)?.absoluteString ?? searchEngine.root)", origin: .searchEngine)
                 }
             })
             makeResult(searchEngineList: results, meiliList: nil)

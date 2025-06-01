@@ -7,20 +7,21 @@
 
 import SwiftUI
 
-struct MeiliSetup: View {
-    @State private var current: MeiliSetupStep = .whatIs
+struct Setup: View {
+    @State private var current: SetupStep = .welcome
     @Environment(AppViewModel.self) var appViewModel
     @Environment(\.dismiss) var dismiss
     var body: some View {
         BackgroundView(shouldRotate: false) {
             VStack {
                 ZStack {
-                    ForEach(MeiliSetupStep.allCases) { step in
-                        step.view()
+                    ForEach(SetupStep.allCases) { step in
+                        step.view(current: $current)
                             .frame(width: 680, height: 380)
                             .if (step != current) { view in
                                 view.hidden()
                             }
+                            .padding(.top, 10)
                     }
                     .overlay(alignment: .topTrailing) {
                         if current == .whatIs {
@@ -33,7 +34,7 @@ struct MeiliSetup: View {
                         }
                     }
                     HStack {
-                        if current != .whatIs {
+                        if current != .welcome {
                             Button {
                                 current = current.previous
                             } label: {
@@ -44,7 +45,7 @@ struct MeiliSetup: View {
                             .buttonStyle(.borderless)
                         }
                         Spacer()
-                        if current != .checkMeiliRunning {
+                        if current != .checkMeiliRunning && current != .welcome {
                             Button {
                                 current = current.next
                             } label: {
@@ -68,6 +69,6 @@ struct MeiliSetup: View {
 }
 
 #Preview {
-    MeiliSetup()
+    Setup()
         .frame(width: 700, height: 400)
 }

@@ -17,6 +17,11 @@ struct SettingsView: View {
                 Label("Key Bindings", systemImage: "keyboard")
             }
             Tab {
+                SearchEngineSelectionView()
+            } label: {
+                Label("Search Engine", systemImage: "globe")
+            }
+            Tab {
                 IgnoredErrorsView()
             } label: {
                 Label("Ignored Errors", systemImage: "exclamationmark.octagon")

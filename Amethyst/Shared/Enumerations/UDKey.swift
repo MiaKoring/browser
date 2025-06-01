@@ -9,7 +9,7 @@ import SwiftUI
 enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case dontAnimateBackground
     case searchEngine
-    case wasMeiliSetupOnce
+    case wasSetupOnce
     case lastAuthTime
     
     case newWindowShortcut
