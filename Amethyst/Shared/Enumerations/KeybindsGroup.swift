@@ -31,7 +31,7 @@ extension KeybindsGroup {
         case .navigation:
             [.goBackShortcut, .goForwardShortcut, .reloadShortcut, .reloadFromSourceShortcut, .previousTabShortcut, .nextTabShortcut, .closeCurrentTabShortcut]
         case .archive:
-            [.showHistoryShortcut, .showRestoredTabhistoryShortcut]
+            [.showHistoryShortcut]
         }
     }
 }

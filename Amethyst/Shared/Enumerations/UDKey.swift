@@ -26,7 +26,6 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case previousTabShortcut
     case nextTabShortcut
     case closeCurrentTabShortcut
-    case showRestoredTabhistoryShortcut
     case showHistoryShortcut
     case zoomInShortcut
     case zoomOutShortcut
@@ -80,8 +79,6 @@ extension UDKey {
             Shortcut(key: "s", modifier: [.command, .shift])
         case .closeCurrentTabShortcut:
             Shortcut(key: "c", modifier: .option)
-        case .showRestoredTabhistoryShortcut:
-            Shortcut(key: "t", modifier: [.command, .shift])
         case .showHistoryShortcut:
             Shortcut(key: "y", modifier: .command)
         case .zoomInShortcut:
