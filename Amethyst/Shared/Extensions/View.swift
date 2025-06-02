@@ -15,9 +15,17 @@ extension View {
     ) -> some View {
         if condition {
             `if`(self)
-        }else {
+        } else {
             self
         }
     }
+    
+    @ViewBuilder
+    func background<T, F>(`true`: T, `false`: F, with condition: Bool) -> some View where T : ShapeStyle, F : ShapeStyle{
+        if condition {
+            self.background(`true`)
+        } else {
+            self.background(`false`)
+        }
+    }
 }
- 

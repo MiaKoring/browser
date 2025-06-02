@@ -30,4 +30,14 @@ extension Image {
                 onTap()
             }
     }
+    
+    func sizeRef(_ view: @escaping () -> some View) -> some View {
+        view()
+            .hidden()
+            .overlay {
+                self
+                    .resizable()
+                    .scaledToFit()
+            }
+    }
 }
