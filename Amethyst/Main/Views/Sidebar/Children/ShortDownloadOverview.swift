@@ -10,6 +10,7 @@ import SwiftUI
 extension ShortDownloadOverview: View {
     var body: some View {
         VStack(alignment: .leading) {
+            Divider()
             if !displayedItems.isEmpty {
                 ForEach($displayedItems, id: \.self) { item in
                     ShortDownloadOverviewItem(item: item)

@@ -59,6 +59,7 @@ struct ShortDownloadOverviewItem: View {
         .if(isHovered && appearance == .light) { view in
             view.background(.white.mix(with: .gray, by: 0.05))
         }
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .contextMenu {
             Button("Show in Finder") {
                 if let url = item.url {

@@ -100,13 +100,58 @@ extension Sidebar: View {
                     .buttonStyle(.borderless)
                     .padding(.bottom, 10)
                 }
-                DownloadOverviewButton()
+                DownloadOverviewButton(isHovered: .constant(false))
                     .hidden()
                     .padding(.top)
             }
             VStack {
                 Spacer()
-                DownloadOverviewButton()
+                HStack {
+                    FeedbackButton()
+                    Spacer()
+                }
+            }
+            VStack {
+                Spacer()
+                if downloadOverviewButtonIsHovered {
+                    ShortDownloadOverview()
+                        .padding(.bottom, 10)
+                        .background {
+                            /*ZStack {
+                                if appearance == .dark {
+                                    UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
+                                        .fill(.thinMaterial)
+                                } else {
+                                    UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
+                                        .fill(.quinary)
+                                }
+                                UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
+                                    .stroke(style: .init(lineWidth: 1))
+                                    .fill(.ultraThinMaterial)
+                            }
+                            */
+                            HStack {
+                                /*if contentViewModel.isSidebarFixed {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(.ultraThinMaterial)
+                                        .background(appearance == .light ? .white.opacity(0.5): .clear)
+                                } else {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
+                                }*/
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
+                            }
+                        }
+                        .onHover { hovering in
+                            downloadOverviewButtonIsHovered = hovering
+                        }
+                        .padding(.bottom, -6)
+                }
+                HStack {
+                    Spacer()
+                    DownloadOverviewButton(isHovered: $downloadOverviewButtonIsHovered)
+                }
             }
         }
         .frame(maxHeight: .infinity)
@@ -114,14 +159,16 @@ extension Sidebar: View {
         .padding(5)
         .background {
             HStack {
-                if contentViewModel.isSidebarFixed {
+                /*if contentViewModel.isSidebarFixed {
                     RoundedRectangle(cornerRadius: 5)
                         .fill(.ultraThinMaterial)
                         .background(appearance == .light ? .white.opacity(0.5): .clear)
                 } else {
                     RoundedRectangle(cornerRadius: 5)
                         .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
-                }
+                }*/
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
             }
             .overlay {
                 if appearance == .light {

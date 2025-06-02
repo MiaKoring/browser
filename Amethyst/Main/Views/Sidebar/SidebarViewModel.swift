@@ -15,5 +15,5 @@ struct Sidebar {
     @State var isBackHovered: Bool = false
     @State var isForwardHovered: Bool = false
     @State var isReloadHovered: Bool = false
-    
+    @State var downloadOverviewButtonIsHovered: Bool = false
 }
