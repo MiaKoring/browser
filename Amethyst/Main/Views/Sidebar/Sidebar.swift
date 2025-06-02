@@ -117,28 +117,7 @@ extension Sidebar: View {
                     ShortDownloadOverview()
                         .padding(.bottom, 10)
                         .background {
-                            /*ZStack {
-                                if appearance == .dark {
-                                    UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
-                                        .fill(.thinMaterial)
-                                } else {
-                                    UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
-                                        .fill(.quinary)
-                                }
-                                UnevenRoundedRectangle(cornerRadii: .init(topLeading: 15, bottomLeading: 15, bottomTrailing: 5, topTrailing: 15))
-                                    .stroke(style: .init(lineWidth: 1))
-                                    .fill(.ultraThinMaterial)
-                            }
-                            */
                             HStack {
-                                /*if contentViewModel.isSidebarFixed {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .fill(.ultraThinMaterial)
-                                        .background(appearance == .light ? .white.opacity(0.5): .clear)
-                                } else {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
-                                }*/
                                 RoundedRectangle(cornerRadius: 5)
                                     .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
                             }
@@ -159,14 +138,6 @@ extension Sidebar: View {
         .padding(5)
         .background {
             HStack {
-                /*if contentViewModel.isSidebarFixed {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(.ultraThinMaterial)
-                        .background(appearance == .light ? .white.opacity(0.5): .clear)
-                } else {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
-                }*/
                 RoundedRectangle(cornerRadius: 5)
                     .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
             }
