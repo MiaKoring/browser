@@ -12,6 +12,7 @@ import MeiliSearch
 enum SetupStep: Int, CaseIterable {
     case welcome
     case searchEngine
+    case sidebarOrientation
     case whatIs
     case installMeili
     case setupAutomator
@@ -47,6 +48,8 @@ extension SetupStep {
                     .padding(.bottom, 15)
                 SearchEngineSelectionView(maxHeight: 55)
             }
+        case .sidebarOrientation:
+            SidebarOrientation()
         case .whatIs:
             VStack {
                 Text("Meilisearch")

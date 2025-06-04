@@ -120,6 +120,10 @@ struct AmethystApp: App {
                     }
                     .keyboardShortcut(UDKey.resetZoomShortcut.shortcut.key, modifiers: UDKey.resetZoomShortcut.shortcut.modifier)
                     .disabled(contentViewModel(for: appViewModel.currentlyActiveWindowId)?.currentTab != nil)
+                    Button("Toggle Tab Position") {
+                        toggleSidebarOrientation()
+                    }
+                    .keyboardShortcut(UDKey.sidebarOrientation.shortcut.key, modifiers: UDKey.sidebarOrientation.shortcut.modifier)
                 }
                 CommandMenu("Navigation") {
                     Button("Go Back") {

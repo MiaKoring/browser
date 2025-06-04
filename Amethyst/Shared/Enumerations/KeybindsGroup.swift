@@ -27,7 +27,7 @@ extension KeybindsGroup {
         case .search:
             [.openSearchbarShortcut, .openInlineSearchShortcut]
         case .view:
-            [.zoomInShortcut, .zoomOutShortcut, .resetZoomShortcut]
+            [.zoomInShortcut, .zoomOutShortcut, .resetZoomShortcut, .sidebarOrientation]
         case .navigation:
             [.goBackShortcut, .goForwardShortcut, .reloadShortcut, .reloadFromSourceShortcut, .previousTabShortcut, .nextTabShortcut, .closeCurrentTabShortcut]
         case .archive:

@@ -206,6 +206,14 @@ extension AmethystApp {
         }
     }
     
+    func toggleSidebarOrientation() {
+        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId) else {
+            print("No contentviewmodel")
+            return
+        }
+        contentViewModel.sidebarOrientation = contentViewModel.sidebarOrientation.other
+    }
+    
     func contentViewModel(for id: String) -> ContentViewModel? {
         switch id {
         case "window1":
@@ -357,6 +365,12 @@ extension AmethystApp {
         //show history
         if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.showHistoryShortcut.shortcut.key, modifiers: UDKey.showHistoryShortcut.shortcut.modifier), event: event) {
             showHistory()
+            return nil
+        }
+        
+        //toggle tab position
+        if expectedShortcutMatchesEvent(expected: KeyboardShortcut(UDKey.sidebarOrientation.shortcut.key, modifiers: UDKey.sidebarOrientation.shortcut.modifier), event: event) {
+            toggleSidebarOrientation()
             return nil
         }
         return event

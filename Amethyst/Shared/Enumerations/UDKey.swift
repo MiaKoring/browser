@@ -90,6 +90,8 @@ extension UDKey {
             Shortcut(key: "0", modifier: .command)
         case .triggerPasswordsAuth:
             Shortcut(key: "u", modifier: .command)
+        case .sidebarOrientation:
+            Shortcut(key: "n", modifier: [.command, .shift])
         default:
             Shortcut(key: " ", modifier: [])
         }
@@ -120,6 +122,7 @@ extension UDKey {
         case .zoomOutShortcut: "Zoom Out"
         case .resetZoomShortcut: "Reset Zoom"
         case .triggerPasswordsAuth: "Authenticate yourself"
+        case .sidebarOrientation: "Move your tabs left or right"
         default: ""
         }
     }

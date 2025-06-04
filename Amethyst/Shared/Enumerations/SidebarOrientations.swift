@@ -20,6 +20,7 @@ extension SidebarOrientations {
             @Environment(\.colorScheme) var appearance
             var prepareCreationSheet: () -> Void
             @State var isSidebarButtonHovered = false
+            
             var body: some View {
                 HStack {
                     if sidebarOrientation == .tabsTrailing {
@@ -166,6 +167,15 @@ extension SidebarOrientations {
             contentViewModel.isSidebarShown && !contentViewModel.isSidebarFixed
         case .tabsLeading:
             contentViewModel.isPasswordShown && !contentViewModel.isPasswordFixed
+        }
+    }
+    
+    var other: SidebarOrientations {
+        switch self {
+        case .tabsLeading:
+                .tabsTrailing
+        case .tabsTrailing:
+                .tabsLeading
         }
     }
 }

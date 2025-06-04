@@ -9,7 +9,6 @@ import SwiftUI
 import AppKit
 
 struct SettingsView: View {
-    @State var trailingTabs: Bool = UDKey.sidebarOrientation.boolValue
     var body: some View {
         TabView {
             Tab {
@@ -28,10 +27,7 @@ struct SettingsView: View {
                 Label("Search Suggestions", systemImage: "sparkle.magnifyingglass")
             }
             Tab {
-                Toggle("trailing tabs", isOn: $trailingTabs)
-                    .onChange(of: trailingTabs) {
-                        UDKey.sidebarOrientation.boolValue = trailingTabs
-                    }
+                SidebarOrientation()
             } label: {
                 Label("SidebarOrientation", systemImage: "sidebar.left")
             }
