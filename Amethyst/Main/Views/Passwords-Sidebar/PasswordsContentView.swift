@@ -17,11 +17,10 @@ struct PasswordsContentView: View {
     @State var isCanceled = false
     var context: ModelContext
     
-    
     var body: some View {
         ZStack {
             if isAuthenticated {
-                HomeView(context: context)
+                PasswordList(context: context)
             }
             if !isAuthenticated {
                 MeshGradient(width: 2, height: 2, points: [

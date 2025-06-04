@@ -11,7 +11,7 @@ import AmethystAuthenticatorCore
 import AuthenticationServices
 
 struct AccountDisplay: View {
-    let account: Account
+    var account: Account
     var context: ModelContext
     @State var showPopup: Bool = false
     @State var isHovered: Bool = false
