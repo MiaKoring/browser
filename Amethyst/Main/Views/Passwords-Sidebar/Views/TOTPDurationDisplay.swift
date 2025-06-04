@@ -14,14 +14,15 @@ struct TOTPDurationDisplay: View {
         ProgressView(value: remainingTime)
             .progressViewStyle(.linear)
             .onAppear {
-                remainingTime = Double(AccountDetail.getRemainingTOTPTime()) / 30.0
+                remainingTime = Double(AuthenticatorHelper.getRemainingTOTPTime()) / 30.0
                 timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         withAnimation {
-                            remainingTime = Double(AccountDetail.getRemainingTOTPTime()) / 30.0
+                            remainingTime = Double(AuthenticatorHelper.getRemainingTOTPTime()) / 30.0
                         }
                     }
                 }
             }
     }
 }
+

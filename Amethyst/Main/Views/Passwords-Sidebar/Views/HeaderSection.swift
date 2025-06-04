@@ -11,7 +11,6 @@ struct HeaderSection: View {
     @Bindable var account: Account
     @Binding var title: String
     @Binding var username: String
-    var editable = true
     
     var body: some View {
         HStack {
@@ -26,40 +25,34 @@ struct HeaderSection: View {
                     .frame(width: 40, height: 40)
             }
             VStack(alignment: .leading) {
-                if editable {
-                    HStack {
-                        if title.isEmpty {
-                            Text("Website")
-                                .bold()
-                                .font(.title3)
-                                .foregroundStyle(.secondary)
-                                .padding(.leading, 3)
-                        } else {
-                            Text("Website")
-                                .bold()
-                                .font(.title3)
-                                .foregroundStyle(.secondary)
-                                .padding(.leading, 3)
-                                .hidden()
-                        }
-                        Spacer()
-                    }
-                    .overlay {
-                        TextEditor(text: $title)
-                            .lineLimit(1)
-                            .textEditorStyle(.plain)
-                            .font(.title3)
+                HStack {
+                    if title.isEmpty {
+                        Text("Website")
                             .bold()
-                            .onChange(of: title) {
-                                if title.contains("\n") {
-                                    title = title.replacingOccurrences(of: "\n", with: "")
-                                }
-                            }
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                            .padding(.leading, 3)
+                    } else {
+                        Text("Website")
+                            .bold()
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                            .padding(.leading, 3)
+                            .hidden()
                     }
-                } else {
-                    Text(title)
+                    Spacer()
+                }
+                .overlay {
+                    TextEditor(text: $title)
+                        .lineLimit(1)
+                        .textEditorStyle(.plain)
                         .font(.title3)
                         .bold()
+                        .onChange(of: title) {
+                            if title.contains("\n") {
+                                title = title.replacingOccurrences(of: "\n", with: "")
+                            }
+                        }
                 }
                 if let edited = account.editedAt {
                     Text("Last modified at \(edited.formatted(date: .numeric, time: .omitted))")
@@ -70,16 +63,8 @@ struct HeaderSection: View {
             Spacer()
         }
         HStack {
-            if editable {
-                TextField("User Name", text: $username)
-                    .multilineTextAlignment(.trailing)
-                    .disabled(!editable)
-            } else {
-                HStack {
-                    Text("Username")
-                    CopyOnClickView(text: username, shouldObfuscate: false)
-                }
-            }
+            TextField("User Name", text: $username)
+                .multilineTextAlignment(.trailing)
         }
     }
 }

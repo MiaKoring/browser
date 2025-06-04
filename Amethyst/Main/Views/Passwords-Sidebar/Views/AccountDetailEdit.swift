@@ -21,14 +21,11 @@ extension AccountDetailEdit: View {
             PasswordSection(account: account, deleteAction: $deleteAction, password: $password, create: create)
             
             if !create {
-                Section {
-                    TOTPSection(account: account, deleteAction: $deleteAction, totpCode: $totpCode)
-                }
+                TOTPSection(account: account, deleteAction: $deleteAction, totpCode: $totpCode)
                 WebsiteSection(account: account)
-            }
-            
-            Button(account.deletedAt != nil ? "Restore Account": "Delete Account" , role: account.deletedAt != nil ? .cancel: .destructive) {
-                handleDeletionAndRestoration()
+                Button(account.deletedAt != nil ? "Restore Account": "Delete Account" , role: account.deletedAt != nil ? .cancel: .destructive) {
+                    handleDeletionAndRestoration()
+                }
             }
         }
         .formStyle(.grouped)
@@ -50,36 +47,11 @@ extension AccountDetailEdit: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {
-                    if !create {
-                        save()
-                        return
-                    }
-                    let strength = AccountDetail.evaluatePasswordStrength(password: password)
-                    do {
-                        try context.transaction {
-                            let newAccount = try Account(service: title, username: username, comment: "", password: password, allAccounts: accounts, strength: strength)
-                            Task {
-                                let title = try? await Account.getTitle(from: newAccount.service)
-                                let image = try? await Account.getImage(for: newAccount.service)
-                                newAccount.setImage(to: image)
-                                if let title {
-                                    newAccount.setTitle(to: title )
-                                }
-                            }
-                            context.insert(newAccount)
-                        }
-                    } catch {
-                        if let error = error as? AAuthenticationError {
-                            self.error = error
-                        } else {
-                            print(error)
-                        }
-                    }
-                    onClose()
+                   confirmAction()
                 } label: {
                     Text(create ? "Create": "Save")
                 }
-                .disabled(create && (title.hasPrefix(".") || title.hasSuffix(".") || !title.contains(".") || username.isEmpty || password.isEmpty))
+                .disabled(confirmationActionDisabled)
             }
         }
     }
@@ -98,39 +70,30 @@ extension AccountDetailEdit: View {
                         .multilineTextAlignment(.trailing)
                 }
                 if password.isEmpty {
-                    Button("Generate Password") {
-                        var pw = ""
-                        let generator = PasswordGenerator()
-                        
-                        repeat {
-                            pw = generator.generatePassword()
-                        } while !generator.isValidPassword(pw)
-                        
-                        password = pw
-                    }
-                    Button("Generator without Special Characters") {
-                        var pw = ""
-                        let generator = PasswordGenerator()
-                        
-                        repeat {
-                            pw = generator.generatePassword(insertSegments: false)
-                        } while !generator.isValidPassword(pw)
-                        
-                        password = pw
-                    }
+                    Button("Generate Password") { generatePassword() }
+                    Button("Generator without Special Characters") { generatePassword(insertSegments: false) }
                 }
-                Button("Delete Password", role: .destructive) {
-                    deleteAction = .password
-                }
+                Button("Delete Password", role: .destructive) { deleteAction = .password }
                 .disabled(create || account.password == nil)
             }
             .onAppear() {
                 if !create {
                     if let password = account.password, account.strength == nil, !password.isEmpty {
-                        account.strength = AccountDetail.evaluatePasswordStrength(password: password)
+                        account.strength = AuthenticatorHelper.evaluatePasswordStrength(password: password)
                     }
                 }
             }
+        }
+        
+        func generatePassword(insertSegments: Bool = true) {
+            var pw = ""
+            let generator = PasswordGenerator()
+            
+            repeat {
+                pw = generator.generatePassword(insertSegments: insertSegments)
+            } while !generator.isValidPassword(pw)
+            
+            password = pw
         }
     }
     
@@ -139,7 +102,7 @@ extension AccountDetailEdit: View {
         var body: some View {
             Section {
                 HStack {
-                    Text("website.com")
+                    Text("Website")
                     Spacer()
                     Menu {
                         Button("Open Website") {
@@ -157,38 +120,3 @@ extension AccountDetailEdit: View {
         }
     }
 }
-
-/*
-#Preview {
-    @Previewable @State var account: Account?
-    NavigationStack {
-        VStack {
-            if let account {
-                AccountDetail(account: account, showDeleted: .constant(false))
-            } else {
-                Text("no account")
-                    .task {
-                        guard let acc = try? Account(service: "google.com", username: "koring.mia@gmail.com", comment: "TestComment", password: "abR4tz-Aleops-uIekar", allAccounts: [], strength: nil) else {
-                            print("failed to create account")
-                            return
-                        }
-                        await acc.setTitle(to: (try? Account.getTitle(from: acc.service)) ?? "failed")
-                        acc.aliases.append("accounts.google.com")
-                        
-                        if let password = acc.password {
-                            acc.strength = AccountDetail.evaluatePasswordStrength(password: password)
-                        }
-                        acc.setTOTPSecret(to: "JBSWY3DPEHPK3PXP")
-                        Task {
-                            let image = try? await Account.getImage(for: acc.service)
-                            let title = try? await Account.getTitle(from: acc.service)
-                            acc.setImage(to: image)
-                            acc.setTitle(to: title ?? acc.service)
-                        }
-                        account = acc
-                    }
-            }
-        }
-    }
-}
-*/

@@ -8,6 +8,7 @@
 import SwiftUI
 import AmethystAuthenticatorCore
 import SwiftData
+import OSLog
 
 struct AccountDetailEdit {
     @Bindable var account: Account
@@ -19,26 +20,32 @@ struct AccountDetailEdit {
     @State var error: AAuthenticationError? = nil
     @State var totpCode: String?
     @State var create: Bool
-    var accountAfterCreation: Binding<Account?>?
+    var confirmationActionDisabled: Bool {
+        create && (title.hasPrefix(".") || title.hasSuffix(".") || !title.contains(".") || username.isEmpty || password.isEmpty)
+    }
     var onClose: () -> Void
     var context: ModelContext
+    static let logger = Logger(subsystem: AmethystApp.subSystem, category: "AccountDetailEdit")
     
-    init(account: Account, create: Bool = false, accountAfterCreation: Binding<Account?>? = nil, context: ModelContext, onClose: @escaping () -> Void) {
+    
+    init(account: Account, create: Bool = false, context: ModelContext, onClose: @escaping () -> Void) {
         self.account = account
         self.username = account.username
         self.context = context
+        
         if !create {
             self.password = account.password ?? ""
         } else {
             self.password = ""
         }
+        
         if create {
             self.title = account.service
         } else {
             self.title = account.title ?? ""
         }
+        
         self.create = create
-        self.accountAfterCreation = accountAfterCreation
         self.onClose = onClose
     }
     
@@ -61,7 +68,7 @@ struct AccountDetailEdit {
                     account.setTitle(to: title)
                 }
                 if !password.isEmpty {
-                    let strength = AccountDetail.evaluatePasswordStrength(password: password)
+                    let strength = AuthenticatorHelper.evaluatePasswordStrength(password: password)
                     account.strength = strength
                     account.setPassword(to: password)
                 } else {
@@ -116,4 +123,35 @@ struct AccountDetailEdit {
         deleteAction = nil
     }
     
+    func confirmAction() {
+        guard create else {
+            save()
+            return
+        }
+        let strength = AuthenticatorHelper.evaluatePasswordStrength(password: password)
+        do {
+            try context.transaction {
+                let newAccount = try Account(service: title, username: username, comment: "", password: password, allAccounts: accounts, strength: strength)
+                Task {
+                    async let title = try? await Account.getTitle(from: newAccount.service)
+                    async let image = try? await Account.getImage(for: newAccount.service)
+                    
+                    await newAccount.setImage(to: image)
+                    if let title = await title {
+                        newAccount.setTitle(to: title )
+                    }
+                }
+                context.insert(newAccount)
+            }
+        } catch {
+            if let error = error as? AAuthenticationError {
+                self.error = error
+            } else {
+                Self.logger.debug("\(error.localizedDescription)")
+            }
+        }
+        onClose()
+    }
+    
 }
+

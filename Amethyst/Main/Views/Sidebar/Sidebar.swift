@@ -6,7 +6,17 @@
 //
 import SwiftUI
 
-extension Sidebar: View {
+struct Sidebar: View {
+    @Environment(ContentViewModel.self) var contentViewModel
+    @Environment(AppViewModel.self) var appViewModel
+    @Environment(\.colorScheme) var appearance
+    @State var isSideBarButtonHovered: Bool = false
+    @State var isNewTabHovered: Bool = false
+    @State var isBackHovered: Bool = false
+    @State var isForwardHovered: Bool = false
+    @State var isReloadHovered: Bool = false
+    @State var downloadOverviewButtonIsHovered: Bool = false
+    
     var body: some View {
         ZStack {
             VStack {
@@ -117,10 +127,8 @@ extension Sidebar: View {
                     ShortDownloadOverview()
                         .padding(.bottom, 10)
                         .background {
-                            HStack {
-                                RoundedRectangle(cornerRadius: 5)
+                            RoundedRectangle(cornerRadius: 5)
                                     .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
-                            }
                         }
                         .onHover { hovering in
                             downloadOverviewButtonIsHovered = hovering
@@ -156,28 +164,5 @@ extension Sidebar: View {
             }
         }
         .padding(contentViewModel.isSidebarFixed ? 0: 8)
-    }
-}
-
-#Preview {
-    @Previewable @State var contentViewModel = ContentViewModel(id: "lol")
-    @Previewable @State var appViewModel = AppViewModel()
-    BackgroundView {
-        ZStack {
-            ContentView()
-            HStack {
-                Sidebar()
-                Spacer()
-            }
-        }
-    }
-    .environment(contentViewModel)
-    .environment(appViewModel)
-    .onAppear() {
-        let vm = WebViewModel(processPool: contentViewModel.wkProcessPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
-        vm.load(urlString: "https://miakoring.de")
-        let tab = ATab(webViewModel: vm)
-        contentViewModel.tabs.append(tab)
-        contentViewModel.currentTab = tab.id
     }
 }

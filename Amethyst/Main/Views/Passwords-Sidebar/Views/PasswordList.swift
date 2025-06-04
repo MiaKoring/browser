@@ -69,7 +69,7 @@ struct PasswordList: View {
             }
         }
         .sheet(isPresented: $showAccountCreation) {
-            AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation, context: context) {
+            AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, context: context) {
                 showAccountCreation = false
             }
         }

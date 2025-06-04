@@ -21,6 +21,7 @@ struct AmethystApp: App {
     @State var contentViewModel2 = ContentViewModel(id: "window2")
     @State var contentViewModel3 = ContentViewModel(id: "window3")
     var container: ModelContainer
+    static var subSystem = "de.touchthegrass.Amethyst"
     
     init() {
 #if DEBUG
