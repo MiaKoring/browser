@@ -46,12 +46,12 @@ extension ContentView: View, TabOpener {
                         Spacer()
                     }
                     HStack(spacing: 0) {
-                        if contentViewModel.isSidebarFixed {
+                        if contentViewModel.sidebarOrientation.isLeadingSidebarFixed(contentViewModel: contentViewModel) {
                             HStack {
-                                Sidebar()
-                                    .frame(maxWidth: sidebarWidth)
+                                contentViewModel.sidebarOrientation.leadingSidebar()
+                                    .frame(maxWidth: leadingWidth)
                                     .overlay(alignment: .trailing) {
-                                        SidebarResizer(sidebarWidth: $sidebarWidth)
+                                        SidebarResizer(sidebarWidth: $leadingWidth)
                                     }
                                 if contentViewModel.tabs.isEmpty {
                                     Spacer()
@@ -63,15 +63,15 @@ extension ContentView: View, TabOpener {
                                 WebView(tabID: tab.id, webViewModel: tab.webViewModel)
                             }
                         }
-                        if contentViewModel.isPasswordFixed {
+                        if contentViewModel.sidebarOrientation.isTrailingSidebarFixed(contentViewModel: contentViewModel) {
                             HStack {
                                 if contentViewModel.tabs.isEmpty {
                                     Spacer()
                                 }
-                                PasswordSidebar()
-                                    .frame(maxWidth: passwordsWidth)
+                                contentViewModel.sidebarOrientation.trailingSidebar()
+                                    .frame(maxWidth: trailingWidth)
                                     .overlay(alignment: .leading) {
-                                        SidebarResizer(sidebarWidth: $passwordsWidth, trailing: true)
+                                        SidebarResizer(sidebarWidth: $trailingWidth, trailing: true)
                                     }
                             }
                         }
@@ -89,17 +89,17 @@ extension ContentView: View, TabOpener {
                         }
                     }
                     HStack {
-                        if contentViewModel.isSidebarShown && !contentViewModel.isSidebarFixed {
-                            Sidebar()
+                        if contentViewModel.sidebarOrientation.isLeadingSidebarShown(contentViewModel: contentViewModel) {
+                            contentViewModel.sidebarOrientation.leadingSidebar()
                                 .transition(.move(edge: .leading))
                         }
                         Spacer()
-                        if contentViewModel.isPasswordShown && !contentViewModel.isPasswordFixed {
-                            PasswordSidebar()
+                        if contentViewModel.sidebarOrientation.isTrailingSidebarShown(contentViewModel: contentViewModel) {
+                            contentViewModel.sidebarOrientation.trailingSidebar()
                                 .transition(.move(edge: .trailing))
                         }
                     }
-                    if (showMacosWindowIconsAreaHovered || macosWindowIconsHovered) && !contentViewModel.isSidebarShown && !contentViewModel.isSidebarFixed {
+                    if (showMacosWindowIconsAreaHovered || macosWindowIconsHovered) && !contentViewModel.sidebarOrientation.isLeadingSidebarShown(contentViewModel: contentViewModel) {
                         
                         VStack {
                             HStack {

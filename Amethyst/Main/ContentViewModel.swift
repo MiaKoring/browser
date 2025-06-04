@@ -25,9 +25,11 @@ class ContentViewModel: NSObject, ObservableObject {
     var showHistory: Bool = false
     var lastInlineQuery: String = ""
     var isLoaded: Bool = false
+    var sidebarOrientation: SidebarOrientations
     
     init(id: String) {
         self.id = id
+        self.sidebarOrientation = UDKey.sidebarOrientation.boolValue ? .tabsTrailing: .tabsLeading
     }
     
     func handleClose() {
@@ -57,8 +59,8 @@ struct ContentView {
     @Environment(\.dismissWindow) var dismissWindow
     @State var showInputBar: Bool = false
     @State var inputBarText: String = ""
-    @State var sidebarWidth: CGFloat = 308
-    @State var passwordsWidth: CGFloat = 308
+    @State var leadingWidth: CGFloat = 308
+    @State var trailingWidth: CGFloat = 308
     @State var showMacosWindowIconsAreaHovered: Bool = false
     @State var macosWindowIconsHovered: Bool = false
     @State var window: NSWindow? = nil

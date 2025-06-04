@@ -10,47 +10,14 @@ struct Sidebar: View {
     @Environment(ContentViewModel.self) var contentViewModel
     @Environment(AppViewModel.self) var appViewModel
     @Environment(\.colorScheme) var appearance
-    @State var isSideBarButtonHovered: Bool = false
     @State var isNewTabHovered: Bool = false
-    @State var isBackHovered: Bool = false
-    @State var isForwardHovered: Bool = false
-    @State var isReloadHovered: Bool = false
     @State var downloadOverviewButtonIsHovered: Bool = false
     
     var body: some View {
         ZStack {
             VStack {
-                HStack {
-                    MacOSButtons()
-                        .padding(.trailing)
-                        .padding(.leading, 5)
-                    Image(systemName: "sidebar.left")
-                        .sidebarTopButton(hovered: $isSideBarButtonHovered, appearance: appearance) {
-                            contentViewModel.isSidebarFixed.toggle()
-                            contentViewModel.isSidebarShown = false
-                        }
-                    Spacer()
-                    Image(systemName: "chevron.left")
-                        .sidebarTopButton(hovered: $isBackHovered, appearance: appearance) {
-                            if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
-                                tab.webViewModel.webView?.goBack()
-                            }
-                        }
-                    Image(systemName: "chevron.right")
-                        .sidebarTopButton(hovered: $isForwardHovered, appearance: appearance) {
-                            if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
-                                tab.webViewModel.webView?.goForward()
-                            }
-                        }
-                    Image(systemName: "arrow.trianglehead.counterclockwise.rotate.90")
-                        .sidebarTopButton(hovered: $isReloadHovered, appearance: appearance) {
-                            if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
-                                tab.webViewModel.webView?.reload()
-                            }
-                        }
-                }
-                .padding(.leading, contentViewModel.isSidebarFixed ? 5: 0)
-                .padding(.top, contentViewModel.isSidebarFixed ? 5: 0)
+                contentViewModel.sidebarOrientation.tabTopRow()
+                .addTopRowPadding(isFixed: contentViewModel.isSidebarFixed)
                 URLDisplay()
                     .padding(.top)
                     .padding(.horizontal, 3)
@@ -141,28 +108,6 @@ struct Sidebar: View {
                 }
             }
         }
-        .frame(maxHeight: .infinity)
-        .frame(maxWidth: contentViewModel.isSidebarFixed ? .infinity: 300)
-        .padding(5)
-        .background {
-            HStack {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
-            }
-            .overlay {
-                if appearance == .light {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(lineWidth: 1)
-                        .fill(Color.gray)
-                        .shadow(radius: 5)
-                } else {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(lineWidth: 1)
-                        .fill(.ultraThickMaterial)
-                        .shadow(radius: 5)
-                }
-            }
-        }
-        .padding(contentViewModel.isSidebarFixed ? 0: 8)
+        .makeSidebar(isFixed: contentViewModel.isSidebarFixed, appearance: appearance)
     }
 }

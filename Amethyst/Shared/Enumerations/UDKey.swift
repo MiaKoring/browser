@@ -31,6 +31,7 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case zoomOutShortcut
     case resetZoomShortcut
     case triggerPasswordsAuth
+    case sidebarOrientation
 }
 
 extension UDKey {

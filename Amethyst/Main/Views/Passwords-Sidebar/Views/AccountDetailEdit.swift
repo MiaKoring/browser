@@ -21,7 +21,7 @@ extension AccountDetailEdit: View {
             PasswordSection(account: account, deleteAction: $deleteAction, password: $password, create: create)
             
             if !create {
-                TOTPSection(account: account, deleteAction: $deleteAction, totpCode: $totpCode)
+                TOTPSection(account: account, deleteAction: $deleteAction)
                 WebsiteSection(account: account)
                 Button(account.deletedAt != nil ? "Restore Account": "Delete Account" , role: account.deletedAt != nil ? .cancel: .destructive) {
                     handleDeletionAndRestoration()

@@ -35,7 +35,6 @@ struct PasswordList {
     }
     
     func filterAccounts() {
-        let identifiers = identifiers
         var likely = [Account]()
         var remaining = [Account]()
         

@@ -18,7 +18,6 @@ struct AccountDetailEdit {
     @State var title: String
     @State var deleteAction: DeleteAction?
     @State var error: AAuthenticationError? = nil
-    @State var totpCode: String?
     @State var create: Bool
     var confirmationActionDisabled: Bool {
         create && (title.hasPrefix(".") || title.hasSuffix(".") || !title.contains(".") || username.isEmpty || password.isEmpty)
@@ -108,7 +107,6 @@ struct AccountDetailEdit {
         switch deleteAction {
         case .code:
             account.removeTOTPSecret()
-            totpCode = "--- ---"
         case .password:
             account.setPassword(to: nil)
             password = ""
