@@ -63,13 +63,13 @@ struct PasswordsContentView: View {
                         Text("Unlock")
                             .font(.title2)
                             .bold()
-                        Text("\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.command) ? "⌘": "")\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.shift) ? "⇧": "")\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.option) ? "⌥": "")\(UDKey.triggerPasswordsAuth.shortcut.modifier.contains(.control) ? "⌃": "")\("\(UDKey.triggerPasswordsAuth.shortcut.key.character)".uppercased())")
+                        Text("\(Keybind.triggerPasswordsAuth.shortcut.modifier.contains(.command) ? "⌘": "")\(Keybind.triggerPasswordsAuth.shortcut.modifier.contains(.shift) ? "⇧": "")\(Keybind.triggerPasswordsAuth.shortcut.modifier.contains(.option) ? "⌥": "")\(Keybind.triggerPasswordsAuth.shortcut.modifier.contains(.control) ? "⌃": "")\("\(Keybind.triggerPasswordsAuth.shortcut.key.character)".uppercased())")
                             .foregroundStyle(.secondary)
                             .font(.title2)
                     }
                 }
                 .buttonStyle(.plain)
-                .keyboardShortcut(UDKey.triggerPasswordsAuth.keyboardShortcut)
+                .keyboardShortcut(Keybind.triggerPasswordsAuth.keyboardShortcut)
             }
         }
         func authenticate(withPasscode: Bool = false) {

@@ -20,7 +20,7 @@ struct KeyBindsView: View {
     }
     
     private struct KeyBindsRow: View {
-        let keybind: UDKey
+        let keybind: Keybind
         @State var text = ""
         @FocusState var textFieldFocused
         @State var redForeground: Bool = false

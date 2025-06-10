@@ -36,7 +36,7 @@ struct SingleFrame: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                     }
-                    .keyboardShortcut(UDKey.moveSingleFrameToWindow.shortcut.key, modifiers: UDKey.moveSingleFrameToWindow.shortcut.modifier)
+                    .keyboardShortcut(Keybind.moveSingleFrameToWindow.shortcut.key, modifiers: Keybind.moveSingleFrameToWindow.shortcut.modifier)
                     .buttonStyle(.plain)
                     .padding(.horizontal, 10)
                     .padding(.top, 10)
