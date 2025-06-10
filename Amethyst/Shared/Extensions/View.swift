@@ -21,7 +21,7 @@ extension View {
     }
     
     @ViewBuilder
-    func background<T, F>(`true`: T, `false`: F, with condition: Bool) -> some View where T : ShapeStyle, F : ShapeStyle{
+    func background<T, F>(`true`: T, `false`: F, with condition: Bool) -> some View where T : ShapeStyle, F : ShapeStyle {
         if condition {
             self.background(`true`)
         } else {
@@ -72,4 +72,28 @@ extension View {
             }
         }
     }
+    
+    @ViewBuilder
+    func activeIndicator<S>(isActive: Bool, _ fill: S = .blue) -> some View where S : ShapeStyle {
+        self.overlay(alignment: .topTrailing) {
+            if isActive {
+                Circle()
+                    .fill(fill)
+                    .frame(width: 8)
+                    .offset(x: -3, y: 3)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func placeBottomLeading() -> some View {
+        VStack {
+            Spacer()
+            HStack {
+                self
+                Spacer()
+            }
+        }
+    }
 }
+
