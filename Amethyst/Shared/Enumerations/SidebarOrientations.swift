@@ -5,11 +5,24 @@
 //  Created by Mia Koring on 04.06.25.
 //
 import SwiftUI
-enum SidebarOrientations {
+enum SidebarOrientations: CaseIterable {
     case tabsLeading, tabsTrailing
 }
 
 extension SidebarOrientations {
+    var image: Image {
+        switch self {
+        case .tabsLeading:
+            Image(.leadingTabs)
+        case .tabsTrailing:
+            Image(.trailingTabs)
+        }
+    }
+    
+    var isTabTrailing: Bool {
+        self == .tabsTrailing
+    }
+    
     func passwordsTopRow(sortData: Binding<PasswordSortData>, prepareCreationSheet: @escaping () -> Void) -> some View {
         return PasswordTopRow(sidebarOrientation: self, sortData: sortData, prepareCreationSheet: prepareCreationSheet)
         struct PasswordTopRow: View {

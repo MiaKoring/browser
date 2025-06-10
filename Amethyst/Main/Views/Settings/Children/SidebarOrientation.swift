@@ -8,30 +8,21 @@ import SwiftUI
 
 
 struct SidebarOrientation: View {
-    @AppStorage(UDKey.sidebarOrientation.rawValue) var trailingTabs: Bool = false
+    @State var trailingTabs: Bool = UDKey.sidebarOrientation.boolValue
     var body: some View {
         HStack {
-            VStack {
-                Image(.leadingTabs)
-                    .resizable()
-                    .scaledToFit()
-                    .onTapGesture {
-                        trailingTabs = false
-                    }
-                    .if(!trailingTabs) { view in
-                        view.shadow(color: .purple, radius: 20, y: 25)
-                    }
-            }
-            VStack {
-                Image(.trailingTabs)
-                    .resizable()
-                    .scaledToFit()
-                    .onTapGesture {
-                        trailingTabs = true
-                    }
-                    .if(trailingTabs) { view in
-                        view.shadow(color: .purple, radius: 20, y: 25)
-                    }
+            ForEach(SidebarOrientations.allCases, id: \.hashValue) { orientation in
+                VStack {
+                    orientation.image
+                        .resizable()
+                        .scaledToFit()
+                        .onTapGesture {
+                            trailingTabs = orientation.isTabTrailing
+                        }
+                        .if(trailingTabs == orientation.isTabTrailing) { view in
+                            view.shadow(color: .purple, radius: 20, y: 25)
+                        }
+                }
             }
         }
     }

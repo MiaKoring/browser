@@ -65,6 +65,9 @@ struct Setup: View {
             }
             .padding(10)
         }
+        .onAppear() {
+            ErrorIgnoreManager.addIgnoredURLError("Frame load interrupted")
+        }
     }
 }
 

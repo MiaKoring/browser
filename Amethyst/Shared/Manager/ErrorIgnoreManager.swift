@@ -13,6 +13,12 @@ struct ErrorIgnoreManager {
         IgnoredError.ignoredURLErrors.all = Array(current)
     }
     
+    public static func addIgnoredURLError (_ description: String) {
+        var current = Set(IgnoredError.ignoredURLErrors.all)
+        current.insert(description)
+        IgnoredError.ignoredURLErrors.all = Array(current)
+    }
+    
     public static func isURLErrorIgnored (_ error: Error) -> Bool {
         return IgnoredError.ignoredURLErrors.all.contains(error.localizedDescription)
     }
