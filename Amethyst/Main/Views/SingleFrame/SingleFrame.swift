@@ -8,104 +8,122 @@
 import SwiftUI
 import WebKit
 
-extension SingleFrame: View {
+struct SingleFrame: View {
+    @Environment(AppViewModel.self) var appViewModel
+    @StateObject var webViewModel: MiniWebViewModel
+    @Binding var url: URL?
+    @State var showWindowSelection: Bool = false
+    
+    init(appViewModel: AppViewModel, url: Binding<URL?>) {
+        //webViewModel.load(urlString: url.wrappedValue?.absoluteString ?? (SearchEngine(rawValue: UDKey.searchEngine.intValue) ?? .duckduckgo).root)
+        self._webViewModel = StateObject(wrappedValue: MiniWebViewModel(appViewModel: appViewModel))
+        self._url = url
+    }
     var body: some View {
         BackgroundView {
             VStack(spacing: 0) {
                 HStack {
                     Spacer()
-                    Button{
-                        showWindowSelection.toggle()
-                    } label: {
-                        HStack(spacing: 0) {
-                            Text("Open in Tab ")
-                                .opacity(0.6)
-                                .bold()
-                            (Text(Image(systemName: "command")) + Text("T"))
-                                .opacity(0.6)
-                                .bold()
-                                .padding(3)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 3)
-                                        .fill(.regularMaterial)
-                                }
-                        }
+                    Button { showWindowSelection.toggle() } label: {
+                        Text("Open in Window")
+                            .opacity(0.6)
+                            .bold()
+                            .padding(10)
+                            .background {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(.thinMaterial)
+                                    .background(.gray.opacity(0.2))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
                     }
-                    .keyboardShortcut("t", modifiers: [.command])
-                        .buttonStyle(.plain)
-                        .padding(10)
-                        .background {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(.thinMaterial)
-                                .background(.gray.opacity(0.2))
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.top, 10)
+                    .keyboardShortcut(UDKey.moveSingleFrameToWindow.shortcut.key, modifiers: UDKey.moveSingleFrameToWindow.shortcut.modifier)
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .padding(.top, 10)
+                    .focusable(false)
                 }
-                ZStack {
-                    MiniWebView(viewModel: webViewModel)
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                        .padding(10)
-                }
+                MiniWebView(viewModel: webViewModel)
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                    .padding(10)
             }
         }
-        .onChange(of: webViewModel.currentURL) {
-            url = webViewModel.currentURL
-        }
+        .onChange(of: webViewModel.currentURL) { url = webViewModel.currentURL }
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $showWindowSelection) {
-                ZStack {
-                    HStack {
-                        ForEach(appViewModel.displayedWindows.filter({$0.hasPrefix("window")}).sorted(), id: \.self) { window in
-                            Button {
-                                handleWindowOpening(selected: window)
-                            } label: {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .fill(Color.myPurple.opacity(0.3))
-                                    .frame(width: 200, height: 200)
-                                    .overlay {
-                                        ZStack {
-                                            Text(window.description.replacingOccurrences(of: "window", with: ""))
-                                                .allowsHitTesting(false)
-                                        }
+            WindowSelection(showWindowSelection: $showWindowSelection, webViewModel: webViewModel)
+        }
+        .onAppear {
+            let initialURLString = url?.absoluteString ?? (SearchEngine(rawValue: UDKey.searchEngine.intValue) ?? .duckduckgo).root
+            webViewModel.load(urlString: initialURLString)
+        }
+    }
+    
+    private struct WindowSelection: View {
+        @Environment(AppViewModel.self) var appViewModel
+        @Environment(\.dismissWindow) var dismissWindow
+        @Binding var showWindowSelection: Bool
+        let webViewModel: MiniWebViewModel
+        var body: some View {
+            ZStack {
+                HStack {
+                    ForEach(appViewModel.displayedWindows.filter({$0.hasPrefix("window")}).sorted(), id: \.self) { window in
+                        Button {
+                            handleWindowOpening(selected: window)
+                        } label: {
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(Color.myPurple.opacity(0.3))
+                                .frame(width: 200, height: 200)
+                                .overlay {
+                                        Text(window.description.replacingOccurrences(of: "window", with: ""))
+                                            .allowsHitTesting(false)
+                                }
+                                .onHover { hovering in
+                                    if hovering {
+                                        appViewModel.highlightedWindow = window
+                                    } else {
+                                        appViewModel.highlightedWindow = ""
                                     }
-                                    .onHover { hovering in
-                                        if hovering {
-                                            appViewModel.highlightedWindow = window
-                                        } else {
-                                            appViewModel.highlightedWindow = ""
-                                        }
-                                    }
-                                    .contentShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            .buttonStyle(.plain)
+                                }
+                                .contentShape(RoundedRectangle(cornerRadius: 5))
                         }
-                        if appViewModel.displayedWindows.count(where: {$0.hasPrefix("window")}) < 3 {
-                            Button {
-                                handleWindowOpening(selected: "newWindow")
-                            } label: {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .fill(Color.myPurple.opacity(0.3))
-                                    .frame(width: 200, height: 200)
-                                    .overlay {
-                                        ZStack {
-                                            Image(systemName: "plus")
-                                                .allowsHitTesting(false)
-                                        }
+                        .buttonStyle(.plain)
+                    }
+                    if appViewModel.displayedWindows.count(where: {$0.hasPrefix("window")}) < 3 {
+                        Button {
+                            handleWindowOpening(selected: "newWindow")
+                        } label: {
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(Color.myPurple.opacity(0.3))
+                                .frame(width: 200, height: 200)
+                                .overlay {
+                                    ZStack {
+                                        Image(systemName: "plus")
+                                            .allowsHitTesting(false)
                                     }
-                            }
-                            .buttonStyle(.plain)
+                                }
                         }
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding(10)
-                .background() {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(.thinMaterial)
-                        .background(.myPurple.opacity(0.2))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
+            }
+            .padding(10)
+            .background() {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(.thinMaterial)
+                    .background(.myPurple.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+        
+        func handleWindowOpening(selected: String) {
+            guard let open = appViewModel.openMiniInNewTab else { return }
+            let selected = selected != "newWindow" ? selected: ["window1", "window2", "window3"].first(where: {!appViewModel.displayedWindows.contains($0)}) ?? "window1"
+            open(webViewModel.currentURL, selected, true)
+            showWindowSelection = false
+            DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
+                dismissWindow()
+            }
+            
         }
     }
 }

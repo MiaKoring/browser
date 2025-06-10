@@ -32,6 +32,7 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case resetZoomShortcut
     case triggerPasswordsAuth
     case sidebarOrientation
+    case moveSingleFrameToWindow
 }
 
 extension UDKey {
@@ -92,6 +93,8 @@ extension UDKey {
             Shortcut(key: "u", modifier: .command)
         case .sidebarOrientation:
             Shortcut(key: "n", modifier: [.command, .shift])
+        case .moveSingleFrameToWindow:
+            Shortcut(key: "b", modifier: .command)
         default:
             Shortcut(key: " ", modifier: [])
         }
@@ -123,6 +126,7 @@ extension UDKey {
         case .resetZoomShortcut: "Reset Zoom"
         case .triggerPasswordsAuth: "Authenticate yourself"
         case .sidebarOrientation: "Move your tabs left or right"
+        case .moveSingleFrameToWindow: "Move a single-tab window to a full browser window"
         default: ""
         }
     }
