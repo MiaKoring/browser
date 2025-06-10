@@ -12,7 +12,8 @@ struct KeyBindsRow: View {
     @State var text = ""
     @FocusState var textFieldFocused
     @State var redForeground: Bool = false
-    @Binding var triggerEvaluation: Bool
+    @Binding var triggerRecompute: Bool
+    
     var body: some View {
         HStack {
             Text(keybind.shortcutName)
@@ -25,33 +26,40 @@ struct KeyBindsRow: View {
                 .focused($textFieldFocused)
                 .foregroundStyle(redForeground ? .red: .primary)
         }
-        .onAppear() {
-            text = "\(keybind.shortcut.modifier.contains(.command) ? "⌘": "")\(keybind.shortcut.modifier.contains(.shift) ? "⇧": "")\(keybind.shortcut.modifier.contains(.option) ? "⌥": "")\(keybind.shortcut.modifier.contains(.control) ? "⌃": "")\("\(keybind.shortcut.key.character)".uppercased())"
-            redForeground = KeybindsGroup.allCases.contains(where: { group in
-                group.children.contains(where: {$0.shortcut == keybind.shortcut && $0.rawValue != keybind.rawValue})
-            })
-        }
-        .onChange(of: textFieldFocused) {
-            if !textFieldFocused {
-                if let key = text.last {
-                    var eventModifiers: EventModifiers = []
-                    for modifier in text.dropLast() {
-                        eventModifiers.insert(EventModifiers(stringRepresentation: String(modifier)))
-                    }
-                    let shortcut = Shortcut(key: KeyEquivalent(key), modifier: eventModifiers)
-                    redForeground = KeybindsGroup.allCases.contains(where: { group in
-                        group.children.contains(where: {$0.shortcut == shortcut && $0.rawValue != keybind.rawValue})
-                    })
-                    keybind.shortcut = shortcut
-                }
-                triggerEvaluation.toggle()
+        .onAppear(perform: mapModifierToSymbol)
+        .onLoseFocus(textFieldFocused, onTextFieldLoseFocus)
+        .onChange(of: triggerRecompute, evalRedHighlight)
+    }
+    private func appear() {
+        text = ""
+        redForeground = KeybindsGroup.allCases.contains(where: { group in
+            group.children.contains(where: { $0.shortcut == keybind.shortcut && $0.rawValue != keybind.rawValue})
+        })
+    }
+    
+    private func onTextFieldLoseFocus() {
+        if let key = text.last {
+            var eventModifiers: EventModifiers = []
+            for modifier in text.dropLast() {
+                eventModifiers.insert(EventModifiers(stringRepresentation: String(modifier)))
             }
-        }
-        .onChange(of: triggerEvaluation) {
+            let shortcut = Shortcut(key: KeyEquivalent(key), modifier: eventModifiers)
             redForeground = KeybindsGroup.allCases.contains(where: { group in
-                group.children.contains(where: {$0.shortcut == keybind.shortcut && $0.rawValue != keybind.rawValue})
+                group.children.contains(where: {$0.shortcut == shortcut && $0.rawValue != keybind.rawValue})
             })
+            keybind.shortcut = shortcut
         }
+        triggerRecompute.toggle()
+    }
+    
+    private func evalRedHighlight() {
+        redForeground = KeybindsGroup.allCases.contains(where: { group in
+            group.children.contains(where: {$0.shortcut == keybind.shortcut && $0.rawValue != keybind.rawValue})
+        })
+    }
+    
+    private func mapModifierToSymbol() {
+        text = "\(keybind.shortcut.modifier.contains(.command) ? "⌘": "")\(keybind.shortcut.modifier.contains(.shift) ? "⇧": "")\(keybind.shortcut.modifier.contains(.option) ? "⌥": "")\(keybind.shortcut.modifier.contains(.control) ? "⌃": "")\("\(keybind.shortcut.key.character)".uppercased())"
     }
 }
 

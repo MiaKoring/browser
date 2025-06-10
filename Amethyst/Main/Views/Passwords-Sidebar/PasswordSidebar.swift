@@ -53,9 +53,7 @@ struct PasswordSidebar: View {
                 currentIdentifier = nil
             }
         }
-        
     }
-    
     
     func prepareCreationSheet() {
         guard let tabID = contentViewModel.currentTab, let tab = contentViewModel.tabs.first(where: {$0.id == tabID }), let currentURL = tab.webViewModel.currentURL else {

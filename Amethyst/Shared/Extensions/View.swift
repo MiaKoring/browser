@@ -56,4 +56,20 @@ extension View {
             .padding(.leading, isFixed ? 5: 0)
             .padding(.top, isFixed ? 5: 0)
     }
+    
+    func onLoseFocus(_ state: Bool, _ execute: @escaping () -> Void) -> some View {
+        self.onChange(of: state) {
+            if !state {
+                execute()
+            }
+        }
+    }
+    
+    func onGetFocus(_ state: Bool, _ execute: @escaping () -> Void) -> some View {
+        self.onChange(of: state) {
+            if state {
+                execute()
+            }
+        }
+    }
 }

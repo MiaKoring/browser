@@ -156,6 +156,6 @@ struct Shortcut: Codable, Equatable {
     }
     
     static func ==(lhs: Shortcut, rhs: Shortcut) -> Bool {
-        lhs.key.character == rhs.key.character && lhs.modifier == rhs.modifier
+        lhs.key.character == rhs.key.character && lhs.modifier.symmetricDifference(rhs.modifier).isEmpty
     }
 }

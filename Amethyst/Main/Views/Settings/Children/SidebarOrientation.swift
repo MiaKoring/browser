@@ -8,7 +8,7 @@ import SwiftUI
 
 
 struct SidebarOrientation: View {
-    @State var trailingTabs: Bool = UDKey.sidebarOrientation.boolValue
+    @AppStorage(UDKey.sidebarOrientation.rawValue) var trailingTabs: Bool = false
     var body: some View {
         HStack {
             VStack {
@@ -17,7 +17,6 @@ struct SidebarOrientation: View {
                     .scaledToFit()
                     .onTapGesture {
                         trailingTabs = false
-                        UDKey.sidebarOrientation.boolValue = false
                     }
                     .if(!trailingTabs) { view in
                         view.shadow(color: .purple, radius: 20, y: 25)
@@ -29,7 +28,6 @@ struct SidebarOrientation: View {
                     .scaledToFit()
                     .onTapGesture {
                         trailingTabs = true
-                        UDKey.sidebarOrientation.boolValue = true
                     }
                     .if(trailingTabs) { view in
                         view.shadow(color: .purple, radius: 20, y: 25)

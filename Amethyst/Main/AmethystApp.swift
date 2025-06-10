@@ -168,9 +168,19 @@ struct AmethystApp: App {
                 }
             }
         Settings {
-            SettingsView()
-                .frame(width: 900, height: 500)
-                .environment(appViewModel)
+            ZStack {
+                HostingWindowFinder(callback: { window in
+                    if let window {
+                        if let id = window.identifier {
+                            self.appViewModel.currentlyActiveWindowId = id.rawValue
+                            self.appViewModel.displayedWindows.insert(id.rawValue)
+                        }
+                    }
+                })
+                SettingsView()
+                    .frame(width: 900, height: 500)
+                    .environment(appViewModel)
+            }
         }
     }
 }

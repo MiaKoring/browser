@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct KeyBindsView: View {
-    @State var triggerEvaluation: Bool = false
+    @State var triggerRecompute: Bool = false
     var body: some View {
         List(KeybindsGroup.allCases, id: \.self) { group in
             Section(group.rawValue) {
                 ForEach(group.children, id: \.self) { keybind in
-                    KeyBindsRow(keybind: keybind, triggerEvaluation: $triggerEvaluation)
+                    KeyBindsRow(keybind: keybind, triggerRecompute: $triggerRecompute)
                 }
             }
         }
