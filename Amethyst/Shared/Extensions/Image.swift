@@ -40,4 +40,12 @@ extension Image {
                     .scaledToFit()
             }
     }
+    
+    func setupImageStyle() -> some View {
+        self
+            .resizable()
+            .scaledToFit()
+            .shadow(color: .myPurple, radius: 10)
+            .padding(.horizontal, 30)
+    }
 }

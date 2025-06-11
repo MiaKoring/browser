@@ -25,12 +25,13 @@ extension SidebarOrientations {
     
     func passwordsTopRow(sortData: Binding<PasswordSortData>, prepareCreationSheet: @escaping () -> Void) -> some View {
         return PasswordTopRow(sidebarOrientation: self, sortData: sortData, prepareCreationSheet: prepareCreationSheet)
+        
         struct PasswordTopRow: View {
             @Environment(ContentViewModel.self) var contentViewModel
+            @Environment(\.colorScheme) var appearance
             let sidebarOrientation: SidebarOrientations
             @Binding var sortData: PasswordSortData
             @State var isPlusHovered: Bool = false
-            @Environment(\.colorScheme) var appearance
             var prepareCreationSheet: () -> Void
             @State var isSidebarButtonHovered = false
             
@@ -66,6 +67,7 @@ extension SidebarOrientations {
     
     func tabTopRow() -> some View {
         return TabsTopRow(sidebarOrientation: self)
+        
         struct TabsTopRow: View {
             @Environment(\.colorScheme) var appearance
             @Environment(ContentViewModel.self) var contentViewModel
@@ -74,6 +76,7 @@ extension SidebarOrientations {
             @State var isReloadHovered = false
             @State var isSidebarButtonHovered = false
             var sidebarOrientation: SidebarOrientations
+            
             var body: some View {
                 HStack {
                     if sidebarOrientation == .tabsLeading {
