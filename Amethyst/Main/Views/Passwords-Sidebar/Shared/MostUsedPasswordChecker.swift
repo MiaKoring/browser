@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import os.log
+import OSLog
 
 class PasswordChecker {
     private static let logger = Logger(subsystem: AmethystApp.subSystem, category: "PasswordChecker")

@@ -7,16 +7,18 @@
 
 import Foundation
 import CoreData
+import OSLog
 
-class CDTabController: ObservableObject {
+class CDTabController {
     public static var shared = CDTabController(name: "Tabs")
     var container: NSPersistentContainer
+    private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "CDTabController")
     
-    init(name: String) {
+    private init(name: String) {
         container = NSPersistentContainer(name: name)
         container.loadPersistentStores { _, error in
             if let error {
-                print("Error initializing CoreData: \(error.localizedDescription)")
+                Self.logger.error("Error initializing CoreData: \(error.localizedDescription)")
             }
         }
     }
@@ -26,28 +28,40 @@ class CDTabController: ObservableObject {
         do {
             return try container.viewContext.fetch(request)
         } catch {
-            print("Error while fetching all SavedTabs: \(error.localizedDescription)")
+            Self.logger.error("Error while fetching all SavedTabs: \(error.localizedDescription)")
         }
         return []
     }
     
+    //only in background, doesn't need view updates
     func clearEntity() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SavedTab")
-        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        do {
-            try container.viewContext.execute(batchDeleteRequest)
-            save()
-        } catch {
-            print("An error occured while emptying SavedTabs: \(error.localizedDescription)")
+        container.performBackgroundTask { context in
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SavedTab")
+            let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            
+            do {
+                let result = try context.execute(batchDeleteRequest) as? NSBatchDeleteResult
+                
+                if let objectIDs = result?.result as? [NSManagedObjectID] {
+                    let changes = [NSDeletedObjectsKey: objectIDs]
+                    NSManagedObjectContext.mergeChanges(
+                        fromRemoteContextSave: changes,
+                        into: [self.container.viewContext]
+                    )
+                }
+            } catch {
+                Self.logger.error("An error occured while emptying SavedTabs: \(error.localizedDescription)")
+            }
         }
     }
     
     func printKnownEntities() {
-        print("Known Entities: \(container.managedObjectModel.entities.compactMap(\.name))")
+        Self.logger.info("Known Entities: \(self.container.managedObjectModel.entities.compactMap(\.name))")
     }
     
     func insertSavedTab(_ tab: SavedTab) {
         container.viewContext.insert(tab)
+        save()
     }
     
     func save() {
@@ -55,7 +69,7 @@ class CDTabController: ObservableObject {
             do {
                 try container.viewContext.save()
             } catch {
-                print("Error saving CoreData: \(error.localizedDescription)")
+                Self.logger.error("Error saving CoreData: \(error.localizedDescription)")
             }
         }
     }
@@ -66,7 +80,7 @@ class CDTabController: ObservableObject {
         do {
             return try container.viewContext.count(for: request)
         } catch {
-            print("Error while fetching count with Predicate")
+            Self.logger.error("Error while fetching count with Predicate: \(error.localizedDescription)")
         }
         return 0
     }
