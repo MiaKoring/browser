@@ -68,7 +68,9 @@ struct ContentView {
     
     
     func onAppear() {
+        #if DEBUG
         CDTabController.shared.printKnownEntities()
+        #endif
         NotificationCenter.default.addObserver(
             forName: NSWindow.didBecomeMainNotification,
             object: nil,
@@ -82,14 +84,9 @@ struct ContentView {
                 appViewModel.displayedWindows.insert(name)
             }
         }
-        #if DEBUG
-        #else
+        #if !DEBUG
         showSetup = appViewModel.showSetup
         #endif
-        if contentViewModel.tabs.isEmpty {
-            contentViewModel.isSidebarShown = true
-        }
-        
         if contentViewModel.tabs.isEmpty {
             let savedTabs = CDTabController.fetchAll().filter({
                 $0.windowID == contentViewModel.id
@@ -106,6 +103,7 @@ struct ContentView {
                 let newTab = ATab(id: id, webViewModel: vm)
                 contentViewModel.tabs.append(newTab)
             }
+            contentViewModel.isSidebarShown = true
         }
     }
 
