@@ -59,8 +59,6 @@ struct ContentView {
     @Environment(\.dismissWindow) var dismissWindow
     @State var showInputBar: Bool = false
     @State var inputBarText: String = ""
-    @State var leadingWidth: CGFloat = 308
-    @State var trailingWidth: CGFloat = 308
     @State var showMacosWindowIconsAreaHovered: Bool = false
     @State var macosWindowIconsHovered: Bool = false
     @State var window: NSWindow? = nil

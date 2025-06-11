@@ -21,31 +21,7 @@ extension AmethystApp {
             print(error)
         }
         
-        appViewModel.openMiniInNewTab = { url, id, newTab in
-            let vm = WebViewModel(processPool: contentViewModel.wkProcessPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
-            vm.load(urlString: url?.absoluteString ?? "")
-            let tab = ATab(webViewModel: vm)
-            switch id {
-            case "window1":
-                contentViewModel.tabs.append(tab)
-                if newTab {
-                    contentViewModel.currentTab = tab.id
-                }
-                openWindow(id: "window1")
-            case "window2":
-                contentViewModel2.tabs.append(tab)
-                if newTab {
-                    contentViewModel2.currentTab = tab.id
-                }
-                openWindow(id: "window2")
-            default:
-                contentViewModel3.tabs.append(tab)
-                if newTab {
-                    contentViewModel3.currentTab = tab.id
-                }
-                openWindow(id: "window3")
-            }
-        }
+        appViewModel.openMiniInNewTab = openMiniInWindow
         
         appViewModel.openWindowByID = { id in
             openWindow(id: id)
@@ -53,21 +29,6 @@ extension AmethystApp {
         
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             return handleAndPassCommand(event)
-        }
-    }
-    
-    
-    
-    func contentViewModel(for id: String) -> ContentViewModel? {
-        switch id {
-        case "window1":
-            contentViewModel
-        case "window2":
-            contentViewModel2
-        case "window3":
-            contentViewModel3
-        default:
-            nil
         }
     }
     
@@ -91,7 +52,9 @@ extension AmethystApp {
                 .environment(appViewModel)
                 .environment(viewModel)
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+                    #if DEBUG
                     print("registered")
+                    #endif
                     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                         return handleAndPassCommand(event)
                     }
@@ -110,6 +73,28 @@ extension AmethystApp {
             return nil
         }
         return event
+    }
+    
+    func openMiniInWindow(_ url: URL?, _ id: String, _ newTab: Bool) {
+        let vm = WebViewModel(processPool: contentViewModel.wkProcessPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
+        vm.load(urlString: url?.absoluteString ?? "")
+        let tab = ATab(webViewModel: vm)
+        switch id {
+        case "window1":
+            handle(id: id, contentViewModel: contentViewModel, newTab: newTab, tab: tab)
+        case "window2":
+            handle(id: id, contentViewModel: contentViewModel2, newTab: newTab, tab: tab)
+        default:
+            handle(id: id, contentViewModel: contentViewModel3, newTab: newTab, tab: tab)
+        }
+        
+        func handle(id: String, contentViewModel: ContentViewModel, newTab: Bool, tab: ATab) {
+            contentViewModel.tabs.append(tab)
+            if newTab {
+                contentViewModel.currentTab = tab.id
+            }
+            openWindow(id: id)
+        }
     }
 }
 

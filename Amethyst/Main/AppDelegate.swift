@@ -7,12 +7,14 @@
 import SwiftData
 import SwiftUI
 import WebKit
+import OSLog
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var appViewModel: AppViewModel?
     var contentViewModel: ContentViewModel?
     var contentViewModel2: ContentViewModel?
     var contentViewModel3: ContentViewModel?
+    private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "AppDelegate")
     
     func configure(appViewModel: AppViewModel, contentViewModel: ContentViewModel, contentViewModel2: ContentViewModel, contentViewModel3: ContentViewModel) {
         self.appViewModel = appViewModel
@@ -22,32 +24,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        print("Appviewmodel is nil: \(appViewModel == nil)")
-        if let appViewModel {
-            CDTabController.clear()
-            
-            if appViewModel.displayedWindows.contains("window1") {
-                if let contentViewModel {
-                    insertTo(valuesOf: contentViewModel, id: "window1")
-                }
+        guard let appViewModel else { return .terminateNow }
+        CDTabController.clear()
+        
+        if appViewModel.displayedWindows.contains("window1") {
+            if let contentViewModel {
+                insert(valuesOf: contentViewModel, id: "window1")
             }
-            if appViewModel.displayedWindows.contains("window2") {
-                if let contentViewModel2 {
-                    insertTo(valuesOf: contentViewModel2, id: "window2")
-                }
+        }
+        if appViewModel.displayedWindows.contains("window2") {
+            if let contentViewModel2 {
+                insert(valuesOf: contentViewModel2, id: "window2")
             }
-            if appViewModel.displayedWindows.contains("window3") {
-                if let contentViewModel3 {
-                    insertTo(valuesOf: contentViewModel3, id: "window3")
-                }
+        }
+        if appViewModel.displayedWindows.contains("window3") {
+            if let contentViewModel3 {
+                insert(valuesOf: contentViewModel3, id: "window3")
             }
-            print("presave")
-            print(CDTabController.shared.container.viewContext.hasChanges)
-            CDTabController.save()
-            print("postsave")
-            print(CDTabController.shared.container.viewContext.hasChanges)
         }
         
+        Self.logger.info("about to save tab changes")
+        Self.logger.info("Container has changes: \(CDTabController.shared.container.viewContext.hasChanges)")
+        CDTabController.save()
+        Self.logger.info("tabs saved")
+        Self.logger.info("Container has changes after saving: \(CDTabController.shared.container.viewContext.hasChanges)")
         return .terminateNow
     }
     
@@ -57,32 +57,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let window1Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window1"))
             let window2Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window2"))
             let window3Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window3"))
+            
             if let appViewModel = self.appViewModel, let open = appViewModel.openWindowByID {
-                if window1Count > 0 {
-                    open("window1")
-                }
-                if window2Count > 0 {
-                    open("window2")
-                }
-                if window3Count > 0 {
-                    open("window3")
-                }
+                if window1Count > 0 { open("window1") }
+                if window2Count > 0 { open("window2") }
+                if window3Count > 0 { open("window3") }
             }
         }
     }
+    
     func application(_ application: NSApplication, open urls: [URL]) {
-        print("urls opened")
         for url in urls {
             if let openWindow = appViewModel?.openWindow {
                 openWindow(url)
             } else {
-                print("failed")
+                Self.logger.error("failed to open url")
             }
         }
     }
     
-    
-    private func insertTo(valuesOf values: ContentViewModel, id: String) {
+    private func insert(valuesOf values: ContentViewModel, id: String) {
         for i in 0..<values.tabs.count {
             let tab = values.tabs[i]
             

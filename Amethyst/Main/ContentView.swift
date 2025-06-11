@@ -11,126 +11,32 @@ import WebKit
 
 
 extension ContentView: View, TabOpener {
-    
-    
     var body: some View {
         GeometryReader { reader in
             BackgroundView {
-                ZStack {
-                    HostingWindowFinder(callback: { window in
-                        if let window {
-                            if let id = window.identifier {
-                                self.appViewModel.currentlyActiveWindowId = id.rawValue
-                                self.appViewModel.displayedWindows.insert(id.rawValue)
-                                self.window = window
-                            }
-                        }
-                    })
-                    if appViewModel.highlightedWindow == contentViewModel.id {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(lineWidth: 5)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                HostingWindowFinder(callback: { window in
+                    if let window, let id = window.identifier {
+                        self.appViewModel.currentlyActiveWindowId = id.rawValue
+                        self.appViewModel.displayedWindows.insert(id.rawValue)
+                        self.window = window
                     }
-                    VStack {
-                        HStack {
-                            Rectangle()
-                                .fill(.clear)
-                                .frame(width: 20, height: 20)
-                                .contentShape(Rectangle())
-                                .onHover { hovering in
-                                    showMacosWindowIconsAreaHovered = hovering
-                                }
-                            Spacer()
+                })
+                WindowHighlighter()
+                MacosButtonHoverArea(showMacosWindowIconsAreaHovered: $showMacosWindowIconsAreaHovered)
+                HStack(spacing: 0) {
+                    FixedSidebar(edge: .leading)
+                    ZStack {
+                        ForEach(contentViewModel.tabs, id: \.self) { tab in
+                            WebView(tabID: tab.id, webViewModel: tab.webViewModel)
                         }
-                        Spacer()
+                        InlineSearch()
                     }
-                    HStack(spacing: 0) {
-                        if contentViewModel.sidebarOrientation.isLeadingSidebarFixed(contentViewModel: contentViewModel) {
-                            HStack {
-                                contentViewModel.sidebarOrientation.leadingSidebar()
-                                    .frame(maxWidth: leadingWidth)
-                                    .overlay(alignment: .trailing) {
-                                        SidebarResizer(sidebarWidth: $leadingWidth)
-                                    }
-                                if contentViewModel.tabs.isEmpty {
-                                    Spacer()
-                                }
-                            }
-                        }
-                        ZStack {
-                            ForEach(contentViewModel.tabs, id: \.self) { tab in
-                                WebView(tabID: tab.id, webViewModel: tab.webViewModel)
-                            }
-                        }
-                        if contentViewModel.sidebarOrientation.isTrailingSidebarFixed(contentViewModel: contentViewModel) {
-                            HStack {
-                                if contentViewModel.tabs.isEmpty {
-                                    Spacer()
-                                }
-                                contentViewModel.sidebarOrientation.trailingSidebar()
-                                    .frame(maxWidth: trailingWidth)
-                                    .overlay(alignment: .leading) {
-                                        SidebarResizer(sidebarWidth: $trailingWidth, trailing: true)
-                                    }
-                            }
-                        }
-                    }
-                    if contentViewModel.showInlineSearch, let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
-                        VStack {
-                            HStack {
-                                Spacer()
-                                DocumentSearchView(webViewModel: tab.webViewModel, text: contentViewModel.lastInlineQuery)
-                                    .environmentObject(contentViewModel)
-                                    .frame(maxWidth: 270)
-                                    .padding(30)
-                            }
-                            Spacer()
-                        }
-                    }
-                    HStack {
-                        if contentViewModel.sidebarOrientation.isLeadingSidebarShown(contentViewModel: contentViewModel) {
-                            contentViewModel.sidebarOrientation.leadingSidebar()
-                                .transition(.move(edge: .leading))
-                        }
-                        Spacer()
-                        if contentViewModel.sidebarOrientation.isTrailingSidebarShown(contentViewModel: contentViewModel) {
-                            contentViewModel.sidebarOrientation.trailingSidebar()
-                                .transition(.move(edge: .trailing))
-                        }
-                    }
-                    if (showMacosWindowIconsAreaHovered || macosWindowIconsHovered) && !contentViewModel.sidebarOrientation.isLeadingSidebarShown(contentViewModel: contentViewModel) {
-                        
-                        VStack {
-                            HStack {
-                                MacOSButtons()
-                                    .padding(10)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(.regularMaterial)
-                                            .background(Color.myPurple.opacity(0.2))
-                                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    }
-                                    .onHover { hovering in
-                                        macosWindowIconsHovered = hovering
-                                    }
-                                Spacer()
-                            }
-                            Spacer()
-                        }
-                    }
+                    FixedSidebar(edge: .trailing)
                 }
-            }
-            .onChange(of: contentViewModel.triggerNewTab) {
-                showInputBar = true
-            }
-            .onChange(of: contentViewModel.tabs) {
-                if contentViewModel.tabs.isEmpty {
-                    contentViewModel.isSidebarShown = true
+                FloatingSidebars()
+                if (showMacosWindowIconsAreaHovered || macosWindowIconsHovered) && !contentViewModel.sidebarOrientation.isLeadingSidebarShown(contentViewModel: contentViewModel) {
+                    MacOSWindowButtonsOverlay(macosWindowIconsHovered: $macosWindowIconsHovered)
                 }
-            }
-            .onAppear() {
-                onAppear()
             }
             .sheet(isPresented: $showInputBar) {
                 InputBar(text: $inputBarText, showInputBar: $showInputBar) { text in
@@ -140,50 +46,198 @@ extension ContentView: View, TabOpener {
                 }
                 .frame(maxWidth: max(550, min(reader.size.width / 2, 800)))
             }
-            .onChange(of: contentViewModel.currentTab) {
-                if contentViewModel.currentTab != nil {
-                    contentViewModel.isLoaded = true
-                }
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .onAppear(perform: onAppear)
+            .onDisappear {
+                NotificationCenter.default.removeObserver(
+                    self,
+                    name: NSWindow.didBecomeMainNotification,
+                    object: nil
+                )
             }
-            .onChange(of: contentViewModel.showHistory) {
-                showHistory = contentViewModel.showHistory
+            .onChange(of: contentViewModel.triggerNewTab) { showInputBar = true }
+            .onChange(of: contentViewModel.tabs) { if contentViewModel.tabs.isEmpty { contentViewModel.isSidebarShown = true } }
+            .onChange(of: contentViewModel.currentTab) { if contentViewModel.currentTab != nil { contentViewModel.isLoaded = true } }
+            .onChange(of: contentViewModel.showHistory) { showHistory = contentViewModel.showHistory }
+            .onChange(of: appViewModel.showSetup) { showSetup = appViewModel.showSetup }
+            .sheet(isPresented: $showHistory) { contentViewModel.showHistory = false } content: {
+                HistoryView()
+                    .frame(width: 400, height: 500)
             }
-            .onChange(of: appViewModel.showSetup) {
-                showSetup = appViewModel.showSetup
+            .sheet(isPresented: $showSetup) { appViewModel.showSetup = false } content: {
+                Setup()
+                    .frame(width: 700, height: 400)
+                    .interactiveDismissDisabled()
             }
         }
-        .onDisappear {
-            NotificationCenter.default.removeObserver(
-                self,
-                name: NSWindow.didBecomeMainNotification,
-                object: nil
-            )
-        }
-        .environment(contentViewModel)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .sheet(isPresented: $showHistory) {
-            contentViewModel.showHistory = false
-        } content: {
-            HistoryView()
-                .frame(width: 400, height: 500)
-        }
-        .sheet(isPresented: $showSetup) {
-            appViewModel.showSetup = false
-        } content: {
-            Setup()
-                .frame(width: 700, height: 400)
-                .interactiveDismissDisabled()
-        }
+        #if DEBUG
         .onChange(of: appViewModel.currentlyActiveWindowId) {
             print(appViewModel.currentlyActiveWindowId)
+        }
+        #endif
+    }
+    
+    private struct MacOSWindowButtonsOverlay: View {
+        @Binding var macosWindowIconsHovered: Bool
+        var body: some View {
+            VStack {
+                HStack {
+                    MacOSButtons()
+                        .padding(10)
+                        .background {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(.regularMaterial)
+                                .background(Color.myPurple.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                        .onHover { hovering in
+                            macosWindowIconsHovered = hovering
+                        }
+                    Spacer()
+                }
+                Spacer()
+            }
+        }
+    }
+    
+    private struct FixedSidebar: View {
+        @Environment(ContentViewModel.self) private var contentViewModel
+        @State private var width: CGFloat = 308
+        let edge: HorizontalEdge
+
+        private var isVisible: Bool {
+            switch edge {
+            case .leading:
+                return contentViewModel.sidebarOrientation.isLeadingSidebarFixed(
+                    contentViewModel: contentViewModel
+                )
+            case .trailing:
+                return contentViewModel.sidebarOrientation.isTrailingSidebarFixed(
+                    contentViewModel: contentViewModel
+                )
+            }
+        }
+
+        // Provides the correct sidebar content view based on the edge.
+        @ViewBuilder
+        private var sidebarContent: some View {
+            switch edge {
+            case .leading:
+                contentViewModel.sidebarOrientation.leadingSidebar()
+            case .trailing:
+                contentViewModel.sidebarOrientation.trailingSidebar()
+            }
+        }
+
+        // Determines the alignment for the resizer overlay.
+        private var resizerAlignment: Alignment {
+            switch edge {
+            case .leading:
+                .trailing
+            case .trailing:
+                .leading
+            }
+        }
+
+
+        var body: some View {
+            // Only render the view if the sidebar should be fixed/visible.
+            if isVisible {
+                HStack(spacing: 0) {
+                    // If it's a trailing sidebar and there are no tabs,
+                    // add a spacer to push it to the right.
+                    if edge == .trailing && contentViewModel.tabs.isEmpty {
+                        Spacer()
+                    }
+
+                    // The main sidebar content.
+                    sidebarContent
+                        .frame(maxWidth: width)
+                        .overlay(alignment: resizerAlignment) {
+                            SidebarResizer(
+                                sidebarWidth: $width,
+                                trailing: edge == .trailing
+                            )
+                        }
+
+                    // If it's a leading sidebar and there are no tabs,
+                    // add a spacer to push the main content away.
+                    if edge == .leading && contentViewModel.tabs.isEmpty {
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+    
+    private struct FloatingSidebars: View {
+        @Environment(ContentViewModel.self) var contentViewModel
+        var body: some View {
+            HStack {
+                if contentViewModel.sidebarOrientation.isLeadingSidebarShown(contentViewModel: contentViewModel) {
+                    contentViewModel.sidebarOrientation.leadingSidebar()
+                        .transition(.move(edge: .leading))
+                }
+                Spacer()
+                if contentViewModel.sidebarOrientation.isTrailingSidebarShown(contentViewModel: contentViewModel) {
+                    contentViewModel.sidebarOrientation.trailingSidebar()
+                        .transition(.move(edge: .trailing))
+                }
+            }
+        }
+        
+    }
+    
+    private struct InlineSearch: View {
+        @Environment(ContentViewModel.self) var contentViewModel
+        var body: some View {
+            if contentViewModel.showInlineSearch, let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
+                VStack {
+                    HStack {
+                        Spacer()
+                        DocumentSearchView(webViewModel: tab.webViewModel, text: contentViewModel.lastInlineQuery)
+                            .environmentObject(contentViewModel)
+                            .frame(maxWidth: 270)
+                            .padding(30)
+                    }
+                    Spacer()
+                }
+            }
+        }
+    }
+    
+    private struct WindowHighlighter: View {
+        @Environment(AppViewModel.self) var appViewModel
+        @Environment(ContentViewModel.self) var contentViewModel
+        var body: some View {
+            if appViewModel.highlightedWindow == contentViewModel.id {
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(lineWidth: 5)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+    }
+    
+    private struct MacosButtonHoverArea: View {
+        @Binding var showMacosWindowIconsAreaHovered: Bool
+        var body: some View {
+            VStack {
+                HStack {
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(width: 20, height: 20)
+                        .contentShape(Rectangle())
+                        .onHover { hovering in
+                            showMacosWindowIconsAreaHovered = hovering
+                        }
+                    Spacer()
+                }
+                Spacer()
+            }
         }
     }
     
 }
 
-
-#Preview {
-    ContentView()
-        .environment(AppViewModel())
-}
 

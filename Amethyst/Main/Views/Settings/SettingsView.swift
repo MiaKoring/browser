@@ -9,32 +9,43 @@ import SwiftUI
 import AppKit
 
 struct SettingsView: View {
+    @Environment(AppViewModel.self) var appViewModel
     var body: some View {
-        TabView {
-            Tab {
-                KeyBindsView()
-            } label: {
-                Label("Key Bindings", systemImage: "keyboard")
-            }
-            Tab {
-                SearchEngineSelectionView()
-            } label: {
-                Label("Search Engine", systemImage: "globe")
-            }
-            Tab {
-                SearchSuggestion()
-            } label: {
-                Label("Search Suggestions", systemImage: "sparkle.magnifyingglass")
-            }
-            Tab {
-                SidebarOrientation()
-            } label: {
-                Label("SidebarOrientation", systemImage: "sidebar.left")
-            }
-            Tab {
-                IgnoredErrorsView()
-            } label: {
-                Label("Ignored Errors", systemImage: "exclamationmark.octagon")
+        ZStack {
+            HostingWindowFinder(callback: { window in
+                if let window {
+                    if let id = window.identifier {
+                        self.appViewModel.currentlyActiveWindowId = id.rawValue
+                        self.appViewModel.displayedWindows.insert(id.rawValue)
+                    }
+                }
+            })
+            TabView {
+                Tab {
+                    KeyBindsView()
+                } label: {
+                    Label("Key Bindings", systemImage: "keyboard")
+                }
+                Tab {
+                    SearchEngineSelectionView()
+                } label: {
+                    Label("Search Engine", systemImage: "globe")
+                }
+                Tab {
+                    SearchSuggestion()
+                } label: {
+                    Label("Search Suggestions", systemImage: "sparkle.magnifyingglass")
+                }
+                Tab {
+                    SidebarOrientation()
+                } label: {
+                    Label("SidebarOrientation", systemImage: "sidebar.left")
+                }
+                Tab {
+                    IgnoredErrorsView()
+                } label: {
+                    Label("Ignored Errors", systemImage: "exclamationmark.octagon")
+                }
             }
         }
     }
