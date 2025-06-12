@@ -65,7 +65,7 @@ extension KeybindsGroup {
     @ViewBuilder func commands(appViewModel: AppViewModel, contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel), openWindow: OpenWindowAction) -> some View {
         ForEach(self.children, id: \.hashValue) { child in
             Button(child.menuButtonName) {
-                child.execute(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                _ = child.execute(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
             }
             .keyboardShortcut(child.keyboardShortcut)
         }
