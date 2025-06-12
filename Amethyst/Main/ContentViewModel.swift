@@ -8,6 +8,7 @@ import SwiftUI
 import SwiftData
 import WebKit
 import AuthenticationServices
+import OSLog
 
 @Observable
 class ContentViewModel: NSObject, ObservableObject {
@@ -54,6 +55,8 @@ class ContentViewModel: NSObject, ObservableObject {
     }
 }
 struct ContentView {
+    static let logger = Logger(subsystem: AmethystApp.subSystem, category: "ContentViewModel")
+    
     @Environment(AppViewModel.self) var appViewModel: AppViewModel
     @Environment(ContentViewModel.self) var contentViewModel: ContentViewModel
     @Environment(\.dismissWindow) var dismissWindow

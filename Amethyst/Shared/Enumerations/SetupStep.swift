@@ -60,7 +60,7 @@ extension SetupStep {
         case .setupAutomator1:
             SetupAutomator1()
         case .setupLoginItems:
-            
+            SetupLoginItems()
         case .checkMeiliRunning:
             CheckMeiliRunning()
         }
