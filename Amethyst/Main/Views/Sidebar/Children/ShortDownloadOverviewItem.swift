@@ -17,9 +17,9 @@ struct ShortDownloadOverviewItem: View {
         HStack {
             item.icon
                 .frame(maxWidth: 50, maxHeight: 50)
-                .if(item.progress != nil && item.info?.task.state == .running) { view in
+                .if(item.info?.progress != nil && item.info?.task.state == .running) { view in
                     view.overlay(alignment: .bottom) {
-                        ProgressView(value: item.progress?.value)
+                        ProgressView(value: item.info?.progress ?? 0.0)
                             .progressViewStyle(.linear)
                             .padding(.horizontal, 5)
                     }
@@ -28,7 +28,7 @@ struct ShortDownloadOverviewItem: View {
                 .lineLimit(1)
                 .foregroundStyle(item.info != nil ? item.info?.task.state == .running || item.info?.task.state == .completed ? .primary: Color.red: .primary)
             Spacer()
-            if item.progress != nil && item.info?.task.state == .running {
+            if item.info?.progress != nil && item.info?.task.state == .running {
                 Button {
                     guard let downloadManager = appViewModel.downloadManager, let task = item.info?.task
                     else {
@@ -51,7 +51,7 @@ struct ShortDownloadOverviewItem: View {
         .if(isHovered && appearance == .light) { view in view.background(.white.mix(with: .gray, by: 0.05)) }
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .contextMenu {
-            if item.progress == nil && item.info?.task.state == .completed {
+            if item.info?.progress == nil && item.info?.task.state == .completed {
                 Button("Show in Finder") {
                     if let url = item.url {
                         NSWorkspace.shared.activateFileViewerSelecting([url])

@@ -26,7 +26,7 @@ struct ShortDownloadOverview: View {
     
     func updateDisplayedItems() {
         let active = appViewModel.downloadManager?.activeDownloads.prefix(4).map { item in
-            DownloadItem(name: item.value.targetURL.lastPathComponent, dateCreated: Date.now.timeIntervalSinceReferenceDate, progress: item.value.progress, url: nil, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(item.value.targetURL.pathExtension) ?? .data)), info: item.value)
+            DownloadItem(name: item.value.targetURL.lastPathComponent, dateCreated: Date.now.timeIntervalSinceReferenceDate, url: nil, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(item.value.targetURL.pathExtension) ?? .data)), info: item.value)
         }
         var newest: [DownloadItem] = []
         
@@ -51,7 +51,7 @@ struct ShortDownloadOverview: View {
                 downloadsController.delete(item)
                 continue
             }
-            newest.append(DownloadItem(name: name, dateCreated: item.createdAt, progress: nil, url: url, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(typeIdentifier) ?? .data)), info: nil))
+            newest.append(DownloadItem(name: name, dateCreated: item.createdAt, url: url, icon: Image(nsImage: NSWorkspace.shared.icon(for: .init(typeIdentifier) ?? .data)), info: nil))
         }
         newest.sort(by: {
             if $0.dateCreated == $1.dateCreated {
