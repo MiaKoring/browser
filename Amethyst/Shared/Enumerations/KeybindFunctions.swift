@@ -133,12 +133,11 @@ extension Keybind {
     
     func closeCurrentTab(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
         guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+        
         withAnimation(.linear(duration: 0.2)) {
             guard let id = contentViewModel.currentTab else { return }
-            contentViewModel.tabs.first(where: {$0.id == id})?.webViewModel.deinitialize()
             
             contentViewModel.handleClose()
-            contentViewModel.tabs.removeAll(where: {$0.id == id})
         }
     }
     

@@ -51,38 +51,6 @@ extension WebViewModel {
         webView?.configuration.userContentController.addUserScript(userScript)
     }
     
-    func injectCustomWebAuthn() {
-        let jsString = """
-        window.customWebAuthn = {
-          request: async function (options) {
-            return new Promise((resolve, reject) => {
-              window.webkit.messageHandlers.webauthn.postMessage(options);
-              window.customWebAuthn.resolve = resolve;
-              window.customWebAuthn.reject = reject;
-            });
-          },
-          complete: function (data) {
-            window.customWebAuthn.resolve(data);
-          },
-          error: function (error) {
-            window.customWebAuthn.reject(error);
-          },
-        };
-
-        // WebAuthn Call überschreiben
-        navigator.credentials.create = function (options) {
-          return window.customWebAuthn.request(options);
-        };
-
-        navigator.credentials.get = function (options) {
-          return window.customWebAuthn.request(options);
-        };
-        """
-        
-        let webauthnScript = WKUserScript(source: jsString, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-        webView?.configuration.userContentController.addUserScript(webauthnScript)
-    }
-    
     func injectCSSGlobally() {
         let cssString = """
         .amethystHighlight {

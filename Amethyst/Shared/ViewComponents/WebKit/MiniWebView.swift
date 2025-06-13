@@ -9,7 +9,6 @@ import SwiftUI
 import WebKit
 
 struct MiniWebView: NSViewRepresentable {
-    
     @ObservedObject var viewModel: MiniWebViewModel
     
     func makeNSView(context: Context) -> WKWebView {

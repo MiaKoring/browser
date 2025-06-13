@@ -9,7 +9,6 @@ import WebKit
 extension WebViewModel: WKUIDelegate {
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if let customAction = (webView as? AWKWebView)?.contextualMenuAction {
-            print(customAction)
             switch customAction {
             case .openInNewTab:
                 return openInNewTab(configuration: configuration)
@@ -17,7 +16,6 @@ extension WebViewModel: WKUIDelegate {
                 let newWebViewModel = WebViewModel(config: configuration, processPool: self.processPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
                 let newTab = ATab(webViewModel: newWebViewModel)
                 contentViewModel.tabs.append(newTab)
-                print("openInBackground")
                 return newWebViewModel.webView
             case .openInNewWindow:
                 guard let url = navigationAction.request.url, let open = appViewModel.openWindow else { return nil }
@@ -31,7 +29,6 @@ extension WebViewModel: WKUIDelegate {
             appViewModel.downloadManager?.downloadFile(from: url, withName: nil)
             return nil
         } else {
-            print("was wird das jetzt? \(navigationAction.description)")
             return nil
         }
     }

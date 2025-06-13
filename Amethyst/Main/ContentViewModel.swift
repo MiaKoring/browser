@@ -42,11 +42,12 @@ class ContentViewModel: NSObject, ObservableObject {
         } else {
             currentTab = nil
         }
-        withAnimation(.linear(duration: 0.2)) {
-            Task {
-                await tabs[index].webViewModel.deinitialize()
+        
+        Task {
+            await tabs[index].webViewModel.cleanup()
+            withAnimation(.linear(duration: 0.2)) {
+                tabs.remove(at: index)
             }
-            tabs.remove(at: index)
         }
     }
     
@@ -56,11 +57,13 @@ class ContentViewModel: NSObject, ObservableObject {
     }
     
     func closeTab(id: UUID) {
-        tabs.first(where: {$0.id == id})?.webViewModel.deinitialize()
-        if currentTab == id {
-            handleClose()
+        Task {
+            await tabs.first(where: {$0.id == id})?.webViewModel.cleanup()
+            if currentTab == id {
+                handleClose()
+            }
+            tabs.removeAll(where: {$0.id == id})
         }
-        tabs.removeAll(where: {$0.id == id})
     }
     
     func changeToTab(id: UUID) {
