@@ -102,8 +102,14 @@ extension ContentView: View, TabOpener {
     
     private struct FixedSidebar: View {
         @Environment(ContentViewModel.self) private var contentViewModel
-        @State private var width: CGFloat = 308
+        @State private var width: CGFloat
         let edge: HorizontalEdge
+        
+        init(edge: HorizontalEdge) {
+            self.edge = edge
+            let storedWidth = edge == .trailing ? UDKey.trailingFixedSidebarWidth.doubleValue: UDKey.leadingFixedSidebarWidth.doubleValue
+            self.width = storedWidth > 0.0 ? storedWidth: 270
+        }
 
         private var isVisible: Bool {
             switch edge {

@@ -25,6 +25,11 @@ struct SidebarResizer: View {
                     }
                     .onEnded { _ in
                         NSCursor.arrow.set()
+                        if trailing {
+                            UDKey.trailingFixedSidebarWidth.doubleValue = sidebarWidth
+                        } else {
+                            UDKey.leadingFixedSidebarWidth.doubleValue = sidebarWidth
+                        }
                     }
             )
             .onHover { hovering in

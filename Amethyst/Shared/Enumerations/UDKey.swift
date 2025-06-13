@@ -12,4 +12,6 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case wasSetupOnce
     case lastAuthTime
     case sidebarOrientation
+    case leadingFixedSidebarWidth
+    case trailingFixedSidebarWidth
 }
