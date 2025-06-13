@@ -24,6 +24,16 @@ extension TabCase {
             "trash"
         }
     }
+    var tabName: String {
+        switch self {
+        case .passwords:
+            "Passwords"
+        case .oneTimeCodes:
+            "Codes"
+        case .trash:
+            "Deleted"
+        }
+    }
     
     @ViewBuilder func view(selectedAccount: Binding<Account?>) -> some View {
         switch self {

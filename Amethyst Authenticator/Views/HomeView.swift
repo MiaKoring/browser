@@ -27,7 +27,7 @@ struct HomeView: View {
                         tab.view(selectedAccount: $selectedAccount)
                     }
                 } label: {
-                    Image(systemName: tab.imageName)
+                    Label(tab.tabName, systemImage: tab.imageName)
                 }
             }
         }
