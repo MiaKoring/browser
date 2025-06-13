@@ -50,8 +50,25 @@ class ContentViewModel: NSObject, ObservableObject {
         }
     }
     
+    
     func tabFor(id: UUID?) -> ATab? {
         return tabs.first(where: {$0.id == id})
+    }
+    
+    func closeTab(id: UUID) {
+        tabs.first(where: {$0.id == id})?.webViewModel.deinitialize()
+        if currentTab == id {
+            handleClose()
+        }
+        tabs.removeAll(where: {$0.id == id})
+    }
+    
+    func changeToTab(id: UUID) {
+        if let currentTab = tabs.first(where: {$0.id == currentTab}) {
+            currentTab.webViewModel.removeHighlights()
+        }
+        showInlineSearch = false
+        currentTab = id
     }
 }
 struct ContentView {
