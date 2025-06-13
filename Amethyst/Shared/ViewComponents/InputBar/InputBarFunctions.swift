@@ -6,6 +6,7 @@
 //
 import Foundation
 import MeiliSearch
+import SwiftUI
 
 extension InputBar {
     func timerSuggestionFetch() async {

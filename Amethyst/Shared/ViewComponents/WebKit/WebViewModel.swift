@@ -234,15 +234,19 @@ class WebViewModel: NSObject, ObservableObject {
                     _ = try await index.addDocuments(documents: [new], primaryKey: "id")
                 }
             } catch let error as MeiliSearch.Error {
+                Self.logger.error("Error occured while appending Meili history: \(error.localizedDescription)")
                 if error.localizedDescription.contains("MeiliSearchApiError: Index `history` not found.") ||
-                    error.localizedDescription.contains("is not filterable. This index does not have configured filterable attributes."){
+                    error.localizedDescription.contains("is not filterable") ||
+                    error.localizedDescription.contains("is not searchable") {
                     do {
                         _ = try await meili.createIndex(uid: "history", primaryKey: "id")
                         _ = try await meili.index("history").updateSearchableAttributes(["url", "title"])
                         _ = try await meili.index("history").updateFilterableAttributes(["url", "title", "id", "lastSeen", "amount"])
                         _ = try await meili.index("history").updateSortableAttributes(["lastSeen", "amount"])
+                        let new = HistoryEntry(id: UUID(), title: self.title ?? "", url: url.absoluteString, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: 1)
+                        _ = try await index.addDocuments(documents: [new], primaryKey: "id")
                     } catch {
-                        Self.logger.error("Error occured while appending Meili history: \(error.localizedDescription)")
+                        Self.logger.error("Error occured while configuring Meili index: \(error.localizedDescription)")
                     }
                 }
             }
