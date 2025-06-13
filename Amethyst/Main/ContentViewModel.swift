@@ -106,7 +106,7 @@ struct ContentView {
                 let newTab = ATab(id: id, webViewModel: vm)
                 contentViewModel.tabs.append(newTab)
             }
-            contentViewModel.isSidebarShown = true
+            contentViewModel.isSidebarFixed = true
         }
     }
 

@@ -5,6 +5,7 @@
 //  Created by Mia Koring on 27.11.24.
 //
 import Foundation
+import SwiftUI
 
 enum SearchEngine: Int, CaseIterable {
     case duckduckgo
@@ -25,6 +26,19 @@ extension SearchEngine: Identifiable {
             "ecosiaLogo"
         case .startpage:
             "startpageLogo"
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .duckduckgo:
+            Image("ddgDuck")
+        case .google:
+            Image("googleIcon")
+        case .ecosia:
+            Image("ecosiaIcon")
+        case .startpage:
+            Image("spIcon")
         }
     }
     
