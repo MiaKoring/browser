@@ -42,13 +42,6 @@ class ContentViewModel: NSObject, ObservableObject {
         } else {
             currentTab = nil
         }
-        
-        Task {
-            await tabs[index].webViewModel.cleanup()
-            withAnimation(.linear(duration: 0.2)) {
-                tabs.remove(at: index)
-            }
-        }
     }
     
     

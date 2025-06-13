@@ -137,7 +137,7 @@ extension Keybind {
         withAnimation(.linear(duration: 0.2)) {
             guard let id = contentViewModel.currentTab else { return }
             
-            contentViewModel.handleClose()
+            contentViewModel.closeTab(id: id)
         }
     }
     

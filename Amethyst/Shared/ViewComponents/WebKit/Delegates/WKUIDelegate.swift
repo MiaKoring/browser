@@ -33,10 +33,6 @@ extension WebViewModel: WKUIDelegate {
         }
     }
     
-    func webViewDidClose(_ webView: WKWebView) {
-        contentViewModel.handleClose()
-    }
-    
     func webView(_ webView: WKWebView, runOpenPanelWith parameters: WKOpenPanelParameters, initiatedByFrame frame: WKFrameInfo) async -> [URL]? {
         let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = true
