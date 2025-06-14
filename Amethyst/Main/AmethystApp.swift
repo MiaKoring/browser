@@ -23,6 +23,8 @@ struct AmethystApp: App {
     var container: ModelContainer
     static var subSystem = "de.touchthegrass.Amethyst"
     
+    static var windowRound: CGFloat = { if #available(macOS 26.0, *) { 16 } else { 10 } }()
+    
     init() {
 #if DEBUG
         guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String, let groupDBURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "\(teamID)group.de.touchthegrass.AmethystAuthenticator.dev")?.appendingPathComponent("shared.sqlite") else {

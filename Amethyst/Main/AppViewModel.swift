@@ -21,7 +21,7 @@ class AppViewModel: NSObject, ObservableObject, NSWindowDelegate {
     var meili: MeiliSearch?
     var shouldSkipMeiliNotification: Bool = false
     var downloadManager: DownloadManager?
-    var useMacOS26Design = !UDKey.useMacOS26upDesign.boolValue
+    var useMacOS26Design = UDKey.useMacOS26upDesign.boolValue
     
     func windowDidBecomeKey(_ notification: Notification) {
         if let window = notification.object as? NSWindow {

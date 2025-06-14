@@ -33,7 +33,7 @@ struct WebView: View {
         }
         .opacity(tabID == contentViewModel.currentTab ? 1 : 0)
         .allowsHitTesting(tabID == contentViewModel.currentTab)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .clipShape(RoundedRectangle(cornerRadius: AmethystApp.windowRound / 2))
         .padding(10)
     }
     

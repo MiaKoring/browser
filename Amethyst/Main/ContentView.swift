@@ -23,7 +23,7 @@ extension ContentView: View, TabOpener {
                 })
                 WindowHighlighter()
                 MacosButtonHoverArea(showMacosWindowIconsAreaHovered: $showMacosWindowIconsAreaHovered)
-                HStack(spacing: 0) {
+                HStack(spacing: appViewModel.useMacOS26Design ? -10: 0) {
                     FixedSidebar(edge: .leading)
                     ZStack {
                         ForEach(contentViewModel.tabs, id: \.self) { tab in
@@ -88,7 +88,7 @@ extension ContentView: View, TabOpener {
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(.regularMaterial)
                                 .background(Color.myPurple.opacity(0.2))
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .clipShape(RoundedRectangle(cornerRadius: AmethystApp.windowRound))
                         }
                         .onHover { hovering in
                             macosWindowIconsHovered = hovering

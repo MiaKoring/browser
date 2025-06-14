@@ -32,6 +32,7 @@ struct SettingsView: View {
                         .toggleStyle(.switch)
                         .onChange(of: useMacos26upDesign) {
                             UDKey.useMacOS26upDesign.boolValue = useMacos26upDesign
+                            appViewModel.useMacOS26Design = useMacos26upDesign
                         }
                 } label: {
                     Label("Design", systemImage: "paintbrush.pointed")

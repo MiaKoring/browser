@@ -11,6 +11,7 @@ import AmethystAuthenticatorCore
 
 struct PasswordSidebar: View {
     @Environment(ContentViewModel.self) var contentViewModel
+    @Environment(AppViewModel.self) var appViewModel
     @Environment(\.colorScheme) var appearance
     @State var isSideBarButtonHovered: Bool = false
     @Environment(\.modelContext) var context
@@ -33,7 +34,7 @@ struct PasswordSidebar: View {
                     .environment(sortData)
             }
         }
-        .makeSidebar(isFixed: contentViewModel.isPasswordFixed, appearance: appearance)
+        .decideSidebarStyling(isFixed: contentViewModel.isPasswordFixed, appearance: appearance, useMacos26Desing: appViewModel.useMacOS26Design)
         .alert("An Error occured", isPresented: .constant(error != nil)) {
             Button("OK", role: .cancel) {
                 error = nil

@@ -6,16 +6,11 @@ struct ATabView: View {
     @Environment(AppViewModel.self) var appViewModel
     
     var body: some View {
-        VStack {
-            List {
-                ForEach(contentViewModel.tabs) { tab in
-                    TabButton(id: tab.id, tabVM: tab.webViewModel)
-                        .listRowSeparator(.hidden)
-                }
-            }
-            .scrollContentBackground(.hidden)
-            Spacer()
+        List(contentViewModel.tabs) { tab in
+            TabButton(id: tab.id, tabVM: tab.webViewModel)
+                .listRowSeparator(.hidden)
         }
+        .scrollContentBackground(.hidden)
         .frame(maxHeight: .infinity)
     }
     
@@ -26,32 +21,28 @@ struct ATabView: View {
         @State var isHovered: Bool = false
         @Environment(ContentViewModel.self) var contentViewModel
         var body: some View {
-            Button {
-                contentViewModel.changeToTab(id: id)
-            } label: {
-                TitleDisplay(tabVM: tabVM)
-                    .padding(10)
-                    .overlay {
-                        HStack(spacing: 0) {
-                            Spacer()
-                            MediaUsageIndicators(tabVM: tabVM)
-                                .padding(.trailing, 5)
-                            if isHovered {
-                                TabCloseButton(id: id)
-                            }
+            TitleDisplay(tabVM: tabVM)
+                .padding(10)
+                .overlay {
+                    HStack(spacing: 0) {
+                        Spacer()
+                        MediaUsageIndicators(tabVM: tabVM)
+                            .padding(.trailing, 5)
+                        if isHovered {
+                            TabCloseButton(id: id)
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .background() {
-                        ButtonBackground(id: id, isHovered: isHovered)
-                    }
-                    .onHover { hovering in
-                        withAnimation(.linear(duration: 0.07)) {
-                            isHovered = hovering
-                        }
-                    }
-            }
-            .buttonStyle(.plain)
+                }
+                .frame(maxWidth: .infinity)
+                .background() {
+                    ButtonBackground(id: id, isHovered: isHovered)
+                }
+                .onHover { hovering in
+                    isHovered = hovering
+                }
+                .onTapGesture {
+                    contentViewModel.changeToTab(id: id)
+                }
         }
         
         private struct MediaUsageIndicators: View {
@@ -134,18 +125,18 @@ struct ATabView: View {
             let id: UUID
             let isHovered: Bool
             var body: some View {
-                if contentViewModel.currentTab == id {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(appearance == .dark ? .mainColorMix.opacity(0.2): .white)
-                        .shadow(radius: appearance == .dark ? 0: 2)
-                } else {
-                    if isHovered {
+                ZStack {
+                    if contentViewModel.currentTab == id {
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(appearance == .dark ? .mainColorMix.opacity(0.1): .mainColorMix.opacity(0.02))
+                            .fill(appearance == .dark ? .mainColorMix.opacity(0.2): .white)
+                            .shadow(radius: appearance == .dark ? 0: 2)
                     } else {
-                        if appearance == .dark {
+                        if isHovered {
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(.thinMaterial)
+                                .fill(appearance == .dark ? .mainColorMix.opacity(0.1): .mainColorMix.opacity(0.02))
+                        } else {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(true: .thinMaterial, false: .thinMaterial, with: appearance == .dark)
                         }
                     }
                 }

@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct Sidebar: View {
+    @Environment(AppViewModel.self) var appViewModel
     @Environment(ContentViewModel.self) var contentViewModel
     @Environment(\.colorScheme) var appearance
     var body: some View {
@@ -31,7 +32,7 @@ struct Sidebar: View {
             FeedbackButton()
                 .placeBottomLeading()
         }
-        .makeSidebar(isFixed: contentViewModel.isSidebarFixed, appearance: appearance)
+        .decideSidebarStyling(isFixed: contentViewModel.isSidebarFixed, appearance: appearance, useMacos26Desing: appViewModel.useMacOS26Design)
     }
     
     struct ClearDivider: View {
@@ -69,7 +70,6 @@ struct Sidebar: View {
             }
             .buttonStyle(.plain)
             .onHover { hovering in isNewTabHovered = hovering }
-            
         }
     }
     

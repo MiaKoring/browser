@@ -52,9 +52,9 @@ extension AmethystApp {
                 .environment(appViewModel)
                 .environment(viewModel)
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
-                    #if DEBUG
+#if DEBUG
                     print("registered")
-                    #endif
+#endif
                     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                         return handleAndPassCommand(event)
                     }

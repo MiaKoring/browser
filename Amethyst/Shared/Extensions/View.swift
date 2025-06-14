@@ -30,24 +30,52 @@ extension View {
     }
     
     @ViewBuilder
-    func makeSidebar(isFixed: Bool, appearance: ColorScheme) -> some View {
+    func applyDesign<N, O>(for use26Design: Bool, new: @escaping (Self) -> N, old: @escaping (Self) -> O) -> some View where N: View, O: View {
+        if #available(macOS 26.0, *), use26Design {
+            new(self)
+        } else {
+            old(self)
+        }
+    }
+    
+    @ViewBuilder
+    private func makeSidebar(isFixed: Bool, appearance: ColorScheme) -> some View {
         self
             .frame(maxHeight: .infinity)
             .frame(maxWidth: isFixed ? .infinity: 300)
             .padding(5)
             .background {
                 HStack {
-                    RoundedRectangle(cornerRadius: 5)
+                    RoundedRectangle(cornerRadius: AmethystApp.windowRound / 2)
                         .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
                 }
                 .overlay {
-                    RoundedRectangle(cornerRadius: 5)
+                    RoundedRectangle(cornerRadius: AmethystApp.windowRound / 2)
                         .stroke(lineWidth: 1)
                         .fill(true: Color.gray, false: .ultraThickMaterial, with: appearance == .light)
                         .shadow(radius: 5)
                 }
             }
             .padding(isFixed ? 0: 8)
+    }
+    
+    @ViewBuilder @available(macOS 26.0, *)
+    private func makeSidebar26(isFixed: Bool) -> some View {
+        self
+        .frame(maxHeight: .infinity)
+        .frame(maxWidth: isFixed ? 400: 300)
+        .padding(5)
+        .glassEffect(in: RoundedRectangle(cornerRadius: AmethystApp.windowRound / 2))
+        .padding(isFixed ? 10: 8)
+    }
+    
+    @ViewBuilder
+    func decideSidebarStyling(isFixed: Bool, appearance: ColorScheme, useMacos26Desing: Bool) -> some View {
+        if #available(macOS 26.0, *), useMacos26Desing {
+            self.makeSidebar26(isFixed: isFixed)
+        } else {
+            self.makeSidebar(isFixed: isFixed, appearance: appearance)
+        }
     }
     
     @ViewBuilder
