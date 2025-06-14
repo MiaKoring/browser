@@ -10,6 +10,7 @@ import AppKit
 
 struct SettingsView: View {
     @Environment(AppViewModel.self) var appViewModel
+    @State var useMacos26upDesign = UDKey.useMacOS26upDesign.boolValue
     var body: some View {
         ZStack {
             HostingWindowFinder(callback: { window in
@@ -25,6 +26,15 @@ struct SettingsView: View {
                     KeyBindsView()
                 } label: {
                     Label("Key Bindings", systemImage: "keyboard")
+                }
+                Tab {
+                    Toggle("Use New Design", isOn: $useMacos26upDesign)
+                        .toggleStyle(.switch)
+                        .onChange(of: useMacos26upDesign) {
+                            UDKey.useMacOS26upDesign.boolValue = useMacos26upDesign
+                        }
+                } label: {
+                    Label("Design", systemImage: "paintbrush.pointed")
                 }
                 Tab {
                     SearchEngineSelectionView()
