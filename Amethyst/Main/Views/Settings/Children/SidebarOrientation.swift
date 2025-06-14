@@ -18,6 +18,7 @@ struct SidebarOrientation: View {
                         .scaledToFit()
                         .onTapGesture {
                             trailingTabs = orientation.isTabTrailing
+                            UDKey.sidebarOrientation.boolValue = orientation.isTabTrailing
                         }
                         .if(trailingTabs == orientation.isTabTrailing) { view in
                             view.shadow(color: .purple, radius: 20, y: 25)
