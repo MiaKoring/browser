@@ -22,16 +22,16 @@ struct PasswordList: View {
     var showTOTP = false
     @State var showAccountCreation: Bool = false
     
-    var body: some View {
-        TextField("Search", text: $searchText)
-            .textFieldStyle(.roundedBorder)
-            .padding(.horizontal, 10)
-        List(accounts
+    var displayedAccounts: [Account] {
+        accounts
             .filter({ account in
                 passesFilter(account)
             })
             .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
-        ) { account in
+    }
+    
+    var body: some View {
+        List(displayedAccounts) { account in
             NavigationLink {
                 AccountDetail(account: account, showDeleted: $showDeleted)
             } label: {
@@ -43,25 +43,20 @@ struct PasswordList: View {
             }
         }
         .listStyle(.plain)
+        .searchable(text: $searchText)
+        .navigationTitle(!showDeleted ? !showTOTP ? Text("Passwords"): Text("Codes"): Text("Trash"))
         .toolbar {
 #if DEBUG
-            ToolbarItem(placement: .primaryAction) {
-                Button("Delete All", role: .destructive) {
-                    for account in accounts {
-                        account.delete()
+            if showDeleted {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Delete All", role: .destructive) {
+                        for account in accounts {
+                            account.delete()
+                        }
                     }
                 }
             }
 #endif
-            
-            ToolbarItem(placement: .primaryAction) {
-                VStack(alignment: .leading) {
-                    !showDeleted ? !showTOTP ? Text("Passwords").bold(): Text("TOTP").bold(): Text("Trash").bold()
-                    Text("\(accounts.count(where: { passesFilter($0) })) Items")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            }
             ToolbarItem(placement: .primaryAction) {
                 SelectionMenu(sortDirectionAcending: $sortDirectionAcending, sortFilter: $sortFilter)
             }

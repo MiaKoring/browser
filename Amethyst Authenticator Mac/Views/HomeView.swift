@@ -16,10 +16,12 @@ struct HomeView: View {
     @State var showAccountList: Bool = false
     @State var selectedTab: TabCase = .passwords
     @Environment(\.modelContext) var context
+    @Environment(\.colorScheme) var appearance
     
     var body: some View {
         NavigationSplitView {
-            LazyVGrid(columns: [.init(spacing: 20), .init(spacing: 20)]) {
+            //LazyVGrid(columns: [.init(spacing: 20), .init(spacing: 20)]) {
+            VStack {
                 ForEach(TabCase.allCases, id: \.self) { tab in
                     Button {
                         selectedTab = tab
@@ -32,7 +34,7 @@ struct HomeView: View {
                             }
                             Text(tab.rawValue)
                         }
-                        .frame(width: 70, height: 50)
+                        .frame(height: 50)
                         .padding(.horizontal)
                         .background {
                             RoundedRectangle(cornerRadius: 10)
@@ -41,7 +43,7 @@ struct HomeView: View {
                                     if tab == selectedTab {
                                         RoundedRectangle(cornerRadius: 10)
                                             .stroke(style: .init(lineWidth: 3))
-                                            .fill(tab.color.mix(with: .secondary, by: 0.4))
+                                            .fill(tab.color.mix(with: appearance == .dark ? .secondary : .white.mix(with: .black, by: 0.1), by: 0.4))
                                     }
                                 }
                         }
@@ -49,14 +51,15 @@ struct HomeView: View {
                     .buttonStyle(.plain)
                     .focusable(false)
                 }
+                Spacer()
             }
             .padding()
-            Spacer()
-            .navigationSplitViewColumnWidth(230)
+            .navigationSplitViewColumnWidth(120)
         } content: {
             selectedTab.view(selectedAccount: $selectedAccount)
         } detail: {
             ContentUnavailableView("No Item Selected", systemImage: "key.2.on.ring.fill")
+                .navigationSplitViewColumnWidth(min: 250, ideal: 320)
         }
     }
 }
