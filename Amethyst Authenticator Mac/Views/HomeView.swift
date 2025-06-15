@@ -19,7 +19,7 @@ struct HomeView: View {
     @Environment(\.colorScheme) var appearance
     
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: .constant(.all)) {
             //LazyVGrid(columns: [.init(spacing: 20), .init(spacing: 20)]) {
             VStack {
                 ForEach(TabCase.allCases, id: \.self) { tab in
@@ -54,7 +54,7 @@ struct HomeView: View {
                 Spacer()
             }
             .padding()
-            .navigationSplitViewColumnWidth(120)
+            .navigationSplitViewColumnWidth(135)
         } content: {
             selectedTab.view(selectedAccount: $selectedAccount)
         } detail: {

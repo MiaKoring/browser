@@ -81,8 +81,12 @@ struct InputBar: View {
                 .focused($inputFocused)
                 .padding()
                 .background() {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(textFieldBackgroundFill.opacity(0.3))
+                    if #available(macOS 26.0, *) {                    RoundedRectangle(cornerRadius: 15)
+                            .fill(textFieldBackgroundFill.opacity(0.3))
+                    } else {
+                        RoundedRectangle(cornerRadius: 5)
+                                .fill(textFieldBackgroundFill.opacity(0.3))
+                    }
                 }
                 .onSubmit(submitTriggered)
                 .onKeyPress(.escape) {
