@@ -24,13 +24,16 @@ struct PasswordList {
     @State var remainingAccounts: [Account] = []
     static let logger = Logger(subsystem: AmethystApp.subSystem, category: "PasswordList")
     
-    @State var filterDebounceTimer: Timer?
+    @State var filterDebounceTimer: Task<Void, Never>?
     
     func scheduleFilterUpdate(debounceTime: CGFloat = 0.5) {
-        filterDebounceTimer?.invalidate()
-        filterDebounceTimer = Timer.scheduledTimer(withTimeInterval: debounceTime, repeats: false) { _ in
-            Self.logger.debug("Debounced filter triggered")
-            self.filterAccounts()
+        filterDebounceTimer?.cancel()
+        filterDebounceTimer = Task {
+            do {
+                try await Task.sleep(for: .seconds(debounceTime))
+                Self.logger.debug("Debounced filter triggered")
+                filterAccounts()
+            } catch { }
         }
     }
     

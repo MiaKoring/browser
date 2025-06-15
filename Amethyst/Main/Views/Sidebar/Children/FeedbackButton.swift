@@ -27,8 +27,8 @@ struct FeedbackButton: View {
                 .foregroundStyle(.gray.mix(with: .mainColorMix, by: 0.3))
                 .symbolEffect(.wiggle.down.byLayer, value: playAnimation)
                 .padding(5)
-                .background(true: .regularMaterial, false: .quinary, with: appearance == .dark)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                .contentShape(RoundedRectangle(cornerRadius: 10))
                 .padding(-2)
                 .onHover { isHovered in
                     if isHovered {

@@ -22,17 +22,21 @@ struct PasswordSidebar: View {
     @State var sortData = PasswordSortData()
     
     
-    
     var body: some View {
-        ZStack {
-            VStack {
-                contentViewModel.sidebarOrientation.passwordsTopRow(sortData: $sortData, prepareCreationSheet: prepareCreationSheet)
-                .addTopRowPadding(isFixed: contentViewModel.isPasswordFixed)
-                .padding(.horizontal, 3)
-                PasswordsContentView(context: context)
-                    .padding(.top)
-                    .environment(sortData)
-            }
+        VStack {
+            contentViewModel.sidebarOrientation.passwordsTopRow(sortData: $sortData, prepareCreationSheet: prepareCreationSheet)
+                .if(!appViewModel.useMacOS26Design) { view in
+                    view
+                        .addTopRowPadding(isFixed: contentViewModel.isPasswordFixed)
+                }
+                .if(appViewModel.useMacOS26Design) { view in
+                    view
+                        .padding(.bottom, -10)
+                }
+            .padding(.horizontal, 3)
+            PasswordsContentView(context: context)
+                .padding(.top)
+                .environment(sortData)
         }
         .decideSidebarStyling(isFixed: contentViewModel.isPasswordFixed, appearance: appearance, useMacos26Desing: appViewModel.useMacOS26Design)
         .alert("An Error occured", isPresented: .constant(error != nil)) {

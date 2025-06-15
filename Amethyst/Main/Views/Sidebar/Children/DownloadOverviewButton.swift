@@ -18,8 +18,8 @@ struct DownloadOverviewButton: View {
             .font(.title)
             .foregroundStyle(.gray.mix(with: .mainColorMix, by: 0.3))
             .padding(5)
-            .background(true: .regularMaterial, false: .quinary, with: appearance == .dark)
             .clipShape(RoundedRectangle(cornerRadius: 10))
+            .contentShape(RoundedRectangle(cornerRadius: 10))
             .padding(-2)
             .activeIndicator(isActive: !(appViewModel.downloadManager?.activeDownloads.isEmpty ?? true))
             .onHover { isHovered in

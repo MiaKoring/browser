@@ -21,6 +21,18 @@ extension View {
     }
     
     @ViewBuilder
+    func ifMacOS26Available<Content: View>(
+        and condition: Bool = true,
+        _ content: (Self) -> Content,
+    ) -> some View {
+        if condition {
+            content(self)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
     func background<T, F>(`true`: T, `false`: F, with condition: Bool) -> some View where T : ShapeStyle, F : ShapeStyle {
         if condition {
             self.background(`true`)

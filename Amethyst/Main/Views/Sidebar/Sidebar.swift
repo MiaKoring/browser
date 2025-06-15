@@ -14,7 +14,14 @@ struct Sidebar: View {
         ZStack {
             VStack {
                 contentViewModel.sidebarOrientation.tabTopRow()
-                .addTopRowPadding(isFixed: contentViewModel.isSidebarFixed)
+                    .if(!appViewModel.useMacOS26Design) { view in
+                        view
+                            .addTopRowPadding(isFixed: contentViewModel.isSidebarFixed)
+                    }
+                    .if(appViewModel.useMacOS26Design) { view in
+                        view
+                            .padding(.bottom, -10)
+                    }
                 URLDisplay()
                     .padding(.top)
                     .padding(.horizontal, 3)
@@ -90,19 +97,31 @@ struct Sidebar: View {
     }
     
     private struct DownloadOverview: View {
+        @Environment(AppViewModel.self) var appViewModel
         @State var downloadOverviewButtonIsHovered: Bool = false
         @Environment(\.colorScheme) var appearance
         var body: some View {
             VStack(alignment: .trailing){
                 if downloadOverviewButtonIsHovered {
                     ShortDownloadOverview()
+                        .transition(.move(edge: .bottom))
                         .padding(.bottom, 10)
                         .background {
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
+                            if #available(macOS 26.0, *), appViewModel.useMacOS26Design {
+                                Rectangle()
+                                    .fill(.ultraThinMaterial)
+                                    .blur(radius: 5)
+                            } else {
+                                Rectangle()
+                                    .fill(appearance == .dark ? .myPurple.mix(with: .white, by: 0.1): Color.test)
+                            }
                         }
                         .onHover { hovering in downloadOverviewButtonIsHovered = hovering }
                         .padding(.bottom, -6)
+                        .ifMacOS26Available(and: appViewModel.useMacOS26Design) { view in
+                            view
+                                .padding(.horizontal, -5)
+                        }
                 }
                 DownloadOverviewButton(isHovered: $downloadOverviewButtonIsHovered)
                     .frame(maxWidth: .infinity, alignment: .trailing)

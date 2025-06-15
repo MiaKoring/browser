@@ -14,10 +14,13 @@ struct ShortDownloadOverview: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Divider()
+            if !appViewModel.useMacOS26Design {
+                Divider()
+            }
             if !displayedItems.isEmpty {
                 ForEach(displayedItems, id: \.self) { item in
-                    ShortDownloadOverviewItem(item: item, update: updateDisplayedItems) 
+                    ShortDownloadOverviewItem(item: item, update: updateDisplayedItems)
+                        .padding(.horizontal, 5)
                 }
             }
         }

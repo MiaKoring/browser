@@ -21,6 +21,8 @@ extension PasswordList: View {
                         .foregroundStyle(.secondary)
                     ForEach( likelyAccounts ) { account in
                         AccountDisplay(account: account, context: context)
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
                             .onTapGesture {
                                 autofill(username: account.username, password: account.password)
                             }
@@ -30,6 +32,8 @@ extension PasswordList: View {
                         .foregroundStyle(.secondary)
                     ForEach( remainingAccounts ) { account in
                         AccountDisplay(account: account, context: context)
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
                             .onTapGesture {
                                 autofill(username: account.username, password: account.password)
                             }

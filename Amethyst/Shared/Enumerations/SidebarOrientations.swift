@@ -28,6 +28,7 @@ extension SidebarOrientations {
         
         struct PasswordTopRow: View {
             @Environment(ContentViewModel.self) var contentViewModel
+            @Environment(AppViewModel.self) var appViewModel
             @Environment(\.colorScheme) var appearance
             let sidebarOrientation: SidebarOrientations
             @Binding var sortData: PasswordSortData
@@ -43,7 +44,7 @@ extension SidebarOrientations {
                             .padding(.leading, 5)
                     }
                     Image(systemName: sidebarOrientation.passwordSidebarButton)
-                        .sidebarTopButton(hovered: $isSidebarButtonHovered, appearance: appearance) {
+                        .sidebarTopButton(hovered: $isSidebarButtonHovered, appearance: appearance, useMacos26Design: appViewModel.useMacOS26Design) {
                             contentViewModel.isPasswordFixed.toggle()
                             contentViewModel.isPasswordShown = false
                         }
@@ -56,7 +57,7 @@ extension SidebarOrientations {
                     SelectionMenu(sortDirectionAcending: $sortData.ascending, sortFilter: $sortData.filter, triggerSort: $sortData.triggerSort)
                     
                     Image(systemName: "plus")
-                        .sidebarTopButton(hovered: $isPlusHovered, appearance: appearance) {
+                        .sidebarTopButton(hovered: $isPlusHovered, appearance: appearance, useMacos26Design: appViewModel.useMacOS26Design) {
                             prepareCreationSheet()
                         }
                 }
@@ -71,6 +72,7 @@ extension SidebarOrientations {
         struct TabsTopRow: View {
             @Environment(\.colorScheme) var appearance
             @Environment(ContentViewModel.self) var contentViewModel
+            @Environment(AppViewModel.self) var appViewModel
             @State var isBackHovered = false
             @State var isForwardHovered = false
             @State var isReloadHovered = false
@@ -85,25 +87,25 @@ extension SidebarOrientations {
                             .padding(.leading, 5)
                     }
                     Image(systemName: sidebarOrientation.tabSidebarButton)
-                        .sidebarTopButton(hovered: $isSidebarButtonHovered, appearance: appearance) {
+                        .sidebarTopButton(hovered: $isSidebarButtonHovered, appearance: appearance, useMacos26Design: appViewModel.useMacOS26Design) {
                             contentViewModel.isSidebarFixed.toggle()
                             contentViewModel.isSidebarShown = false
                         }
                     Spacer()
                     Image(systemName: "chevron.left")
-                        .sidebarTopButton(hovered: $isBackHovered, appearance: appearance) {
+                        .sidebarTopButton(hovered: $isBackHovered, appearance: appearance, useMacos26Design: appViewModel.useMacOS26Design) {
                             if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
                                 tab.webViewModel.webView?.goBack()
                             }
                         }
                     Image(systemName: "chevron.right")
-                        .sidebarTopButton(hovered: $isForwardHovered, appearance: appearance) {
+                        .sidebarTopButton(hovered: $isForwardHovered, appearance: appearance, useMacos26Design: appViewModel.useMacOS26Design) {
                             if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
                                 tab.webViewModel.webView?.goForward()
                             }
                         }
                     Image(systemName: "arrow.trianglehead.counterclockwise.rotate.90")
-                        .sidebarTopButton(hovered: $isReloadHovered, appearance: appearance) {
+                        .sidebarTopButton(hovered: $isReloadHovered, appearance: appearance, useMacos26Design: appViewModel.useMacOS26Design) {
                             if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
                                 tab.webViewModel.webView?.reload()
                             }
