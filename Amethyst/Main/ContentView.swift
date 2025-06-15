@@ -23,7 +23,7 @@ extension ContentView: View, TabOpener {
                 })
                 WindowHighlighter()
                 MacosButtonHoverArea(showMacosWindowIconsAreaHovered: $showMacosWindowIconsAreaHovered)
-                HStack(spacing: appViewModel.useMacOS26Design ? -10: 0) {
+                HStack(spacing: appViewModel.useMacOS26Design ? -11: 0) {
                     FixedSidebar(edge: .leading)
                     ZStack {
                         ForEach(contentViewModel.tabs, id: \.self) { tab in

@@ -6,9 +6,14 @@ struct ATabView: View {
     @Environment(AppViewModel.self) var appViewModel
     
     var body: some View {
-        List(contentViewModel.tabs) { tab in
-            TabButton(id: tab.id, tabVM: tab.webViewModel)
-                .listRowSeparator(.hidden)
+        ScrollView {
+            LazyVStack {
+                ForEach(contentViewModel.tabs) { tab in
+                    TabButton(id: tab.id, tabVM: tab.webViewModel)
+                        .listRowSeparator(.hidden)
+                }
+            }
+            .padding(15)
         }
         .scrollContentBackground(.hidden)
         .frame(maxHeight: .infinity)
