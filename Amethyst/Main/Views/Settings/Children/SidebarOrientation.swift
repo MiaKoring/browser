@@ -7,6 +7,11 @@
 import SwiftUI
 
 
+
+/// A view that allows the user to select the orientation for the sidebar.
+///
+/// The user can choose between a leading (left) or trailing (right) orientation.
+/// The choice is persisted in `UserDefaults` and visually indicated by a shadow on the selected option.
 struct SidebarOrientation: View {
     @State var trailingTabs: Bool = UDKey.sidebarOrientation.boolValue
     var body: some View {
