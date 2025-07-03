@@ -34,10 +34,17 @@ struct Sidebar: View {
                     .safeAreaInset(edge: .bottom) {
                         DownloadOverview()
                     }
-                if(!AppViewModel.isDefaultBrowser()) { SetDefaultBrowserButton() }
             }
-            FeedbackButton()
+            ZStack {
+                if(!AppViewModel.isDefaultBrowser()) {
+                    VStack {
+                        Spacer()
+                        SetDefaultBrowserButton()
+                    }
+                }
+                FeedbackButton()
                 .placeBottomLeading()
+            }
         }
         .decideSidebarStyling(isFixed: contentViewModel.isSidebarFixed, appearance: appearance, useMacos26Desing: appViewModel.useMacOS26Design)
     }
@@ -82,7 +89,7 @@ struct Sidebar: View {
     
     private struct SetDefaultBrowserButton: View {
         var body: some View {
-            Button("Set as default Browser") {
+            Button("Set Default") {
                 Task {
                     do {
                         try await NSWorkspace.shared.setDefaultApplication(at: Bundle.main.bundleURL, toOpenURLsWithScheme: "http")
