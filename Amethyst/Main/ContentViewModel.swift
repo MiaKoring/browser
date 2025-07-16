@@ -80,7 +80,11 @@ struct ContentView {
     @State var window: NSWindow? = nil
     @Environment(\.scenePhase) var scenePhase
     @State var showHistory = false
+    #if DEBUG
+    @State var showSetup = true
+    #else
     @State var showSetup = false
+    #endif
     
     
     func onAppear() {

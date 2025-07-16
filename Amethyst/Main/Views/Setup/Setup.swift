@@ -60,8 +60,13 @@ struct Setup: View {
                 .frame(height: 380)
             }
             .background() {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(.thinMaterial)
+                if #available(macOS 26.0, *) {
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(.thinMaterial)
+                } else {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.thinMaterial)
+                }
             }
             .padding(10)
         }
