@@ -10,6 +10,7 @@ import AppKit
 
 struct SettingsView: View {
     @Environment(AppViewModel.self) var appViewModel
+    @StateObject var fileDownloader = SetupStep.DownloadIndexView.FileDownloader()
     var body: some View {
         ZStack {
             HostingWindowFinder(callback: { window in
@@ -33,6 +34,7 @@ struct SettingsView: View {
                 }
                 Tab {
                     SearchSuggestion()
+                        .environmentObject(fileDownloader)
                 } label: {
                     Label("Search Suggestions", systemImage: "sparkle.magnifyingglass")
                 }
@@ -51,7 +53,7 @@ struct SettingsView: View {
     }
     
     struct SearchSuggestion: View {
-        @State var current: SetupStep = .whatIs
+        @State var current: SetupStep = .downloadIndex
         var body: some View {
             BackgroundView(shouldRotate: false) {
                 VStack {
@@ -65,7 +67,7 @@ struct SettingsView: View {
                                 .padding(.top, 10)
                         }
                         HStack {
-                            if current != .whatIs {
+                            if current != .downloadIndex {
                                 Button {
                                     current = current.previous
                                 } label: {

@@ -11,6 +11,7 @@ struct Setup: View {
     @State private var current: SetupStep = .welcome
     @Environment(AppViewModel.self) var appViewModel
     @Environment(\.dismiss) var dismiss
+    @StateObject var fileDownloader = SetupStep.DownloadIndexView.FileDownloader()
     var body: some View {
         BackgroundView(shouldRotate: false) {
             VStack {
@@ -22,9 +23,10 @@ struct Setup: View {
                                 view.hidden()
                             }
                             .padding(.top, 10)
+                            .environmentObject(fileDownloader)
                     }
                     .overlay(alignment: .topTrailing) {
-                        if current == .whatIs {
+                        if current == .downloadIndex {
                             Button("Skip") {
                                 UDKey.wasSetupOnce.boolValue = true
                                 dismiss()

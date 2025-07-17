@@ -16,6 +16,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var contentViewModel3: ContentViewModel?
     private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "AppDelegate")
     
+    static let settingsGroupID: String = {
+        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String else { fatalError("TeamID not found")}
+        return "\(teamID)group.de.touchthegrass.Amethyst.Index"
+    }()
+    
     func configure(appViewModel: AppViewModel, contentViewModel: ContentViewModel, contentViewModel2: ContentViewModel, contentViewModel3: ContentViewModel) {
         self.appViewModel = appViewModel
         self.contentViewModel = contentViewModel

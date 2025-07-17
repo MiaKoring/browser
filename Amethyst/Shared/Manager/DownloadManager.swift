@@ -126,7 +126,14 @@ Error Code: \(error.code)
         var suffix = 0
         
         let fileExtension = originalURL.pathExtension
-        let fileNameWithoutExtension = originalURL.deletingPathExtension().lastPathComponent
+        let fileNameWithoutExtension = {
+            let initialURL = originalURL.deletingPathExtension().lastPathComponent
+            guard !initialURL.isEmpty else {
+                return "AmethystDownload"
+            }
+            return initialURL
+        }()
+        
         let directory = originalURL.deletingLastPathComponent()
         
         while fileManager.fileExists(atPath: targetURL.path) {

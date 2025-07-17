@@ -20,6 +20,7 @@
 	<array>
 		<string>$(TeamIdentifierPrefix)group.de.touchthegrass.AmethystAuthenticator</string>
 		<string>$(TeamIdentifierPrefix)group.de.touchthegrass.AmethystAuthenticator.dev</string>
+		<string>$(TeamIdentifierPrefix)group.de.touchthegrass.Amethyst.Index</string>
 	</array>
 	<key>com.apple.security.device.audio-input</key>
 	<true/>
@@ -34,6 +35,7 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)$(KEYCHAIN_GROUP)</string>
+		<string>$(AppIdentifierPrefix)de.touchthegrass.Amethyst-Index.app</string>
 	</array>
 </dict>
 </plist>
