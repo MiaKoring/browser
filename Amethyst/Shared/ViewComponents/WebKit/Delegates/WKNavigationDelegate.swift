@@ -19,6 +19,17 @@ extension WebViewModel: WKNavigationDelegate {
             "Decide Policy for Action: \(navigationAction.request.url?.absoluteString ?? "N/A")"
         )
         
+        guard let url = navigationAction.request.url else {
+            return .allow
+        }
+        
+        let externalSchemes = ["mailto", "tel", "sms", "facetime"]
+
+        if let scheme = url.scheme, externalSchemes.contains(scheme) {
+            NSWorkspace.shared.open(url)
+            return .cancel
+        }
+        
         // Save the referer, so downloads that expect a referer still work.
         // This only updates if a Referer header is present.
         if let referer = navigationAction.request.allHTTPHeaderFields?["Referer"] {
@@ -26,7 +37,7 @@ extension WebViewModel: WKNavigationDelegate {
         }
         
         // Manage custom cache behavior based on navigation type.
-        if let _ = navigationAction.request.url, contentViewModel.isLoaded {
+        if contentViewModel.isLoaded {
             switch navigationAction.navigationType {
             case .reload, .backForward, .formResubmitted, .formSubmitted:
                 cache = nil
@@ -42,7 +53,7 @@ extension WebViewModel: WKNavigationDelegate {
             Self.logger.info(
                 "Action: WebKit suggests download for \(navigationAction.request.url?.absoluteString ?? "N/A")"
             )
-            if let url = navigationAction.request.url, url.scheme != "blob" {
+            if url.scheme != "blob" {
                 // Initiate custom download and cancel WebKit's handling.
                 appViewModel.downloadManager?.downloadFile(
                     from: url,
