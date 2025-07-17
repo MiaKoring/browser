@@ -16,7 +16,12 @@ extension AmethystApp {
             openWindow(value: url)
         }
         do {
-            appViewModel.meili = try MeiliSearch(host: "http://localhost:7700", apiKey: KeyChainManager.getValue(for: .meiliMasterKey))
+            let meiliURL = MeiliSettings.meiliURL.stringValue(default: "127.0.0.1:37270")
+            guard !meiliURL.isEmpty else {
+                print("Meili not setup")
+                return
+            }
+            appViewModel.meili = try MeiliSearch(host: "http://\(meiliURL)", apiKey: KeyChainManager.getValue(for: .meiliMasterKey))
         } catch {
             print(error)
         }

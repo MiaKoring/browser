@@ -665,6 +665,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Browser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "DevAmethyst Browser";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to pass video to websites";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Used to pass audio to websites";
@@ -721,6 +722,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Amethyst-Browser-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Amethyst Browser";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to pass video to websites";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Used to pass audio to websites";
