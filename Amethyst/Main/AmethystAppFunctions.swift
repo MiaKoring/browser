@@ -11,7 +11,6 @@ import MeiliSearch
 extension AmethystApp {
     func onAppear() {
         appViewModel.showSetup = !UDKey.wasSetupOnce.boolValue
-        appDelegate.configure(appViewModel: appViewModel)
         appViewModel.openWindow = { url in
             handleOpenSchema(url: url)
         }
@@ -44,7 +43,7 @@ extension AmethystApp {
         return event
     }
     
-    private func handleOpenSchema(url: URL) {
+    func handleOpenSchema(url: URL) {
         Self.logger.warning("open schema triggered")
         let id = appViewModel.currentlyActiveWindowId
         guard let latestFocused = appViewModel.displayedWindows[id] ?? appViewModel.displayedWindows.values.first else {
@@ -58,7 +57,8 @@ extension AmethystApp {
         webVM.load(url: url)
         let tab = ATab(webViewModel: webVM)
         latestFocused.tabs.append(tab)
-        //openWindow(id: latestFocused.id)
+        latestFocused.currentTab = tab.id
+        openWindow(id: latestFocused.id)
     }
 }
 

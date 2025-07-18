@@ -12,6 +12,7 @@ import OSLog
 class AppDelegate: NSObject, NSApplicationDelegate {
     var appViewModel: AppViewModel?
     private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "AppDelegate")
+    private var launchedViaURL = false
     
     static let settingsGroupID: String = {
         guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String else { fatalError("TeamID not found")}
@@ -43,15 +44,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {
+        self.launchedViaURL = true
         Self.logger.warning("trying to open url")
         guard let url = urls.first else { return }
         if let appVMopenWindow = appViewModel?.openWindow {
-            DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(5))) {
+            DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .milliseconds(500))) {
+                print("called handle")
                 appVMopenWindow(url)
             }
         } else {
             Self.logger.error("failed to open url")
         }
+    }
+    
+    
+    
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
+        return false
     }
     
     private func insert(valuesOf values: ContentViewModel, id: String) {

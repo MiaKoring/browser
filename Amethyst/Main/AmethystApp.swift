@@ -10,6 +10,7 @@ import AppKit
 import SwiftData
 import WebKit
 import AmethystAuthenticatorCore
+import OSLog
 
 
 @main
@@ -20,6 +21,7 @@ struct AmethystApp: App {
     
     var container: ModelContainer
     static var subSystem = "de.touchthegrass.Amethyst"
+    static var logger = Logger(subsystem: Self.subSystem, category: "App")
     
     static var windowRound: CGFloat = { if #available(macOS 26.0, *) { 16 } else { 10 } }()
     
@@ -39,8 +41,12 @@ struct AmethystApp: App {
         } catch {
             fatalError("Couldn't create Model Container. Failed with: \(error.localizedDescription)")
         }
-        self.appViewModel = AppViewModel()
-        self.appViewModel.downloadManager = DownloadManager()
+        let viewModel = AppViewModel()
+        viewModel.downloadManager = DownloadManager()
+        
+        self._appViewModel = State(initialValue: viewModel)
+        
+        self.appDelegate.configure(appViewModel: viewModel)
     }
     
     var body: some Scene {
@@ -67,6 +73,7 @@ struct AmethystApp: App {
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
         .windowStyle(.hiddenTitleBar)
         .restorationBehavior(.automatic)
+        .handlesExternalEvents(matching: [])
         .commands {
             KeybindsGroup.window.commandGroup(
                 appViewModel: appViewModel,
