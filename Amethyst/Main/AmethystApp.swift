@@ -71,6 +71,7 @@ struct AmethystApp: App {
         }
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
         .windowStyle(.hiddenTitleBar)
+        .restorationBehavior(.automatic)
         .commands {
             KeybindsGroup.window.commandGroup(
                 appViewModel: appViewModel,
