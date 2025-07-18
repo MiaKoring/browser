@@ -18,8 +18,9 @@ extension WebViewModel: WKUIDelegate {
                 contentViewModel.tabs.append(newTab)
                 return newWebViewModel.webView
             case .openInNewWindow:
-                guard let url = navigationAction.request.url, let open = appViewModel.openWindow else { return nil }
-                open(url)
+                guard let url = navigationAction.request.url, let open = appViewModel.openWindowByID else { return nil }
+                appViewModel.newURLToOpen = url
+                open("mainWindow")
                 return nil
             }
         } else if navigationAction.targetFrame == nil && !navigationAction.shouldPerformDownload {
@@ -48,7 +49,7 @@ extension WebViewModel: WKUIDelegate {
         }
     }
     
-    func openInNewTab(configuration: WKWebViewConfiguration) -> WKWebView? {
+    private func openInNewTab(configuration: WKWebViewConfiguration) -> WKWebView? {
         let newWebViewModel = WebViewModel(config: configuration, processPool: self.processPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
         let newTab = ATab(webViewModel: newWebViewModel)
         if let index = contentViewModel.tabs.firstIndex(where: {$0.id == contentViewModel.currentTab}) {
@@ -59,6 +60,4 @@ extension WebViewModel: WKUIDelegate {
         contentViewModel.currentTab = newTab.id
         return newWebViewModel.webView
     }
-    
-
 }

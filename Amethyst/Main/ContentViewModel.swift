@@ -115,6 +115,16 @@ struct ContentView {
         #if !DEBUG
         showSetup = appViewModel.showSetup
         #endif
+        if let newURL = appViewModel.newURLToOpen {
+            appViewModel.newURLToOpen = nil
+            
+            let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
+            vm.load(url: newURL)
+            let newTab = ATab(webViewModel: vm)
+            
+            contentViewModel.tabs.append(newTab)
+            contentViewModel.currentTab = newTab.id
+        }
         if contentViewModel.tabs.isEmpty {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 let savedTabs = CDTabController.fetchAll().filter({
@@ -128,7 +138,7 @@ struct ContentView {
                     }
                     memoizedIDs.append(id)
                     let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
-                    vm.load(urlString: savedTab.url?.absoluteString ?? "https://miakoring.de")
+                    vm.load(urlString: savedTab.url?.absoluteString ?? "about:blank")
                     let newTab = ATab(id: id, webViewModel: vm)
                     contentViewModel.tabs.append(newTab)
                 }

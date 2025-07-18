@@ -43,12 +43,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {
-        for url in urls {
-            if let openWindow = appViewModel?.openWindow {
-                openWindow(url)
-            } else {
-                Self.logger.error("failed to open url")
+        Self.logger.warning("trying to open url")
+        guard let url = urls.first else { return }
+        if let appVMopenWindow = appViewModel?.openWindow {
+            DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(5))) {
+                appVMopenWindow(url)
             }
+        } else {
+            Self.logger.error("failed to open url")
         }
     }
     

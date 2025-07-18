@@ -13,7 +13,7 @@ extension AmethystApp {
         appViewModel.showSetup = !UDKey.wasSetupOnce.boolValue
         appDelegate.configure(appViewModel: appViewModel)
         appViewModel.openWindow = { url in
-            openWindow(value: url)
+            handleOpenSchema(url: url)
         }
         do {
             let meiliURL = MeiliSettings.meiliURL.stringValue(default: "127.0.0.1:37270")
@@ -42,6 +42,23 @@ extension AmethystApp {
             return nil
         }
         return event
+    }
+    
+    private func handleOpenSchema(url: URL) {
+        Self.logger.warning("open schema triggered")
+        let id = appViewModel.currentlyActiveWindowId
+        guard let latestFocused = appViewModel.displayedWindows[id] ?? appViewModel.displayedWindows.values.first else {
+            appViewModel.newURLToOpen = url
+            Self.logger.error("no contentViewModel sadge")
+            openWindow(id: "mainWindow")
+            return
+        }
+        Self.logger.warning("wtf")
+        let webVM = WebViewModel(contentViewModel: latestFocused, appViewModel: appViewModel)
+        webVM.load(url: url)
+        let tab = ATab(webViewModel: webVM)
+        latestFocused.tabs.append(tab)
+        //openWindow(id: latestFocused.id)
     }
 }
 
