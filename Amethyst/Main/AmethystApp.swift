@@ -44,11 +44,6 @@ struct AmethystApp: App {
     }
     
     var body: some Scene {
-        /*Window("Amethyst Control", id: "main") {
-         ControlView()
-         .environment(appViewModel)
-         }
-         */
         WindowGroup(id: "mainWindow") {
             ContentView()
                 .frame(minWidth: 600, minHeight: 600)
@@ -107,16 +102,3 @@ struct AmethystApp: App {
     }
 }
 
-struct ControlView: View {
-    @Environment var appViewModel: AppViewModel
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Window Count: \(appViewModel.displayedWindows.count)")
-            Button("Open New Tracked Window") {
-                //appViewModel.openNewWindow()
-            }
-        }
-        .frame(width: 300, height: 200)
-    }
-}

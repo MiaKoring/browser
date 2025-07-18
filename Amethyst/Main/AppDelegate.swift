@@ -40,18 +40,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         print("applicationLaunched")
-        //TODO: update to restore tabs again
-        /*DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let window1Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window1"))
-            let window2Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window2"))
-            let window3Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window3"))
-            
-            if let appViewModel = self.appViewModel, let open = appViewModel.openWindowByID {
-                if window1Count > 0 { open("window1") }
-                if window2Count > 0 { open("window2") }
-                if window3Count > 0 { open("window3") }
-            }
-        }*/
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {

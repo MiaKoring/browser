@@ -111,9 +111,6 @@ struct ContentView {
                 contentViewModel.blockNotification = false
                 return
             }
-            /*if let name = window?.identifier?.rawValue {
-                appViewModel.displayedWindows.insert(name)
-            }*/
         }
         #if !DEBUG
         showSetup = appViewModel.showSetup
