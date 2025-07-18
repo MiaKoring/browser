@@ -7,8 +7,8 @@
 import SwiftUI
 
 extension Keybind {
-    func toggleSidebar(fix: Bool = false, _ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func toggleSidebar(fix: Bool = false, _ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         if !fix {
             withAnimation(.linear(duration: 0.1)) {
                 if contentViewModel.isSidebarFixed {
@@ -26,18 +26,18 @@ extension Keybind {
         }
     }
     
-    func search(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func search(_ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         contentViewModel.showInlineSearch.toggle()
     }
     
-    func showHistory(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func showHistory(_ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         contentViewModel.showHistory.toggle()
     }
     
-    func zoom(enlarge: Bool = true, _ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels), let webViewModel = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab})?.webViewModel else { return }
+    func zoom(enlarge: Bool = true, _ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel), let webViewModel = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab})?.webViewModel else { return }
         webViewModel.webView?.evaluateJavaScript("document.body.style.zoom = (parseFloat(document.body.style.zoom || 1.0) \(enlarge ? "+": "-") 0.1)") { (result, error) in
             if let error = error {
                 print("Zoom \(enlarge ? "in": "out") error: \(error)")
@@ -45,8 +45,8 @@ extension Keybind {
         }
     }
     
-    func resetZoom(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels), let webViewModel = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab})?.webViewModel else { return }
+    func resetZoom(_ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel), let webViewModel = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab})?.webViewModel else { return }
         webViewModel.webView?.evaluateJavaScript("document.body.style.zoom = 1.0") { (result, error) in
             if let error = error {
                 print("Zoom reset error: \(error)")
@@ -54,29 +54,20 @@ extension Keybind {
         }
     }
     
-    func toggleSidebarOrientation(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else {
+    func toggleSidebarOrientation(_ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else {
             print("No contentviewmodel")
             return
         }
         contentViewModel.sidebarOrientation = contentViewModel.sidebarOrientation.other
     }
     
-    func createNewWindow(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel), _ openWindow: OpenWindowAction) {
-        if !appViewModel.displayedWindows.contains("window1") {
-            contentViewModels.0.currentTab = contentViewModels.0.tabs.first?.id
-            openWindow(id: "window1")
-        } else if !appViewModel.displayedWindows.contains("window2") {
-            contentViewModels.1.currentTab = contentViewModels.1.tabs.first?.id
-            openWindow(id: "window2")
-        } else if !appViewModel.displayedWindows.contains("window3") {
-            contentViewModels.2.currentTab = contentViewModels.2.tabs.first?.id
-            openWindow(id: "window3")
-        }
+    func createNewWindow(_ appViewModel: AppViewModel, _ openWindow: OpenWindowAction) {
+        openWindow(id: "mainWindow")
     }
     
-    func togglePasswordSidebar(fix: Bool = false, _ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func togglePasswordSidebar(fix: Bool = false, _ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         if !fix {
             withAnimation(.linear(duration: 0.1)) {
                 if contentViewModel.isPasswordFixed {
@@ -94,13 +85,13 @@ extension Keybind {
         }
     }
     
-    func newTab(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func newTab(_ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         contentViewModel.triggerNewTab.toggle()
     }
     
-    func navigate(back: Bool = true, _ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func navigate(back: Bool = true, _ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         if let model = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab})?.webViewModel {
             if back {
                 model.goBack()
@@ -110,8 +101,8 @@ extension Keybind {
         }
     }
     
-    func navigateTabs(back: Bool = true, _ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels), contentViewModel.tabs.count > 0 else { return }
+    func navigateTabs(back: Bool = true, _ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel), contentViewModel.tabs.count > 0 else { return }
         if let currentTab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
             currentTab.webViewModel.removeHighlights()
         }
@@ -131,8 +122,8 @@ extension Keybind {
         contentViewModel.currentTab = contentViewModel.tabs[min(contentViewModel.tabs.count - 1, index + 1)].id
     }
     
-    func closeCurrentTab(_ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func closeCurrentTab(_ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         
         withAnimation(.linear(duration: 0.2)) {
             guard let id = contentViewModel.currentTab else { return }
@@ -140,8 +131,8 @@ extension Keybind {
         }
     }
     
-    func reload(fromSource: Bool = false, _ appViewModel: AppViewModel, _ contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) {
-        guard let contentViewModel = contentViewModel(for: appViewModel.currentlyActiveWindowId, contentViewModels: contentViewModels) else { return }
+    func reload(fromSource: Bool = false, _ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel) else { return }
         if let tab = contentViewModel.tabs.first(where: {$0.id == contentViewModel.currentTab}) {
             if !fromSource {
                 tab.webViewModel.webView?.reload()

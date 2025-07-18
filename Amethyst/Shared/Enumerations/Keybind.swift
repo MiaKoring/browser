@@ -227,27 +227,27 @@ extension Keybind {
         }
     }
     
-    func execute(appViewModel: AppViewModel, contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel), openWindow: OpenWindowAction) -> Bool {
+    func execute(appViewModel: AppViewModel, openWindow: OpenWindowAction) -> Bool {
         switch self {
-        case .newWindow: createNewWindow(appViewModel, contentViewModels, openWindow)
-        case .toggleSidebar: toggleSidebar(appViewModel, contentViewModels)
-        case .toggleSidebarFixed: toggleSidebar(fix: true, appViewModel, contentViewModels)
-        case .togglePasswords: togglePasswordSidebar(appViewModel, contentViewModels)
-        case .togglePasswordsFixed: togglePasswordSidebar(fix: true, appViewModel, contentViewModels)
-        case .openSearchbar: newTab(appViewModel, contentViewModels)
-        case .openInlineSearch: search(appViewModel, contentViewModels)
-        case .goBack: navigate(appViewModel, contentViewModels)
-        case .goForward: navigate(back: false, appViewModel, contentViewModels)
-        case .reload: reload(appViewModel, contentViewModels)
-        case .reloadFromSource: reload(fromSource: true, appViewModel, contentViewModels)
-        case .previousTab: navigateTabs(appViewModel, contentViewModels)
-        case .nextTab: navigateTabs(back: false, appViewModel, contentViewModels)
-        case .closeCurrentTab: closeCurrentTab(appViewModel, contentViewModels)
-        case .showHistory: showHistory(appViewModel, contentViewModels)
-        case .zoomIn: zoom(appViewModel, contentViewModels)
-        case .zoomOut: zoom(enlarge: false, appViewModel, contentViewModels)
-        case .resetZoom: resetZoom(appViewModel, contentViewModels)
-        case .sidebarOrientation: toggleSidebarOrientation(appViewModel, contentViewModels)
+        case .newWindow: createNewWindow(appViewModel, openWindow)
+        case .toggleSidebar: toggleSidebar(appViewModel)
+        case .toggleSidebarFixed: toggleSidebar(fix: true, appViewModel)
+        case .togglePasswords: togglePasswordSidebar(appViewModel)
+        case .togglePasswordsFixed: togglePasswordSidebar(fix: true, appViewModel)
+        case .openSearchbar: newTab(appViewModel)
+        case .openInlineSearch: search(appViewModel)
+        case .goBack: navigate(appViewModel)
+        case .goForward: navigate(back: false, appViewModel)
+        case .reload: reload(appViewModel)
+        case .reloadFromSource: reload(fromSource: true, appViewModel)
+        case .previousTab: navigateTabs(appViewModel)
+        case .nextTab: navigateTabs(back: false, appViewModel)
+        case .closeCurrentTab: closeCurrentTab(appViewModel)
+        case .showHistory: showHistory(appViewModel)
+        case .zoomIn: zoom(appViewModel)
+        case .zoomOut: zoom(enlarge: false, appViewModel)
+        case .resetZoom: resetZoom(appViewModel)
+        case .sidebarOrientation: toggleSidebarOrientation(appViewModel)
         case .moveSingleFrameToWindow, .triggerPasswordsAuth: break
         }
         switch self {
@@ -258,16 +258,7 @@ extension Keybind {
         }
     }
     
-    func contentViewModel(for id: String, contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel)) -> ContentViewModel? {
-        switch id {
-        case "window1":
-            contentViewModels.0
-        case "window2":
-            contentViewModels.1
-        case "window3":
-            contentViewModels.2
-        default:
-            nil
-        }
+    func contentViewModelForActiveWindow(appViewModel: AppViewModel) -> ContentViewModel? {
+        return appViewModel.displayedWindows[appViewModel.currentlyActiveWindowId]
     }
 }

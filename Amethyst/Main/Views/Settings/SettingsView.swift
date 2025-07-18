@@ -18,7 +18,7 @@ struct SettingsView: View {
                 if let window {
                     if let id = window.identifier {
                         self.appViewModel.currentlyActiveWindowId = id.rawValue
-                        self.appViewModel.displayedWindows.insert(id.rawValue)
+                        //self.appViewModel.displayedWindows.insert(id.rawValue)
                     }
                 }
             })

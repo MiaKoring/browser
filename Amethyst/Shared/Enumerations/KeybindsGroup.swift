@@ -33,39 +33,39 @@ extension KeybindsGroup {
     }
     
     @CommandsBuilder
-    func commandGroup(appViewModel: AppViewModel, contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel), openWindow: OpenWindowAction) -> some Commands {
+    func commandGroup(appViewModel: AppViewModel, openWindow: OpenWindowAction) -> some Commands {
         switch self {
         case .window:
             CommandGroup(replacing: .newItem) {
-                self.commands(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
             }
         case .sidebars:
             CommandGroup(after: .sidebar) {
-                self.commands(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
             }
         case .search:
             CommandMenu("Find") {
-                self.commands(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
             }
         case .navigation:
             CommandMenu("Navigation") {
-                self.commands(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
             }
         case .archive:
             CommandMenu("Archive") {
-                self.commands(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
             }
         case .view:
             CommandMenu("View") {
-                self.commands(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
             }
         }
     }
     
-    @ViewBuilder func commands(appViewModel: AppViewModel, contentViewModels: (ContentViewModel, ContentViewModel, ContentViewModel), openWindow: OpenWindowAction) -> some View {
+    @ViewBuilder func commands(appViewModel: AppViewModel, openWindow: OpenWindowAction) -> some View {
         ForEach(self.children, id: \.hashValue) { child in
             Button(child.menuButtonName) {
-                _ = child.execute(appViewModel: appViewModel, contentViewModels: contentViewModels, openWindow: openWindow)
+                _ = child.execute(appViewModel: appViewModel, openWindow: openWindow)
             }
             .keyboardShortcut(child.keyboardShortcut)
         }

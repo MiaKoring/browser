@@ -11,9 +11,6 @@ import OSLog
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var appViewModel: AppViewModel?
-    var contentViewModel: ContentViewModel?
-    var contentViewModel2: ContentViewModel?
-    var contentViewModel3: ContentViewModel?
     private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "AppDelegate")
     
     static let settingsGroupID: String = {
@@ -21,31 +18,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return "\(teamID)group.de.touchthegrass.Amethyst.Index"
     }()
     
-    func configure(appViewModel: AppViewModel, contentViewModel: ContentViewModel, contentViewModel2: ContentViewModel, contentViewModel3: ContentViewModel) {
+    func configure(appViewModel: AppViewModel) {
         self.appViewModel = appViewModel
-        self.contentViewModel = contentViewModel
-        self.contentViewModel2 = contentViewModel2
-        self.contentViewModel3 = contentViewModel3
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard let appViewModel else { return .terminateNow }
         CDTabController.clear()
         
-        if appViewModel.displayedWindows.contains("window1") {
-            if let contentViewModel {
-                insert(valuesOf: contentViewModel, id: "window1")
-            }
-        }
-        if appViewModel.displayedWindows.contains("window2") {
-            if let contentViewModel2 {
-                insert(valuesOf: contentViewModel2, id: "window2")
-            }
-        }
-        if appViewModel.displayedWindows.contains("window3") {
-            if let contentViewModel3 {
-                insert(valuesOf: contentViewModel3, id: "window3")
-            }
+        for contentViewModel in appViewModel.displayedWindows.values {
+            insert(valuesOf: contentViewModel, id: contentViewModel.id)
         }
         
         Self.logger.info("about to save tab changes")
@@ -58,7 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         print("applicationLaunched")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        //TODO: update to restore tabs again
+        /*DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             let window1Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window1"))
             let window2Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window2"))
             let window3Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window3"))
@@ -68,7 +51,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 if window2Count > 0 { open("window2") }
                 if window3Count > 0 { open("window3") }
             }
-        }
+        }*/
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {

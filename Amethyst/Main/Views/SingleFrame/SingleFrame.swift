@@ -7,7 +7,7 @@
 
 import SwiftUI
 import WebKit
-
+/*
 struct SingleFrame: View {
     @Environment(AppViewModel.self) var appViewModel
     @StateObject var webViewModel: MiniWebViewModel
@@ -128,3 +128,4 @@ struct SingleFrame: View {
     }
 }
 
+*/

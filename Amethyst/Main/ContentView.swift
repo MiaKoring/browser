@@ -17,7 +17,7 @@ extension ContentView: View, TabOpener {
                 HostingWindowFinder(callback: { window in
                     if let window, let id = window.identifier {
                         self.appViewModel.currentlyActiveWindowId = id.rawValue
-                        self.appViewModel.displayedWindows.insert(id.rawValue)
+                        //self.appViewModel.displayedWindows.insert(id.rawValue)
                         self.window = window
                     }
                 })

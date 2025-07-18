@@ -11,8 +11,9 @@ import AuthenticationServices
 import OSLog
 
 @Observable
-class ContentViewModel: NSObject, ObservableObject {
-    let id: String
+class ContentViewModel: NSObject, ObservableObject, Identifiable {
+    var id: String
+    var creationDate = Date()
     var triggerNewTab: Bool = false
     var isSidebarShown: Bool = false
     var isSidebarFixed: Bool = false
@@ -88,6 +89,16 @@ struct ContentView {
     
     
     func onAppear() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let window, let id = window.identifier?.rawValue {
+                window.standardWindowButton(.closeButton)?.isHidden = true
+                window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                window.standardWindowButton(.zoomButton)?.isHidden = true
+                window.delegate = appViewModel
+                appViewModel.displayedWindows[id] = contentViewModel
+                contentViewModel.id = id
+            }
+        }
         #if DEBUG
         CDTabController.shared.printKnownEntities()
         #endif
@@ -100,9 +111,9 @@ struct ContentView {
                 contentViewModel.blockNotification = false
                 return
             }
-            if let name = window?.identifier?.rawValue {
+            /*if let name = window?.identifier?.rawValue {
                 appViewModel.displayedWindows.insert(name)
-            }
+            }*/
         }
         #if !DEBUG
         showSetup = appViewModel.showSetup

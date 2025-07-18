@@ -20,7 +20,9 @@ struct MacOSButtons: View {
                     .foregroundColor(.red)
                     .onTapGesture {
                         contentViewModel.blockNotification = true //to block notification didBecomeMain in ContentView
-                        self.appViewModel.displayedWindows.remove(window.identifier?.rawValue ?? "")
+                        if let identifier = window.identifier?.rawValue {
+                            self.appViewModel.displayedWindows[identifier] = nil
+                        }
                         dismissWindow()
                     }
                 if !window.isZoomed {

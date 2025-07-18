@@ -9,10 +9,11 @@ import SwiftUI
 import WebKit
 import MeiliSearch
 
+
 @Observable
 class AppViewModel: NSObject, ObservableObject, NSWindowDelegate {
     var currentlyActiveWindowId: String = ""
-    var displayedWindows: Set<String> = []
+    var displayedWindows = [String: ContentViewModel]()
     var openWindow: ((URL) -> Void)? = nil
     var openMiniInNewTab: ((URL?, String, Bool) -> Void)? = nil
     var openWindowByID: ((String) -> Void)? = nil

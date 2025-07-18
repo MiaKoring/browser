@@ -17,9 +17,7 @@ struct AmethystApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) var openWindow
     @State var appViewModel: AppViewModel
-    @State var contentViewModel = ContentViewModel(id: "window1")
-    @State var contentViewModel2 = ContentViewModel(id: "window2")
-    @State var contentViewModel3 = ContentViewModel(id: "window3")
+    
     var container: ModelContainer
     static var subSystem = "de.touchthegrass.Amethyst"
     
@@ -46,64 +44,78 @@ struct AmethystApp: App {
     }
     
     var body: some Scene {
-        createWindow(id: "window1", viewModel: contentViewModel)
-        WindowGroup(id: "singleWindow", for: URL.self) { value in
-            if let _ = value.wrappedValue {
-                SingleFrame(appViewModel: appViewModel, url: value)
-                    .environment(appViewModel)
-                    .environment(contentViewModel)
-                    .onAppear() {
-                        onAppear()
+        /*Window("Amethyst Control", id: "main") {
+         ControlView()
+         .environment(appViewModel)
+         }
+         */
+        WindowGroup(id: "mainWindow") {
+            ContentView()
+                .frame(minWidth: 600, minHeight: 600)
+                .ignoresSafeArea(.container, edges: .top)
+                .onAppear {
+                    onAppear()
+                }
+                .environment(appViewModel)
+                .environment(ContentViewModel(id: UUID().uuidString))
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+#if DEBUG
+                    print("registered")
+#endif
+                    NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                        return handleAndPassCommand(event)
                     }
-                    .ignoresSafeArea()
-                    .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
-                        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                            return handleAndPassCommand(event)
-                        }
-                    }
-                    .modelContainer(container)
-            }
+                }
+                .modelContainer(container)
+                .defaultAppStorage(UserDefaults.standard)
         }
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
         .windowStyle(.hiddenTitleBar)
-        createWindow(id: "window2", viewModel: contentViewModel2)
-        createWindow(id: "window3", viewModel: contentViewModel3)
-            .commands {
-                KeybindsGroup.window.commandGroup(
-                    appViewModel: appViewModel,
-                    contentViewModels: (contentViewModel, contentViewModel2, contentViewModel3),
-                    openWindow: openWindow
-                )
-                KeybindsGroup.sidebars.commandGroup(
-                    appViewModel: appViewModel,
-                    contentViewModels: (contentViewModel, contentViewModel2, contentViewModel3),
-                    openWindow: openWindow
-                )
-                KeybindsGroup.search.commandGroup(
-                    appViewModel: appViewModel,
-                    contentViewModels: (contentViewModel, contentViewModel2, contentViewModel3),
-                    openWindow: openWindow
-                )
-                KeybindsGroup.view.commandGroup(
-                    appViewModel: appViewModel,
-                    contentViewModels: (contentViewModel, contentViewModel2, contentViewModel3),
-                    openWindow: openWindow
-                )
-                KeybindsGroup.navigation.commandGroup(
-                    appViewModel: appViewModel,
-                    contentViewModels: (contentViewModel, contentViewModel2, contentViewModel3),
-                    openWindow: openWindow
-                )
-                KeybindsGroup.archive.commandGroup(
-                    appViewModel: appViewModel,
-                    contentViewModels: (contentViewModel, contentViewModel2, contentViewModel3),
-                    openWindow: openWindow
-                )
-            }
+        .commands {
+            KeybindsGroup.window.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.sidebars.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.search.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.view.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.navigation.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.archive.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+        }
+        
         Settings {
             SettingsView()
                 .frame(width: 900, height: 500)
                 .environment(appViewModel)
         }
+    }
+}
+
+struct ControlView: View {
+    @Environment var appViewModel: AppViewModel
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Window Count: \(appViewModel.displayedWindows.count)")
+            Button("Open New Tracked Window") {
+                //appViewModel.openNewWindow()
+            }
+        }
+        .frame(width: 300, height: 200)
     }
 }
