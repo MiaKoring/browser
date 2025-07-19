@@ -22,7 +22,7 @@ class AppViewModel: NSObject, ObservableObject, NSWindowDelegate {
     var meili: MeiliSearch?
     var shouldSkipMeiliNotification: Bool = false
     var downloadManager: DownloadManager?
-    var useMacOS26Design = UDKey.useMacOS26upDesign.boolValue
+    var useMacOS26Design = !UDKey.useOldDesign.boolValue
     var newURLToOpen: URL?
     var createNewWindow: Bool = false
     

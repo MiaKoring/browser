@@ -14,5 +14,5 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case sidebarOrientation
     case leadingFixedSidebarWidth
     case trailingFixedSidebarWidth
-    case useMacOS26upDesign
+    case useOldDesign
 }

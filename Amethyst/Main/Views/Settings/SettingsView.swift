@@ -11,7 +11,7 @@ import AppKit
 struct SettingsView: View {
     @Environment(AppViewModel.self) var appViewModel
     @StateObject var fileDownloader = SetupStep.DownloadIndexView.FileDownloader()
-    @State var useMacos26upDesign = UDKey.useMacOS26upDesign.boolValue
+    @State var useMacos26upDesign = !UDKey.useOldDesign.boolValue
     var body: some View {
         ZStack {
             HostingWindowFinder(callback: { window in
@@ -32,7 +32,7 @@ struct SettingsView: View {
                     Toggle("Use New Design", isOn: $useMacos26upDesign)
                         .toggleStyle(.switch)
                         .onChange(of: useMacos26upDesign) {
-                            UDKey.useMacOS26upDesign.boolValue = useMacos26upDesign
+                            UDKey.useOldDesign.boolValue = !useMacos26upDesign
                             appViewModel.useMacOS26Design = useMacos26upDesign
                         }
                 } label: {
