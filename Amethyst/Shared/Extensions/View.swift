@@ -78,7 +78,7 @@ extension View {
         .frame(maxWidth: isFixed ? 400: 300)
         .padding(5)
         .glassEffect(in: RoundedRectangle(cornerRadius: AmethystApp.windowRound / 2))
-        .padding(isFixed ? 10: 8)
+        .padding(8)
     }
     
     @ViewBuilder

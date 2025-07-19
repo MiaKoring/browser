@@ -23,7 +23,7 @@ extension ContentView: View, TabOpener {
                 })
                 WindowHighlighter()
                 MacosButtonHoverArea(showMacosWindowIconsAreaHovered: $showMacosWindowIconsAreaHovered)
-                HStack(spacing: appViewModel.useMacOS26Design ? -11: 0) {
+                HStack(spacing: appViewModel.useMacOS26Design ? -9: 0) {
                     FixedSidebar(edge: .leading)
                     ZStack {
                         ForEach(contentViewModel.tabs, id: \.self) { tab in
@@ -213,9 +213,16 @@ extension ContentView: View, TabOpener {
     private struct WindowHighlighter: View {
         @Environment(AppViewModel.self) var appViewModel
         @Environment(ContentViewModel.self) var contentViewModel
+        var cornerRadius: CGFloat {
+            if #available(macOS 26.0, *) {
+                return 16.5
+            } else {
+                return 10
+            }
+        }
         var body: some View {
             if appViewModel.highlightedWindow == contentViewModel.id {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(lineWidth: 5)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
