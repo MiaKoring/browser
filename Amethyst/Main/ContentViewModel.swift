@@ -29,6 +29,8 @@ class ContentViewModel: NSObject, ObservableObject, Identifiable {
     var isLoaded: Bool = false
     var sidebarOrientation: SidebarOrientations
     
+    var onClose: (() -> Void)?
+    
     init(id: String) {
         self.id = id
         self.sidebarOrientation = UDKey.sidebarOrientation.boolValue ? .tabsTrailing: .tabsLeading

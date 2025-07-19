@@ -4,7 +4,7 @@
 //
 //  Created by Mia Koring on 30.11.24.
 //
-/*
+
 import SwiftUI
 import WebKit
 
@@ -19,4 +19,4 @@ struct MiniWebView: NSViewRepresentable {
         
     }
 }
-*/
+

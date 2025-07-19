@@ -7,7 +7,7 @@
 
 import SwiftUI
 import WebKit
-/*
+
 struct SingleFrame: View {
     @Environment(AppViewModel.self) var appViewModel
     @StateObject var webViewModel: MiniWebViewModel
@@ -63,10 +63,11 @@ struct SingleFrame: View {
         @Environment(\.dismissWindow) var dismissWindow
         @Binding var showWindowSelection: Bool
         let webViewModel: MiniWebViewModel
+        
         var body: some View {
             ZStack {
                 HStack {
-                    ForEach(appViewModel.displayedWindows.filter({$0.hasPrefix("window")}).sorted(), id: \.self) { window in
+                    ForEach(appViewModel.displayedWindows.keys.sorted(), id: \.self) { window in
                         Button {
                             handleWindowOpening(selected: window)
                         } label: {
@@ -74,8 +75,8 @@ struct SingleFrame: View {
                                 .fill(Color.myPurple.opacity(0.3))
                                 .frame(width: 200, height: 200)
                                 .overlay {
-                                        Text(window.description.replacingOccurrences(of: "window", with: ""))
-                                            .allowsHitTesting(false)
+                                    Text(window.replacingOccurrences(of: "mainWindow-AppWindow-", with: ""))
+                                        .allowsHitTesting(false)
                                 }
                                 .onHover { hovering in
                                     if hovering {
@@ -88,44 +89,37 @@ struct SingleFrame: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    if appViewModel.displayedWindows.count(where: {$0.hasPrefix("window")}) < 3 {
-                        Button {
-                            handleWindowOpening(selected: "newWindow")
-                        } label: {
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(Color.myPurple.opacity(0.3))
-                                .frame(width: 200, height: 200)
-                                .overlay {
-                                    ZStack {
-                                        Image(systemName: "plus")
-                                            .allowsHitTesting(false)
-                                    }
+                    Button {
+                        handleWindowOpening(selected: "newWindow")
+                    } label: {
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.myPurple.opacity(0.3))
+                            .frame(width: 200, height: 200)
+                            .overlay {
+                                ZStack {
+                                    Image(systemName: "plus")
+                                        .allowsHitTesting(false)
                                 }
-                        }
-                        .buttonStyle(.plain)
+                            }
                     }
+                    .buttonStyle(.plain)
+                }
+                .padding(10)
+                .background() {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(.thinMaterial)
+                        .background(.myPurple.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
-            .padding(10)
-            .background() {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(.thinMaterial)
-                    .background(.myPurple.opacity(0.2))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
         }
-        
         func handleWindowOpening(selected: String) {
             guard let open = appViewModel.openMiniInNewTab else { return }
-            let selected = selected != "newWindow" ? selected: ["window1", "window2", "window3"].first(where: {!appViewModel.displayedWindows.contains($0)}) ?? "window1"
             open(webViewModel.currentURL, selected, true)
             showWindowSelection = false
             DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
                 dismissWindow()
             }
-            
         }
     }
 }
-
-*/

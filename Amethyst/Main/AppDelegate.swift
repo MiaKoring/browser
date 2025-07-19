@@ -40,7 +40,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        print("applicationLaunched")
+        DispatchQueue.main.async {
+            let hasVisibleContentWindows = NSApp.windows.contains { window in
+                window.isVisible && window.canBecomeMain
+            }
+            
+            if !hasVisibleContentWindows {
+                self.appViewModel?.createNewWindow.toggle()
+            }
+        }
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -60,6 +68,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
+        if !hasVisibleWindows {
+            return true
+        }
+        var miniaturizedWindow: NSWindow? = nil
+        var shouldRestoreMiniaturized = !sender.windows.contains(where: {!$0.isMiniaturized})
+        if shouldRestoreMiniaturized {
+            for window in sender.windows {
+                if window.identifier?.rawValue.hasPrefix("mainWindow") ?? false,
+                   window.isMiniaturized,
+                   miniaturizedWindow == nil {
+                    miniaturizedWindow = window
+                }
+            }
+            guard let window = miniaturizedWindow else { return true }
+            window.deminiaturize(nil)
+        }
         return false
     }
     

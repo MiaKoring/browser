@@ -4,7 +4,7 @@
 //
 //  Created by Mia Koring on 30.11.24.
 //
-/*
+
 import SwiftUI
 import WebKit
 import Combine
@@ -160,16 +160,17 @@ class MiniWebViewModel: NSObject, ObservableObject {
 extension MiniWebViewModel: WKUIDelegate {
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         let url = navigationAction.request.url
+        let windowToOpenIn = appViewModel.currentlyActiveWindowId
         
         if let customAction = (webView as? AWKWebView)?.contextualMenuAction {
             switch customAction {
             case .openInNewTab:
                 guard let openFromMiniTab = appViewModel.openMiniInNewTab else { return nil }
-                openFromMiniTab(url, "window1", true)
+                openFromMiniTab(url, windowToOpenIn, true)
                 return nil
             case .openInBackground:
                 guard let openFromMiniTab = appViewModel.openMiniInNewTab else { return nil }
-                openFromMiniTab(url, "window1", false)
+                openFromMiniTab(url, windowToOpenIn, false)
                 return nil
             case .openInNewWindow:
                 guard let url, let open = appViewModel.openWindow else { return nil }
@@ -178,11 +179,11 @@ extension MiniWebViewModel: WKUIDelegate {
             }
         } else if navigationAction.targetFrame == nil {
             guard let openFromMiniTab = appViewModel.openMiniInNewTab else { return nil }
-            openFromMiniTab(url, "window1", true)
+            openFromMiniTab(url, windowToOpenIn, true)
             return nil
         } else {
             return nil
         }
     }
 }
-*/
+

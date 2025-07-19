@@ -16,6 +16,7 @@ class AppViewModel: NSObject, ObservableObject, NSWindowDelegate {
     var displayedWindows = [String: ContentViewModel]()
     var openWindow: ((URL) -> Void)? = nil
     var openWindowByID: ((String) -> Void)? = nil
+    var openMiniInNewTab: ((URL?, String, Bool) -> Void)? = nil
     var highlightedWindow: String = ""
     var showSetup = false
     var meili: MeiliSearch?
@@ -23,6 +24,7 @@ class AppViewModel: NSObject, ObservableObject, NSWindowDelegate {
     var downloadManager: DownloadManager?
     var useMacOS26Design = UDKey.useMacOS26upDesign.boolValue
     var newURLToOpen: URL?
+    var createNewWindow: Bool = false
     
     func windowDidBecomeKey(_ notification: Notification) {
         if let window = notification.object as? NSWindow {

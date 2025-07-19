@@ -50,6 +50,7 @@ struct AmethystApp: App {
     }
     
     var body: some Scene {
+        
         WindowGroup(id: "mainWindow") {
             ContentView()
                 .frame(minWidth: 600, minHeight: 600)
@@ -73,6 +74,29 @@ struct AmethystApp: App {
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
         .windowStyle(.hiddenTitleBar)
         .restorationBehavior(.automatic)
+        .handlesExternalEvents(matching: [])
+        .onChange(of: appViewModel.createNewWindow) {
+            openWindow(id: "mainWindow")
+        }
+        
+        WindowGroup(id: "singleWindow", for: URL.self) { value in
+            if let _ = value.wrappedValue {
+                SingleFrame(appViewModel: appViewModel, url: value)
+                    .environment(appViewModel)
+                    .onAppear() {
+                        onAppear()
+                    }
+                    .ignoresSafeArea()
+                    .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+                        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                            return handleAndPassCommand(event)
+                        }
+                    }
+                    .modelContainer(container)
+            }
+        }
+        .windowToolbarStyle(.unifiedCompact(showsTitle: false))
+        .windowStyle(.hiddenTitleBar)
         .handlesExternalEvents(matching: [])
         .commands {
             KeybindsGroup.window.commandGroup(

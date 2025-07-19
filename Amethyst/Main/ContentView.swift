@@ -17,7 +17,6 @@ extension ContentView: View, TabOpener {
                 HostingWindowFinder(callback: { window in
                     if let window, let id = window.identifier {
                         self.appViewModel.currentlyActiveWindowId = id.rawValue
-                        //self.appViewModel.displayedWindows.insert(id.rawValue)
                         self.window = window
                     }
                 })
@@ -70,11 +69,10 @@ extension ContentView: View, TabOpener {
                     .interactiveDismissDisabled()
             }
         }
-        #if DEBUG
-        .onChange(of: appViewModel.currentlyActiveWindowId) {
-            print(appViewModel.currentlyActiveWindowId)
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { newValue in
+            guard let window = newValue.object as? NSWindow, let id = window.identifier?.rawValue, id == contentViewModel.id else { return }
+            appViewModel.displayedWindows[id] = nil
         }
-        #endif
     }
     
     private struct MacOSWindowButtonsOverlay: View {
