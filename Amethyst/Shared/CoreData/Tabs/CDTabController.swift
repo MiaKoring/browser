@@ -85,11 +85,49 @@ class CDTabController {
         return 0
     }
     
+    func fetchAllFor(windowID: String) -> [SavedTab] {
+        let request = SavedTab.createFetchRequest()
+        request.predicate = NSPredicate(format: "windowID == %@", windowID)
+        do {
+            return try container.viewContext.fetch(request)
+        } catch {
+            Self.logger.error("Error while fetching count with Predicate: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
+    func deleteFor(windowID: String) {
+        container.performBackgroundTask { context in
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "SavedTab")
+            fetchRequest.predicate = NSPredicate(format: "windowID == %@", windowID)
+            let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            
+            do {
+                let result = try context.execute(batchDeleteRequest) as? NSBatchDeleteResult
+                
+                if let objectIDs = result?.result as? [NSManagedObjectID] {
+                    let changes = [NSDeletedObjectsKey: objectIDs]
+                    NSManagedObjectContext.mergeChanges(
+                        fromRemoteContextSave: changes,
+                        into: [self.container.viewContext]
+                    )
+                }
+            } catch {
+                Self.logger.error("An error occured while emptying SavedTabs for windowID \(windowID): \(error.localizedDescription)")
+            }
+        }
+        
+    }
+    
 }
 
 extension CDTabController {
     static func fetchAll() -> [SavedTab] {
         CDTabController.shared.fetchAll()
+    }
+    
+    static func fetchAllFor(windowID: String) -> [SavedTab] {
+        CDTabController.shared.fetchAllFor(windowID: windowID)
     }
     
     static func save() {
@@ -106,6 +144,10 @@ extension CDTabController {
     
     static func fetchCount(_ predicate: NSPredicate) -> Int {
         CDTabController.shared.fetchCount(predicate)
+    }
+    
+    static func deleteFor(windowID: String) {
+        CDTabController.shared.deleteFor(windowID: windowID)
     }
     
 }

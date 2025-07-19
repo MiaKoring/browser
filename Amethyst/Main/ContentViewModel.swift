@@ -129,9 +129,7 @@ struct ContentView {
         }
         if contentViewModel.tabs.isEmpty {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                let savedTabs = CDTabController.fetchAll().filter({
-                    $0.windowID == contentViewModel.id
-                })
+                let savedTabs = CDTabController.fetchAllFor(windowID: contentViewModel.id)
                 
                 var memoizedIDs = [UUID]()
                 for savedTab in savedTabs {
@@ -144,6 +142,7 @@ struct ContentView {
                     let newTab = ATab(id: id, webViewModel: vm)
                     contentViewModel.tabs.append(newTab)
                 }
+                CDTabController.deleteFor(windowID: contentViewModel.id)
                 contentViewModel.isSidebarFixed = true
             }
         }
