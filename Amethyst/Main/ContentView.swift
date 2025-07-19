@@ -12,6 +12,7 @@ import WebKit
 
 extension ContentView: View, TabOpener {
     var body: some View {
+        @Bindable var appViewModel = appViewModel
         GeometryReader { reader in
             BackgroundView {
                 HostingWindowFinder(callback: { window in
@@ -58,12 +59,11 @@ extension ContentView: View, TabOpener {
             .onChange(of: contentViewModel.tabs) { if contentViewModel.tabs.isEmpty { contentViewModel.isSidebarShown = true } }
             .onChange(of: contentViewModel.currentTab) { if contentViewModel.currentTab != nil { contentViewModel.isLoaded = true } }
             .onChange(of: contentViewModel.showHistory) { showHistory = contentViewModel.showHistory }
-            .onChange(of: appViewModel.showSetup) { showSetup = appViewModel.showSetup }
             .sheet(isPresented: $showHistory) { contentViewModel.showHistory = false } content: {
                 HistoryView()
                     .frame(width: 400, height: 500)
             }
-            .sheet(isPresented: $showSetup) { appViewModel.showSetup = false } content: {
+            .sheet(isPresented: $appViewModel.showsSetup) { appViewModel.showsSetup = false } content: {
                 Setup()
                     .frame(width: 700, height: 400)
                     .interactiveDismissDisabled()

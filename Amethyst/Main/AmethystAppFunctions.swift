@@ -10,7 +10,11 @@ import MeiliSearch
 
 extension AmethystApp {
     func onAppear() {
-        appViewModel.showSetup = !UDKey.wasSetupOnce.boolValue
+        #if DEBUG
+        appViewModel.showsSetup = true
+        #else
+        appViewModel.showsSetup = !UDKey.wasSetupOnce.boolValue
+        #endif
         appViewModel.openWindow = { url in
             handleOpenSchema(url: url)
         }
@@ -47,6 +51,7 @@ extension AmethystApp {
         }
     }
     func handleAndPassCommand(_ event: NSEvent) -> NSEvent? {
+        if appViewModel.showsSetup { return event }
         if event.modifierFlags.rawValue == 256 || ((event.modifierFlags.contains(.shift) || event.modifierFlags.contains(.capsLock)) && (!event.modifierFlags.contains(.command) && !event.modifierFlags.contains(.control) && !event.modifierFlags.contains(.option))) || appViewModel.currentlyActiveWindowId == "com_apple_SwiftUI_Settings_window" { return event }
         guard let keybind = Keybind(event) else { return event }
         guard keybind.execute(appViewModel: appViewModel, openWindow: openWindow) else {

@@ -28,6 +28,7 @@ class ContentViewModel: NSObject, ObservableObject, Identifiable {
     var lastInlineQuery: String = ""
     var isLoaded: Bool = false
     var sidebarOrientation: SidebarOrientations
+    var showSetup: Bool = false
     
     var onClose: (() -> Void)?
     
@@ -70,6 +71,7 @@ class ContentViewModel: NSObject, ObservableObject, Identifiable {
         currentTab = id
     }
 }
+
 struct ContentView {
     static let logger = Logger(subsystem: AmethystApp.subSystem, category: "ContentViewModel")
     
@@ -83,12 +85,6 @@ struct ContentView {
     @State var window: NSWindow? = nil
     @Environment(\.scenePhase) var scenePhase
     @State var showHistory = false
-    #if DEBUG
-    @State var showSetup = true
-    #else
-    @State var showSetup = false
-    #endif
-    
     
     func onAppear() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -114,9 +110,7 @@ struct ContentView {
                 return
             }
         }
-        #if !DEBUG
-        showSetup = appViewModel.showSetup
-        #endif
+        
         if let newURL = appViewModel.newURLToOpen {
             appViewModel.newURLToOpen = nil
             

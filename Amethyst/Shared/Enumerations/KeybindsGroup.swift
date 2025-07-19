@@ -68,6 +68,7 @@ extension KeybindsGroup {
                 _ = child.execute(appViewModel: appViewModel, openWindow: openWindow)
             }
             .keyboardShortcut(child.keyboardShortcut)
+            .disabled(appViewModel.showsSetup)
         }
     }
 }

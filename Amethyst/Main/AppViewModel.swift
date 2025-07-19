@@ -18,7 +18,7 @@ class AppViewModel: NSObject, ObservableObject, NSWindowDelegate {
     var openWindowByID: ((String) -> Void)? = nil
     var openMiniInNewTab: ((URL?, String, Bool) -> Void)? = nil
     var highlightedWindow: String = ""
-    var showSetup = false
+    var showsSetup = false
     var meili: MeiliSearch?
     var shouldSkipMeiliNotification: Bool = false
     var downloadManager: DownloadManager?
