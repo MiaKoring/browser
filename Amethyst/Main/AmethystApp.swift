@@ -12,7 +12,6 @@ import WebKit
 import AmethystAuthenticatorCore
 import OSLog
 
-
 @main
 struct AmethystApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -24,6 +23,8 @@ struct AmethystApp: App {
     static var logger = Logger(subsystem: Self.subSystem, category: "App")
     
     static var windowRound: CGFloat = { if #available(macOS 26.0, *) { 16 } else { 10 } }()
+    
+    @State private var accProvider = AccountProvider.shared
     
     init() {
 #if DEBUG
@@ -60,6 +61,7 @@ struct AmethystApp: App {
                 }
                 .environment(appViewModel)
                 .environment(ContentViewModel(id: UUID().uuidString))
+                .environment(accProvider)
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
 #if DEBUG
                     print("registered")
@@ -83,6 +85,7 @@ struct AmethystApp: App {
             if let _ = value.wrappedValue {
                 SingleFrame(appViewModel: appViewModel, url: value)
                     .environment(appViewModel)
+                    .environment(accProvider)
                     .onAppear() {
                         onAppear()
                     }
@@ -129,6 +132,7 @@ struct AmethystApp: App {
             SettingsView()
                 .frame(width: 900, height: 500)
                 .environment(appViewModel)
+                .environment(accProvider)
         }
     }
 }

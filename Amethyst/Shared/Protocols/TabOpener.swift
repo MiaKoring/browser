@@ -48,7 +48,6 @@ extension TabOpener {
         } else {
             // Otherwise, create a new tab.
             let webViewModel = WebViewModel(
-                processPool: contentViewModel.wkProcessPool,
                 contentViewModel: contentViewModel,
                 appViewModel: appViewModel
             )

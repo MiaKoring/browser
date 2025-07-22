@@ -30,7 +30,6 @@ class WebViewModel: NSObject, ObservableObject {
     var historyBlocked: [URL: Double] = [:]
     var webView: AWKWebView?
     var cancellables: Set<AnyCancellable> = []
-    var processPool: WKProcessPool
     var downloadDelegate: DownloadDelegate = DownloadDelegate()
     var cache: Bool? = nil
     
@@ -44,7 +43,6 @@ class WebViewModel: NSObject, ObservableObject {
         appViewModel: AppViewModel
     ) {
         // The processPool must be part of the configuration.
-        self.processPool = configuration.processPool
         self.contentViewModel = contentViewModel
         self.appViewModel = appViewModel
         super.init()
@@ -58,27 +56,12 @@ class WebViewModel: NSObject, ObservableObject {
     // Convenience init for a standard new tab.
     // It derives the processPool from the contentViewModel.
     convenience init(contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        let config = Self.makeDefaultConfiguration(
-            with: contentViewModel.wkProcessPool
-        )
+        let config = Self.makeDefaultConfiguration()
         // No special configuration needed, so we call the designated init directly.
         self.init(configuration: config, contentViewModel: contentViewModel, appViewModel: appViewModel)
     }
     
-    // Convenience init for a standard new tab with a specific processPool.
-    // This one adds the 'webauthn' message handler.
-    convenience init(
-        processPool: WKProcessPool,
-        contentViewModel: ContentViewModel,
-        appViewModel: AppViewModel
-    ) {
-        let config = Self.makeDefaultConfiguration(with: processPool)
-        // Add specific handlers for this case
-        self.init(configuration: config, contentViewModel: contentViewModel, appViewModel: appViewModel)
-    }
-    
-    init(config: WKWebViewConfiguration, processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        self.processPool = processPool
+    init(config: WKWebViewConfiguration, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
         self.contentViewModel = contentViewModel
         self.appViewModel = appViewModel
         super.init()
@@ -165,7 +148,6 @@ class WebViewModel: NSObject, ObservableObject {
             webConfiguration.allowsAirPlayForMediaPlayback = true
             webConfiguration.mediaTypesRequiringUserActionForPlayback = []
             webConfiguration.suppressesIncrementalRendering = false
-            webConfiguration.processPool = processPool
             let webView = AWKWebView(frame: .zero, configuration: webConfiguration)
             self.webView = webView
             self.webView?.allowsBackForwardNavigationGestures = false
@@ -325,12 +307,8 @@ class WebViewModel: NSObject, ObservableObject {
     }
 
     /// Factory method to create a default WKWebViewConfiguration for Amethyst.
-    private static func makeDefaultConfiguration(
-        with processPool: WKProcessPool
-    ) -> WKWebViewConfiguration {
+    private static func makeDefaultConfiguration() -> WKWebViewConfiguration {
         let webConfiguration = WKWebViewConfiguration()
-        // Assign the process pool
-        webConfiguration.processPool = processPool
         // Set User-Agent
         webConfiguration.applicationNameForUserAgent =
             "Version/18.1.1 Safari/605.1.15"
