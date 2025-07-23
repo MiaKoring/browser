@@ -25,10 +25,6 @@ extension WebViewModel: WKUIDelegate {
             }
         } else if navigationAction.targetFrame == nil && !navigationAction.shouldPerformDownload {
             return openInNewTab(configuration: configuration)
-        } else if navigationAction.shouldPerformDownload {
-            guard let url = navigationAction.request.url else { return nil }
-            appViewModel.downloadManager?.downloadFile(from: url, withName: nil)
-            return nil
         } else {
             return nil
         }

@@ -30,7 +30,6 @@ class WebViewModel: NSObject, ObservableObject {
     var historyBlocked: [URL: Double] = [:]
     var webView: AWKWebView?
     var cancellables: Set<AnyCancellable> = []
-    var downloadDelegate: DownloadDelegate = DownloadDelegate()
     var cache: Bool? = nil
     
     // MARK: - Initializers
@@ -42,7 +41,6 @@ class WebViewModel: NSObject, ObservableObject {
         contentViewModel: ContentViewModel,
         appViewModel: AppViewModel
     ) {
-        // The processPool must be part of the configuration.
         self.contentViewModel = contentViewModel
         self.appViewModel = appViewModel
         super.init()
@@ -170,14 +168,6 @@ class WebViewModel: NSObject, ObservableObject {
         request.setValue(Self.accept, forHTTPHeaderField: "Accept")
         request.setValue("https://duckduckgo.com/", forHTTPHeaderField: "Referer")
         webView?.load(request)
-    }
-    
-    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
-        download.delegate = downloadDelegate
-    }
-        
-    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
-        download.delegate = downloadDelegate
     }
     
     func appendHistory() {
