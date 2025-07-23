@@ -7,120 +7,57 @@
 import SwiftUI
 import CoreData
 import OSLog
+import WebKit
 
 @Observable
-class DownloadManager: NSObject, URLSessionDownloadDelegate {
-    var activeDownloads: [URLSessionTask: DownloadInfo] = [:]
-    private var session: URLSession!
+class DownloadManager: NSObject {
+    var activeDownloads: [WKDownload: DownloadInfo] = [:]
     
     private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "DownloadManager")
         
     override init() {
         super.init()
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 60  // Longer Request-Timeout
-        config.timeoutIntervalForResource = 600  // 10 minutes full timeout
-        config.waitsForConnectivity = true
-        config.httpMaximumConnectionsPerHost = 1 // for more stable, bigger downloads
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        
-        self.session = URLSession(
-            configuration: config,
-            delegate: self,
-            delegateQueue: .main
-        )
     }
     
-    func downloadFile(from url: URL, withName name: String?, referedBy: String? = nil) {
-        var request = URLRequest(url: url)
-        
-        // Headers für download request
-        request.setValue("bytes=0-", forHTTPHeaderField: "Range")
-        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
-        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
-        
-        if let referedBy {
-            request.setValue(referedBy, forHTTPHeaderField: "Referer")
-        }
-        
-        let downloadTask = session.downloadTask(with: request)
-        
+    func startTracking(download: WKDownload, withName name: String?) {
         let downloadsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
-        let filename = name ?? url.lastPathComponent
+        // The final filename might be provided by the download object itself later.
+        let filename = name ?? download.originalRequest?.url?.lastPathComponent ?? "Download"
         let targetURL = downloadsDirectory.appendingPathComponent(filename)
-        let downloadSidecarURL = targetURL.appendingPathExtension("download")
-
-        activeDownloads[downloadTask] = DownloadInfo(
-            originalURL: url,
-            targetURL: targetURL,
-            downloadURL: downloadSidecarURL,
-            task: downloadTask
-        )
         
-        downloadTask.resume()
+        let downloadInfo = DownloadInfo(download: download, targetURL: targetURL)
+        
+        activeDownloads[download] = downloadInfo
+        Self.logger.info("Started tracking new WKDownload for \(filename)")
     }
     
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let error = error as NSError? else { return }
-        
-        Self.logger.error("""
-Download-Error: \(error.localizedDescription)
-Error Domain: \(error.domain)
-Error Code: \(error.code)
-""")
-        
-        // check if download can be resumed
-        if error.domain == NSURLErrorDomain, let resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData] as? Data {
-            // Try to proceed download
-            Self.logger.info("Attempting to resume download for task: \(task.taskIdentifier)")
-            
-            // copy download info
-            guard let oldDownloadInfo = activeDownloads.removeValue(forKey: task) else {
-                return
-            }
-            
-            let newDownloadTask = session.downloadTask(withResumeData: resumeData)
-            
-            oldDownloadInfo.task = newDownloadTask
-            activeDownloads[newDownloadTask] = oldDownloadInfo
-            
-            newDownloadTask.resume()
-            
-        } else {
-            activeDownloads.removeValue(forKey: task)
+    func updateProgress(for download: WKDownload, progress: Double, downloadedBytes: Int64, totalBytes: Int64) {
+        if let downloadInfo = activeDownloads[download] {
+            downloadInfo.progress = progress
+            downloadInfo.downloadedBytes = downloadedBytes
+            downloadInfo.totalBytes = totalBytes
         }
     }
     
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let downloadInfo = activeDownloads[downloadTask] else {
-            Self.logger.warning("Finished download for an untracked task: \(downloadTask.taskIdentifier)")
+    func finishDownload(for download: WKDownload) {
+        guard let downloadInfo = activeDownloads.removeValue(forKey: download) else {
+            Self.logger.warning("Finished download for an untracked WKDownload.")
             return
         }
         
-        do {
-            // Ensure the final destination URL is unique to avoid overwriting files.
-            let uniqueTargetURL = determineUniqueTargetURL(for: downloadInfo.targetURL)
-            
-            try FileManager.default.moveItem(at: location, to: uniqueTargetURL)
-            // Clean up the .download sidecar file.
-            try? FileManager.default.removeItem(at: downloadInfo.downloadURL)
-            
-            saveBookmark(targetURL: downloadInfo.targetURL)
-        } catch {
-            Self.logger.error("Error finishing download: \(error)")
-        }
-        activeDownloads.removeValue(forKey: downloadTask)
-    }
-    
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        if let downloadInfo = activeDownloads[downloadTask] {
-            downloadInfo.progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
-            downloadInfo.downloadedBytes = totalBytesWritten
-            downloadInfo.totalBytes = totalBytesExpectedToWrite
+        if let destinationURL = downloadInfo.destinationURL {
+            saveBookmark(targetURL: destinationURL)
+            Self.logger.info("Successfully moved downloaded file to \(destinationURL.path)")
         }
     }
     
-    private func determineUniqueTargetURL(for originalURL: URL) -> URL {
+    func failDownload(for download: WKDownload, error: Error, resumeData: Data?) {
+        activeDownloads[download]?.didFail = true
+        Self.logger.error("Download failed for \(download.debugDescription) with error: \(error.localizedDescription)")
+        // TODO: Add resume logic
+    }
+    
+    func determineUniqueTargetURL(for originalURL: URL, download: WKDownload) -> URL {
         var targetURL = originalURL
         let fileManager = FileManager.default
         var suffix = 0
@@ -143,6 +80,8 @@ Error Code: \(error.code)
                 .appendingPathComponent(newFileName)
                 .appendingPathExtension(fileExtension)
         }
+        
+        activeDownloads[download]?.destinationURL = targetURL
         
         return targetURL
     }

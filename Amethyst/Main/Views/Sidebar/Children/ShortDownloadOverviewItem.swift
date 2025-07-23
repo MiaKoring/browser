@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ShortDownloadOverviewItem: View {
-    let item: DownloadItem
+    @State var item: DownloadItem
     @State var isHovered: Bool = false
     @Environment(AppViewModel.self) var appViewModel
     @Environment(\.colorScheme) var appearance
@@ -17,7 +17,7 @@ struct ShortDownloadOverviewItem: View {
         HStack {
             item.icon
                 .frame(maxWidth: 50, maxHeight: 50)
-                .if(item.info?.progress != nil && item.info?.task.state == .running) { view in
+                .if(item.info?.download.progress != nil) { view in
                     view.overlay(alignment: .bottom) {
                         ProgressView(value: item.info?.progress ?? 0.0)
                             .progressViewStyle(.linear)
@@ -26,16 +26,14 @@ struct ShortDownloadOverviewItem: View {
                 }
             Text(item.name)
                 .lineLimit(1)
-                .foregroundStyle(item.info != nil ? item.info?.task.state == .running || item.info?.task.state == .completed ? .primary: Color.red: .primary)
+                .foregroundStyle(item.info?.didFail ?? false ? .red: .primary)
             Spacer()
-            if item.info?.progress != nil && item.info?.task.state == .running {
+            if item.info?.progress != nil {
                 Button {
-                    guard let downloadManager = appViewModel.downloadManager, let task = item.info?.task
-                    else {
-                        return
+                    if let download = item.info?.download {
+                        download.cancel()
+                        appViewModel.downloadManager?.activeDownloads[download] = nil
                     }
-                    downloadManager.activeDownloads.removeValue(forKey: task)
-                    task.cancel()
                     update()
                 } label: {
                     Image(systemName: "xmark.circle")
@@ -51,7 +49,7 @@ struct ShortDownloadOverviewItem: View {
         .if(isHovered && appearance == .light) { view in view.background(.white.mix(with: .gray, by: 0.05)) }
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .contextMenu {
-            if item.info?.progress == nil && item.info?.task.state == .completed {
+            if item.info?.progress == nil {
                 Button("Show in Finder") {
                     if let url = item.url {
                         NSWorkspace.shared.activateFileViewerSelecting([url])

@@ -17,9 +17,9 @@ struct WebView: View {
             WebViewNS(viewModel: webViewModel)
                 .if(tabID == contentViewModel.currentTab) { view in
                     view
-                        .overlay(alignment: .bottomTrailing) {
+                        /*.overlay(alignment: .bottomTrailing) {
                             DownloadButton(webViewModel: webViewModel)
-                        }
+                        }*/
                 }
                 .if(webViewModel.error != nil) { view in
                     view.allowsHitTesting(false)

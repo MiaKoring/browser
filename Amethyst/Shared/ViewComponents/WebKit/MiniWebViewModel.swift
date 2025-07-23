@@ -21,7 +21,6 @@ class MiniWebViewModel: NSObject, ObservableObject {
     
     private var webView: AWKWebView?
     private var cancellables: Set<AnyCancellable> = []
-    var downloadDelegate = DownloadDelegate()
     
     init(appViewModel: AppViewModel) {
         self.appViewModel = appViewModel

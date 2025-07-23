@@ -30,8 +30,6 @@ class WebViewModel: NSObject, ObservableObject {
     var historyBlocked: [URL: Double] = [:]
     var webView: AWKWebView?
     var cancellables: Set<AnyCancellable> = []
-    var processPool: WKProcessPool
-    var downloadDelegate: DownloadDelegate = DownloadDelegate()
     var cache: Bool? = nil
     
     // MARK: - Initializers
@@ -43,8 +41,6 @@ class WebViewModel: NSObject, ObservableObject {
         contentViewModel: ContentViewModel,
         appViewModel: AppViewModel
     ) {
-        // The processPool must be part of the configuration.
-        self.processPool = configuration.processPool
         self.contentViewModel = contentViewModel
         self.appViewModel = appViewModel
         super.init()
@@ -65,20 +61,7 @@ class WebViewModel: NSObject, ObservableObject {
         self.init(configuration: config, contentViewModel: contentViewModel, appViewModel: appViewModel)
     }
     
-    // Convenience init for a standard new tab with a specific processPool.
-    // This one adds the 'webauthn' message handler.
-    convenience init(
-        processPool: WKProcessPool,
-        contentViewModel: ContentViewModel,
-        appViewModel: AppViewModel
-    ) {
-        let config = Self.makeDefaultConfiguration(with: processPool)
-        // Add specific handlers for this case
-        self.init(configuration: config, contentViewModel: contentViewModel, appViewModel: appViewModel)
-    }
-    
-    init(config: WKWebViewConfiguration, processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        self.processPool = processPool
+    init(config: WKWebViewConfiguration, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
         self.contentViewModel = contentViewModel
         self.appViewModel = appViewModel
         super.init()
@@ -165,7 +148,6 @@ class WebViewModel: NSObject, ObservableObject {
             webConfiguration.allowsAirPlayForMediaPlayback = true
             webConfiguration.mediaTypesRequiringUserActionForPlayback = []
             webConfiguration.suppressesIncrementalRendering = false
-            webConfiguration.processPool = processPool
             let webView = AWKWebView(frame: .zero, configuration: webConfiguration)
             self.webView = webView
             self.webView?.allowsBackForwardNavigationGestures = false
@@ -188,14 +170,6 @@ class WebViewModel: NSObject, ObservableObject {
         request.setValue(Self.accept, forHTTPHeaderField: "Accept")
         request.setValue("https://duckduckgo.com/", forHTTPHeaderField: "Referer")
         webView?.load(request)
-    }
-    
-    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
-        download.delegate = downloadDelegate
-    }
-        
-    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
-        download.delegate = downloadDelegate
     }
     
     func appendHistory() {

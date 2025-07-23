@@ -48,21 +48,7 @@ extension WebViewModel: WKNavigationDelegate {
             }
         }
         
-        // Use the modern API to handle downloads suggested by WebKit.
         if navigationAction.shouldPerformDownload {
-            Self.logger.info(
-                "Action: WebKit suggests download for \(navigationAction.request.url?.absoluteString ?? "N/A")"
-            )
-            if url.scheme != "blob" {
-                // Initiate custom download and cancel WebKit's handling.
-                appViewModel.downloadManager?.downloadFile(
-                    from: url,
-                    withName: url.lastPathComponent,
-                    referedBy: self.referer
-                )
-                return .cancel
-            }
-            // For blobs or other cases, let WebKit handle the download.
             return .download
         }
         
@@ -136,29 +122,7 @@ extension WebViewModel: WKNavigationDelegate {
         }
         
         if isDownload {
-            // Mark this URL to prevent re-checking.
-            self.blockDownloadCheckforURL = url
-            
-            // Use the filename from Content-Disposition, or fall back to the URL's last path component.
-            let finalFilename = suggestedFilename ?? response.suggestedFilename
-            ?? url.lastPathComponent
-            
-            if url.scheme != "blob" {
-                // Cancel WebKit's navigation.
-                decisionHandler(.cancel)
-                // Start the download with our custom manager.
-                Self.logger.info(
-                    "Initiating custom download for \(url.absoluteString) as '\(finalFilename)'"
-                )
-                appViewModel.downloadManager?.downloadFile(
-                    from: url,
-                    withName: finalFilename,
-                    referedBy: self.referer
-                )
-            } else {
-                // For blob URLs, it's often better to let WebKit handle the download directly.
-                decisionHandler(.download)
-            }
+            decisionHandler(.download)
         } else {
             // The content is not a download, allow WebKit to render it.
             decisionHandler(.allow)

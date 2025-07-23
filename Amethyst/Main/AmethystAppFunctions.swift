@@ -24,7 +24,7 @@ extension AmethystApp {
                 openWindow(id: "mainWindow")
                 return
             }
-            let vm = WebViewModel(processPool: contentViewModel.wkProcessPool, contentViewModel: contentViewModel, appViewModel: appViewModel)
+            let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
             vm.load(urlString: url?.absoluteString ?? "")
             let tab = ATab(webViewModel: vm)
             contentViewModel.tabs.append(tab)
