@@ -21,7 +21,6 @@ class ContentViewModel: NSObject, ObservableObject, Identifiable {
     var isPasswordFixed: Bool = false
     var currentTab: UUID?
     var tabs: [ATab] = []
-    var wkProcessPool = WKProcessPool()
     var blockNotification: Bool = false
     var showInlineSearch: Bool = false
     var showHistory: Bool = false

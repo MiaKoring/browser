@@ -25,6 +25,7 @@ class AppViewModel: NSObject, ObservableObject, NSWindowDelegate {
     var useMacOS26Design = !UDKey.useOldDesign.boolValue
     var newURLToOpen: URL?
     var createNewWindow: Bool = false
+    var runsInAppStoreSandbox: Bool = false
     
     func windowDidBecomeKey(_ notification: Notification) {
         if let window = notification.object as? NSWindow {

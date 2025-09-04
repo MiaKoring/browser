@@ -8,6 +8,7 @@ import SwiftData
 import SwiftUI
 import WebKit
 import OSLog
+import StoreKit
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var appViewModel: AppViewModel?
@@ -40,6 +41,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
+        Task {
+            Subscriptions.setup() // configures the IAP Provider
+            appViewModel?.runsInAppStoreSandbox = await {
+                let result = try? await AppTransaction.shared
+                let transaction = try? result?.payloadValue
+                return transaction?.environment != .production
+            }()
+        }
         DispatchQueue.main.async {
             let hasVisibleContentWindows = NSApp.windows.contains { window in
                 window.isVisible && window.canBecomeMain
@@ -72,7 +81,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return true
         }
         var miniaturizedWindow: NSWindow? = nil
-        var shouldRestoreMiniaturized = !sender.windows.contains(where: {!$0.isMiniaturized})
+        let shouldRestoreMiniaturized = !sender.windows.contains(where: {!$0.isMiniaturized})
         if shouldRestoreMiniaturized {
             for window in sender.windows {
                 if window.identifier?.rawValue.hasPrefix("mainWindow") ?? false,

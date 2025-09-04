@@ -1,0 +1,186 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "5584538E",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "59.99",
+      "familyShareable" : false,
+      "internalID" : "6748880173",
+      "localizations" : [
+        {
+          "description" : "Current plus features & 1 year new(perpetual)",
+          "displayName" : "Lifetime Plus",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "de.touchthegrass.Amethyst.Lifetime",
+      "referenceName" : "Lifetime Plus",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6738795399",
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_developerTeamID" : "68YWPYV749",
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 774733645.51653004,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "DEU",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21736561",
+      "localizations" : [
+
+      ],
+      "name" : "Amethyst Plus",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "24.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6748880636",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "1 Year of Plus features inlcuding updates",
+              "displayName" : "Annual Plus",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "de.touchthegrass.Amethyst.Annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Annual",
+          "subscriptionGroupID" : "21736561",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6748881399",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "All plus features including updates",
+              "displayName" : "Monthly Plus",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "de.touchthegrass.Amethyst.Monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly",
+          "subscriptionGroupID" : "21736561",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "id" : "21736574",
+      "localizations" : [
+
+      ],
+      "name" : "Amethyst Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "84.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6748888295",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access all Plus and Pro Features",
+              "displayName" : "Amethyst Pro Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "amt_pro_year",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Amethyst Pro Annual",
+          "subscriptionGroupID" : "21736574",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "7.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6748888377",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access all Plus and Pro Features",
+              "displayName" : "Amethyst Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "amt_pro_month",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Amethyst Pro Monthly",
+          "subscriptionGroupID" : "21736574",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

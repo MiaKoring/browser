@@ -133,7 +133,7 @@ extension SetupStep {
         }
         
         func autoconfig() {
-            if let generated = KeyChainManager.getValue(for: .meiliMasterKey) {} else {
+            if let _ = KeyChainManager.getValue(for: .meiliMasterKey) {} else {
                 guard let masterKey = KeyChainManager.generateSecureKey(length: 16) else {
                     return
                 }

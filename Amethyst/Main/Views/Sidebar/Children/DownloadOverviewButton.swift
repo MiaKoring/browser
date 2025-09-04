@@ -21,7 +21,7 @@ struct DownloadOverviewButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .contentShape(RoundedRectangle(cornerRadius: 10))
             .padding(-2)
-            .activeIndicator(isActive: !(appViewModel.downloadManager?.activeDownloads.isEmpty ?? true))
+            .activeIndicator(isActive: (appViewModel.downloadManager?.activeDownloads.contains(where: {!$0.value.isCanceled}) ?? false))
             .onHover { isHovered in
                 if isHovered { playAnimation.toggle() }
                 self.isHovered = isHovered

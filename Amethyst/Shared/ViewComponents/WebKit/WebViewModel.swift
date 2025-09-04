@@ -54,9 +54,7 @@ class WebViewModel: NSObject, ObservableObject {
     // Convenience init for a standard new tab.
     // It derives the processPool from the contentViewModel.
     convenience init(contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        let config = Self.makeDefaultConfiguration(
-            with: contentViewModel.wkProcessPool
-        )
+        let config = Self.makeDefaultConfiguration()
         // No special configuration needed, so we call the designated init directly.
         self.init(configuration: config, contentViewModel: contentViewModel, appViewModel: appViewModel)
     }
@@ -141,13 +139,7 @@ class WebViewModel: NSObject, ObservableObject {
         if let webView {
             return webView
         } else {
-            let webConfiguration = WKWebViewConfiguration()
-            webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
-            webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
-            webConfiguration.allowsInlinePredictions = true
-            webConfiguration.allowsAirPlayForMediaPlayback = true
-            webConfiguration.mediaTypesRequiringUserActionForPlayback = []
-            webConfiguration.suppressesIncrementalRendering = false
+            let webConfiguration = Self.makeDefaultConfiguration()
             let webView = AWKWebView(frame: .zero, configuration: webConfiguration)
             self.webView = webView
             self.webView?.allowsBackForwardNavigationGestures = false
@@ -299,12 +291,8 @@ class WebViewModel: NSObject, ObservableObject {
     }
 
     /// Factory method to create a default WKWebViewConfiguration for Amethyst.
-    private static func makeDefaultConfiguration(
-        with processPool: WKProcessPool
-    ) -> WKWebViewConfiguration {
+    private static func makeDefaultConfiguration() -> WKWebViewConfiguration {
         let webConfiguration = WKWebViewConfiguration()
-        // Assign the process pool
-        webConfiguration.processPool = processPool
         // Set User-Agent
         webConfiguration.applicationNameForUserAgent =
             "Version/18.1.1 Safari/605.1.15"
