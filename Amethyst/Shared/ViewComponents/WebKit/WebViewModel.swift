@@ -139,13 +139,7 @@ class WebViewModel: NSObject, ObservableObject {
         if let webView {
             return webView
         } else {
-            let webConfiguration = WKWebViewConfiguration()
-            webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
-            webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
-            webConfiguration.allowsInlinePredictions = true
-            webConfiguration.allowsAirPlayForMediaPlayback = true
-            webConfiguration.mediaTypesRequiringUserActionForPlayback = []
-            webConfiguration.suppressesIncrementalRendering = false
+            let webConfiguration = Self.makeDefaultConfiguration()
             let webView = AWKWebView(frame: .zero, configuration: webConfiguration)
             self.webView = webView
             self.webView?.allowsBackForwardNavigationGestures = false

@@ -76,8 +76,6 @@ extension WebViewModel: WKNavigationDelegate {
         }
         
         var isDownload = false
-        var suggestedFilename: String?
-        
         // 1. Check for 'Content-Disposition: attachment' header. This is the strongest indicator.
         let dispositionKey = response.allHeaderFields.keys.first {
             ($0 as? String)?.lowercased() == "content-disposition"
@@ -87,7 +85,6 @@ extension WebViewModel: WKNavigationDelegate {
            disposition.lowercased().contains("attachment")
         {
             isDownload = true
-            suggestedFilename = parseFilename(from: disposition)
             Self.logger.debug(
                 "Download detected by Content-Disposition for \(url.absoluteString)"
             )

@@ -18,6 +18,7 @@ class DownloadInfo: Identifiable, Hashable {
     
     var destinationURL: URL?
     var didFail: Bool = false
+    var isCanceled: Bool = false
     var isFinished: Bool = false
     
     let download: WKDownload

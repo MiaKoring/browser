@@ -11,6 +11,7 @@ import WebKit
 
 @Observable
 class DownloadManager: NSObject {
+    public static var downloadsExtension = "amthDownload"
     var activeDownloads: [WKDownload: DownloadInfo] = [:]
     
     private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "DownloadManager")
@@ -83,11 +84,37 @@ class DownloadManager: NSObject {
         
         activeDownloads[download]?.destinationURL = targetURL
         
-        return targetURL
+        return targetURL.appendingPathExtension(Self.downloadsExtension)
+    }
+    
+    func cancelDownload(_ download: WKDownload?) {
+        guard let download else {
+            Self.logger.error("failed to cancel download, recieved nil value")
+            return
+        }
+        if let info = activeDownloads[download],
+           let destination = info.destinationURL {
+            download.cancel()
+            info.isCanceled = true
+            info.progress = -1
+            do {
+                try FileManager.default.removeItem(at: destination.appendingPathExtension(DownloadManager.downloadsExtension))
+            } catch {
+                Self.logger.error("Failed to remove dangling temp download file with error: \(error.localizedDescription)")
+            }
+        } else {
+            Self.logger.error("Failed to remove dangling temp download file with reason: couldn't find destination)")
+        }
     }
     
     private func saveBookmark(targetURL: URL) {
         do {
+            do {
+                try FileManager.default.moveItem(at: targetURL.appendingPathExtension(Self.downloadsExtension), to: targetURL)
+            } catch {
+                Self.logger.error("failed to set quarantine value for: \(targetURL.absoluteString)\nwith error: \(error.localizedDescription)")
+            }
+            
             let bookmark = try targetURL.bookmarkData(
                 options: .withSecurityScope,
                 includingResourceValuesForKeys: [.nameKey, .contentTypeKey, .creationDateKey],

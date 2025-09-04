@@ -17,7 +17,7 @@ struct ShortDownloadOverviewItem: View {
         HStack {
             item.icon
                 .frame(maxWidth: 50, maxHeight: 50)
-                .if(item.info?.download.progress != nil) { view in
+                .if((0.0...1.0).contains(item.info?.progress ?? -1.0)) { view in
                     view.overlay(alignment: .bottom) {
                         ProgressView(value: item.info?.progress ?? 0.0)
                             .progressViewStyle(.linear)
@@ -26,14 +26,11 @@ struct ShortDownloadOverviewItem: View {
                 }
             Text(item.name)
                 .lineLimit(1)
-                .foregroundStyle(item.info?.didFail ?? false ? .red: .primary)
+                .foregroundStyle(item.info?.didFail ?? false ? .red: item.info?.isCanceled ?? false ? .gray: .primary)
             Spacer()
-            if item.info?.progress != nil {
+            if item.info?.progress != nil && item.info?.progress ?? 0.0 < 1.0 {
                 Button {
-                    if let download = item.info?.download {
-                        download.cancel()
-                        appViewModel.downloadManager?.activeDownloads[download] = nil
-                    }
+                    appViewModel.downloadManager?.cancelDownload(item.info?.download)
                     update()
                 } label: {
                     Image(systemName: "xmark.circle")
