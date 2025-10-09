@@ -18,7 +18,7 @@ extension KeybindsGroup {
     var children: [Keybind] {
         switch self {
         case .window:
-            [.newWindow]
+            [.newWindow, .toggleTranslucentFloatingWindow]
         case .sidebars:
             [.toggleSidebar, .toggleSidebarFixed, .togglePasswords, .togglePasswordsFixed, .triggerPasswordsAuth]
         case .search:

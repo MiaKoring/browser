@@ -18,7 +18,7 @@ extension ContentView: View, TabOpener {
                 HostingWindowFinder(callback: { window in
                     if let window, let id = window.identifier {
                         self.appViewModel.currentlyActiveWindowId = id.rawValue
-                        self.window = window
+                        self.contentViewModel.window = window
                     }
                 })
                 WindowHighlighter()

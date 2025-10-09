@@ -12,6 +12,7 @@ struct SettingsView: View {
     @Environment(AppViewModel.self) var appViewModel
     @StateObject var fileDownloader = SetupStep.DownloadIndexView.FileDownloader()
     @State var useMacos26upDesign = !UDKey.useOldDesign.boolValue
+    @State var translucency: Double = UDKey.tranclucency.doubleValue <= 0 ? 0.4 : UDKey.tranclucency.doubleValue
     var body: some View {
         ZStack {
             HostingWindowFinder(callback: { window in
@@ -35,6 +36,13 @@ struct SettingsView: View {
                             UDKey.useOldDesign.boolValue = !useMacos26upDesign
                             appViewModel.useMacOS26Design = useMacos26upDesign
                         }
+                    Slider(value: $translucency, in: 0.1...0.9) {
+                        Text("Opacity while floating: \(translucency)")
+                    } onEditingChanged: { isEditing in
+                        if !isEditing {
+                            UDKey.tranclucency.doubleValue = translucency
+                        }
+                    }
                 } label: {
                     Label("Design", systemImage: "paintbrush.pointed")
                 }
