@@ -43,15 +43,17 @@ extension SearchEngine: Identifiable {
     }
     
     func makeSearchUrl(_ input: String) -> URL? {
-        switch self {
+        let query = input.addingPercentEncoding(withAllowedCharacters: []) ??
+        input
+        return switch self {
         case .duckduckgo:
-            URL(string: "https://duckduckgo.com/?q=\(input.replacingOccurrences(of: " ", with: "+"))")
+            URL(string: "https://duckduckgo.com/?q=\(query)")
         case .google:
-            URL(string: "https://google.com/search?q=\(input.replacingOccurrences(of: " ", with: "+"))")
+            URL(string: "https://google.com/search?q=\(query)")
         case .ecosia:
-            URL(string: "https://www.ecosia.org/search?q=\(input.replacingOccurrences(of: " ", with: "+"))")
+            URL(string: "https://www.ecosia.org/search?q=\(query)")
         case .startpage:
-            URL(string: "https://www.startpage.com/sp/search?q=\(input.replacingOccurrences(of: " ", with: "+"))")
+            URL(string: "https://www.startpage.com/sp/search?q=\(query)")
         }
     }
     
