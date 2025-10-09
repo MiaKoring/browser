@@ -28,6 +28,7 @@ enum Keybind: String, CaseIterable, UserDefaultWrapper {
     case triggerPasswordsAuth
     case sidebarOrientation
     case moveSingleFrameToWindow
+    case toggleTranslucentFloatingWindow
 }
 
 extension Keybind {
@@ -53,55 +54,55 @@ extension Keybind {
     }
     
     var shortcut: Shortcut {
-            get {
-                // First, try to retrieve the shortcut from the cache in a thread-safe way.
-                let cachedShortcut = Keybind.cacheQueue.sync {
-                    Keybind.shortcutCache[self.rawValue]
-                }
-
-                if let shortcut = cachedShortcut {
-                    // Cache hit: return the cached shortcut immediately.
-                    return shortcut
-                }
-
-                // Cache miss: The shortcut is not in our cache yet.
-                // We need to compute it from UserDefaults.
-                let computedShortcut: Shortcut
-                if let data = self.data,
-                    let decoded = try? JSONDecoder().decode(
-                        Shortcut.self,
-                        from: data
-                    )
-                {
-                    // A custom shortcut was found in UserDefaults.
-                    computedShortcut = decoded
-                } else {
-                    // No custom shortcut found, use the default.
-                    computedShortcut = self.defaultShortcut
-                }
-
-                // Store the newly computed shortcut in the cache for next time.
-                Keybind.cacheQueue.sync {
-                    Keybind.shortcutCache[self.rawValue] = computedShortcut
-                }
-
-                return computedShortcut
+        get {
+            // First, try to retrieve the shortcut from the cache in a thread-safe way.
+            let cachedShortcut = Keybind.cacheQueue.sync {
+                Keybind.shortcutCache[self.rawValue]
             }
-            nonmutating set {
-                do {
-                    // Encode the new shortcut and save it to UserDefaults.
-                    let encoded = try JSONEncoder().encode(newValue)
-                    UserDefaults.standard.set(encoded, forKey: self.key)
-
-                    // Update the cache with the new value in a thread-safe way.
-                    Keybind.cacheQueue.sync {
-                        Keybind.shortcutCache[self.rawValue] = newValue
-                    }
-                } catch {
-                    print("Error encoding shortcut: \(error)")
+            
+            if let shortcut = cachedShortcut {
+                // Cache hit: return the cached shortcut immediately.
+                return shortcut
+            }
+            
+            // Cache miss: The shortcut is not in our cache yet.
+            // We need to compute it from UserDefaults.
+            let computedShortcut: Shortcut
+            if let data = self.data,
+               let decoded = try? JSONDecoder().decode(
+                Shortcut.self,
+                from: data
+               )
+            {
+                // A custom shortcut was found in UserDefaults.
+                computedShortcut = decoded
+            } else {
+                // No custom shortcut found, use the default.
+                computedShortcut = self.defaultShortcut
+            }
+            
+            // Store the newly computed shortcut in the cache for next time.
+            Keybind.cacheQueue.sync {
+                Keybind.shortcutCache[self.rawValue] = computedShortcut
+            }
+            
+            return computedShortcut
+        }
+        nonmutating set {
+            do {
+                // Encode the new shortcut and save it to UserDefaults.
+                let encoded = try JSONEncoder().encode(newValue)
+                UserDefaults.standard.set(encoded, forKey: self.key)
+                
+                // Update the cache with the new value in a thread-safe way.
+                Keybind.cacheQueue.sync {
+                    Keybind.shortcutCache[self.rawValue] = newValue
                 }
+            } catch {
+                print("Error encoding shortcut: \(error)")
             }
         }
+    }
     
     var defaultShortcut: Shortcut {
         switch self {
@@ -147,6 +148,8 @@ extension Keybind {
             Shortcut(key: "n", modifier: [.command, .shift])
         case .moveSingleFrameToWindow:
             Shortcut(key: "b", modifier: .command)
+        case .toggleTranslucentFloatingWindow:
+            Shortcut(key: "0", modifier: [.command, .shift])
         }
     }
     
@@ -177,6 +180,7 @@ extension Keybind {
         case .triggerPasswordsAuth: "Authenticate yourself"
         case .sidebarOrientation: "Move your tabs left or right"
         case .moveSingleFrameToWindow: "Move a single-tab window to a full browser window"
+        case .toggleTranslucentFloatingWindow: "Toggle translucent floating mode"
         }
     }
     
@@ -224,6 +228,8 @@ extension Keybind {
             "Toggle Tab Position"
         case .moveSingleFrameToWindow:
             ""
+        case .toggleTranslucentFloatingWindow:
+            "Toggle Floating"
         }
     }
     
@@ -249,6 +255,7 @@ extension Keybind {
         case .resetZoom: resetZoom(appViewModel)
         case .sidebarOrientation: toggleSidebarOrientation(appViewModel)
         case .moveSingleFrameToWindow, .triggerPasswordsAuth: break
+        case .toggleTranslucentFloatingWindow: toggleTranslucentWindow(appViewModel)
         }
         switch self {
         case .triggerPasswordsAuth, .moveSingleFrameToWindow:

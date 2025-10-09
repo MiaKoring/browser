@@ -15,6 +15,7 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case leadingFixedSidebarWidth
     case trailingFixedSidebarWidth
     case useOldDesign
+    case tranclucency
     
     case userEmail
 }

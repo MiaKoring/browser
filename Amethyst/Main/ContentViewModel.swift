@@ -29,6 +29,8 @@ class ContentViewModel: NSObject, ObservableObject, Identifiable {
     var sidebarOrientation: SidebarOrientations
     var showSetup: Bool = false
     
+    var window: NSWindow? = nil
+    
     var onClose: (() -> Void)?
     
     init(id: String) {
@@ -81,13 +83,12 @@ struct ContentView {
     @State var inputBarText: String = ""
     @State var showMacosWindowIconsAreaHovered: Bool = false
     @State var macosWindowIconsHovered: Bool = false
-    @State var window: NSWindow? = nil
     @Environment(\.scenePhase) var scenePhase
     @State var showHistory = false
     
     func onAppear() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let window, let id = window.identifier?.rawValue {
+            if let window = contentViewModel.window, let id = window.identifier?.rawValue {
                 window.standardWindowButton(.closeButton)?.isHidden = true
                 window.standardWindowButton(.miniaturizeButton)?.isHidden = true
                 window.standardWindowButton(.zoomButton)?.isHidden = true

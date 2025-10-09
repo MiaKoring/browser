@@ -141,4 +141,21 @@ extension Keybind {
             }
         }
     }
+    
+    func toggleTranslucentWindow(_ appViewModel: AppViewModel) {
+        guard let contentViewModel = contentViewModelForActiveWindow(appViewModel: appViewModel), let window = contentViewModel.window else { return }
+        if window.alphaValue == 1 {
+            var translucency = UDKey.tranclucency.doubleValue
+            if translucency <= 0 { translucency = 0.4 }
+            window.alphaValue = translucency
+            window.level = .floating
+            window.ignoresMouseEvents = true
+            window.acceptsMouseMovedEvents = false
+        } else {
+            window.alphaValue = 1
+            window.level = .normal
+            window.ignoresMouseEvents = false
+            window.acceptsMouseMovedEvents = true
+        }
+    }
 }
