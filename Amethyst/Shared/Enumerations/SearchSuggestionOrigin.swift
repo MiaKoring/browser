@@ -9,15 +9,16 @@ import SwiftUI
 enum SearchSuggestionOrigin {
     case history
     case searchEngine
+    case bang
 }
 
 extension SearchSuggestionOrigin {
     var image: Image {
         switch self {
-        case .searchEngine:
-            (SearchEngine(rawValue: UDKey.searchEngine.intValue) ?? .duckduckgo).icon
-        case .history:
-            Image("AmethystLogo")
+            case .searchEngine:
+                (SearchEngine(rawValue: UDKey.searchEngine.intValue) ?? .duckduckgo).icon
+            case .history, .bang:
+                Image("AmethystLogo")
         }
     }
 }

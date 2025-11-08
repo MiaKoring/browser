@@ -79,6 +79,12 @@ fileprivate struct InputParser {
         if let command = InputType.Command(rawValue: text) {
             return .command(command)
         }
+        
+        var text = text
+        
+        if let bangResult = BangManager.shared.resolve(text) {
+            text = bangResult
+        }
 
         // Then, try to interpret the text as a URL
         if let url = createURL(from: text) {

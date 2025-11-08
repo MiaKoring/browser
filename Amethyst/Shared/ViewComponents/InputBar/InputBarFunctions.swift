@@ -10,6 +10,10 @@ import SwiftUI
 
 extension InputBar {
     func timerSuggestionFetch() async {
+        if let bang = BangManager.shared.resolve(text) {
+            quickSearchResults = [SearchSuggestion(title: text, urlString: bang, origin: .bang)]
+            return
+        }
         if let meili = appViewModel.meili {
             async let results = await fetchSearchEngineSuggestions()
             async let meiliRes = await fetchHistorySuggestions(meili)
@@ -68,7 +72,10 @@ extension InputBar {
         return meiliRes
     }
     
-    private func makeResult(searchEngineList: [SearchSuggestion], meiliList: [SearchSuggestion]?) {
+    private func makeResult(
+        searchEngineList: [SearchSuggestion],
+        meiliList: [SearchSuggestion]?
+    ) {
         var result: [SearchSuggestion] = []
         if let meiliList {
             if searchEngineList.count >= 1 {

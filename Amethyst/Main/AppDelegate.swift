@@ -49,6 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return transaction?.environment != .production
             }()
         }
+        BangManager.shared.fetch()
         DispatchQueue.main.async {
             let hasVisibleContentWindows = NSApp.windows.contains { window in
                 window.isVisible && window.canBecomeMain
