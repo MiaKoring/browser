@@ -1,5 +1,5 @@
 {
-  "originHash" : "85b79bfc25371cb639adae0801f585796295511626a9a074ed1a7d9cf4ef567b",
+  "originHash" : "b654c2b8dc3967d05ba2c93e99a8ca680b8cc0e1468018e89845dc54f92cd811",
   "pins" : [
     {
       "identity" : "amethystauthenticatorcore",
@@ -38,47 +38,11 @@
       }
     },
     {
-      "identity" : "purchases-ios-spm",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/RevenueCat/purchases-ios-spm.git",
-      "state" : {
-        "revision" : "fa196fa767b15663ff8941a0a80e3ad67ad4d53f",
-        "version" : "5.33.0"
-      }
-    },
-    {
-      "identity" : "supabase-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/supabase/supabase-swift",
-      "state" : {
-        "revision" : "2eac6294b3e8fc08bfcc54ebdd614fd167f4f6ef",
-        "version" : "2.30.1"
-      }
-    },
-    {
       "identity" : "swift-asn1",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",
       "state" : {
         "revision" : "ae33e5941bb88d88538d0a6b19ca0b01e6c76dcf",
-        "version" : "1.3.1"
-      }
-    },
-    {
-      "identity" : "swift-clocks",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-clocks",
-      "state" : {
-        "revision" : "cc46202b53476d64e824e0b6612da09d84ffde8e",
-        "version" : "1.0.6"
-      }
-    },
-    {
-      "identity" : "swift-concurrency-extras",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-concurrency-extras",
-      "state" : {
-        "revision" : "82a4ae7170d98d8538ec77238b7eb8e7199ef2e8",
         "version" : "1.3.1"
       }
     },
@@ -92,30 +56,12 @@
       }
     },
     {
-      "identity" : "swift-http-types",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-http-types.git",
-      "state" : {
-        "revision" : "a0a57e949a8903563aba4615869310c0ebf14c03",
-        "version" : "1.4.0"
-      }
-    },
-    {
       "identity" : "swiftotp",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lachlanbell/SwiftOTP.git",
       "state" : {
         "revision" : "9660551ea3df153c3cbacfa34ac3abbec73a8b84",
         "version" : "3.0.2"
-      }
-    },
-    {
-      "identity" : "xctest-dynamic-overlay",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
-      "state" : {
-        "revision" : "23e3442166b5122f73f9e3e622cd1e4bafeab3b7",
-        "version" : "1.6.0"
       }
     }
   ],
