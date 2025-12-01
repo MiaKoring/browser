@@ -8,7 +8,7 @@ import SwiftData
 import SwiftUI
 import WebKit
 import OSLog
-import StoreKit
+
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var appViewModel: AppViewModel?
@@ -41,14 +41,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        Task {
-            Subscriptions.setup() // configures the IAP Provider
-            appViewModel?.runsInAppStoreSandbox = await {
-                let result = try? await AppTransaction.shared
-                let transaction = try? result?.payloadValue
-                return transaction?.environment != .production
-            }()
-        }
         BangManager.shared.fetch()
         DispatchQueue.main.async {
             let hasVisibleContentWindows = NSApp.windows.contains { window in

@@ -72,11 +72,6 @@ struct SettingsView: View {
                 } label: {
                     Label("Ignored Errors", systemImage: "exclamationmark.octagon")
                 }
-                Tab {
-                    Plans()
-                } label: {
-                    Label("Plans", systemImage: "crown.fill")
-                }
             }
         }
     }

@@ -16,11 +16,7 @@
 		A64536A92D85B45A0067BC82 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A64536A82D85B45A0067BC82 /* CodeScanner */; };
 		A64F20402D81F51100F36E0E /* CredentialProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64F20322D81F51100F36E0E /* CredentialProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A64F20462D81F52500F36E0E /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64F20342D81F51100F36E0E /* AuthenticationServices.framework */; };
-		A663DD1D2E2D2E4A00FCDE9F /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = A663DD1C2E2D2E4A00FCDE9F /* RevenueCat */; };
-		A663DD1F2E2D2E4A00FCDE9F /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = A663DD1E2E2D2E4A00FCDE9F /* RevenueCatUI */; };
-		A663DD322E2D433700FCDE9F /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = A663DD312E2D433700FCDE9F /* Auth */; };
 		A671F6F82D808C14008D4E03 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A671F6F72D808C14008D4E03 /* CodeScanner */; };
-		A693445E2E2D4EF1005E2935 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = A693445D2E2D4EF1005E2935 /* Supabase */; };
 		A6DB6D412D9589D3005CBC00 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6DB6D402D9589D3005CBC00 /* CloudKit.framework */; };
 		A6DB6D432D9589F5005CBC00 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6DB6D422D9589F5005CBC00 /* CloudKit.framework */; };
 		A6DB6D442D958A12005CBC00 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6DB6D422D9589F5005CBC00 /* CloudKit.framework */; };
@@ -164,13 +160,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A663DD1F2E2D2E4A00FCDE9F /* RevenueCatUI in Frameworks */,
 				A6124C702E2E317C00791893 /* StoreKit.framework in Frameworks */,
 				A61471152D948799001BB587 /* AmethystAuthenticatorCore in Frameworks */,
-				A693445E2E2D4EF1005E2935 /* Supabase in Frameworks */,
 				A640BCD32D05E6A1007E62E0 /* MeiliSearch in Frameworks */,
-				A663DD322E2D433700FCDE9F /* Auth in Frameworks */,
-				A663DD1D2E2D2E4A00FCDE9F /* RevenueCat in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,7 +267,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A693445C2E2D4E7E005E2935 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A64A1EE32CF6936B003B8875 /* Amethyst */,
@@ -284,10 +275,6 @@
 			packageProductDependencies = (
 				A640BCD22D05E6A1007E62E0 /* MeiliSearch */,
 				A61471142D948799001BB587 /* AmethystAuthenticatorCore */,
-				A663DD1C2E2D2E4A00FCDE9F /* RevenueCat */,
-				A663DD1E2E2D2E4A00FCDE9F /* RevenueCatUI */,
-				A663DD312E2D433700FCDE9F /* Auth */,
-				A693445D2E2D4EF1005E2935 /* Supabase */,
 			);
 			productName = Browser;
 			productReference = A64A1EE12CF6936B003B8875 /* Amethyst Browser.app */;
@@ -381,8 +368,6 @@
 				A640BCD12D05E6A1007E62E0 /* XCRemoteSwiftPackageReference "meilisearch-swift" */,
 				A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */,
 				A614710D2D9480E9001BB587 /* XCRemoteSwiftPackageReference "AmethystAuthenticatorCore" */,
-				A663DD1B2E2D2E4A00FCDE9F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
-				A663DD302E2D433700FCDE9F /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A64A1EE22CF6936B003B8875 /* Products */;
@@ -464,10 +449,6 @@
 			isa = PBXTargetDependency;
 			target = A64F20312D81F51100F36E0E /* CredentialProvider */;
 			targetProxy = A64F203E2D81F51100F36E0E /* PBXContainerItemProxy */;
-		};
-		A693445C2E2D4E7E005E2935 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = A693445B2E2D4E7E005E2935 /* Auth */;
 		};
 /* End PBXTargetDependency section */
 
@@ -990,22 +971,6 @@
 				kind = branch;
 			};
 		};
-		A663DD1B2E2D2E4A00FCDE9F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.33.0;
-			};
-		};
-		A663DD302E2D433700FCDE9F /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase/supabase-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.1;
-			};
-		};
 		A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/twostraws/CodeScanner";
@@ -1047,35 +1012,10 @@
 			package = A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */;
 			productName = CodeScanner;
 		};
-		A663DD1C2E2D2E4A00FCDE9F /* RevenueCat */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A663DD1B2E2D2E4A00FCDE9F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
-			productName = RevenueCat;
-		};
-		A663DD1E2E2D2E4A00FCDE9F /* RevenueCatUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A663DD1B2E2D2E4A00FCDE9F /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
-			productName = RevenueCatUI;
-		};
-		A663DD312E2D433700FCDE9F /* Auth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A663DD302E2D433700FCDE9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Auth;
-		};
 		A671F6F72D808C14008D4E03 /* CodeScanner */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A671F6F62D808C14008D4E03 /* XCRemoteSwiftPackageReference "CodeScanner" */;
 			productName = CodeScanner;
-		};
-		A693445B2E2D4E7E005E2935 /* Auth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A663DD302E2D433700FCDE9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Auth;
-		};
-		A693445D2E2D4EF1005E2935 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A663DD302E2D433700FCDE9F /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

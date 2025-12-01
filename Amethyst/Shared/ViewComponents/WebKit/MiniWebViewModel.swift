@@ -27,7 +27,7 @@ class MiniWebViewModel: NSObject, ObservableObject {
         super.init()
         
         let webConfiguration = WKWebViewConfiguration()
-        webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36"
+        webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15"
         webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
         webConfiguration.allowsInlinePredictions = true
         webConfiguration.allowsAirPlayForMediaPlayback = true
@@ -81,7 +81,7 @@ class MiniWebViewModel: NSObject, ObservableObject {
             return webView
         } else {
             let webConfiguration = WKWebViewConfiguration()
-            webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36"
+            webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15"
             webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
             webConfiguration.allowsInlinePredictions = true
             webConfiguration.allowsAirPlayForMediaPlayback = true
@@ -100,7 +100,7 @@ class MiniWebViewModel: NSObject, ObservableObject {
     func load(urlString: String) {
         guard let url = URL(string: urlString) else { return }
         var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
         webView?.load(request)
     }
     

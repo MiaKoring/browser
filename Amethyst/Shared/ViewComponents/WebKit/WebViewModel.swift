@@ -158,9 +158,8 @@ class WebViewModel: NSObject, ObservableObject {
     
     func load(url: URL) {
         var request = URLRequest(url: url)
-        request.setValue("Version/18.1.1 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
         request.setValue(Self.accept, forHTTPHeaderField: "Accept")
-        request.setValue("https://duckduckgo.com/", forHTTPHeaderField: "Referer")
         webView?.load(request)
     }
     
