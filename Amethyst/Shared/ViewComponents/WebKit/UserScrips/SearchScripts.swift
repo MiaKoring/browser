@@ -19,7 +19,7 @@ extension WebViewModel {
             amethystBrowserMarkInstance.unmark({"className": "amethystBrowserHighlight"});
             amethystBrowserMarkHighlights = [];
             amethystBrowserMarkInstance.mark(searchTerm, options); 
-            return document.querySelectorAll('.amethystHighlight').length;
+            return document.querySelectorAll('.amethystBrowserHighlight').length;
         }
         
         function amethystBrowserMarkRemoveHighlights() {
@@ -27,30 +27,29 @@ extension WebViewModel {
         }
 
         function amethystBrowserMarkNavigateHighlights(direction) {
-            if (highlights.length === 0) {
-                highlights = document.querySelectorAll('.amethystBrowserHighlight');
+            if (amethystBrowserMarkHighlights.length === 0) {
+                amethystBrowserMarkHighlights = document.querySelectorAll('.amethystBrowserHighlight');
             }
-            if (highlights.length === 0) return 0;
+            if (amethystBrowserMarkHighlights.length === 0) return 0;
 
-            // Entferne vorherige Markierung
+            // Remove old highlights
             amethystBrowserMarkHighlights[amethystBrowserMarkCurrentIndex]?.classList.remove('amethystBrowserCurrent-highlight');
 
-            // Aktualisiere den Index
+            // update index
             amethystBrowserMarkCurrentIndex += direction;
-            if (amethystBrowserMarkCurrentIndex < 0) amethystBrowserMarkCurrentIndex = highlights.length - 1;
-            if (amethystBrowserMarkCurrentIndex >= highlights.length) amethystBrowserMarkCurrentIndex = 0;
+            if (amethystBrowserMarkCurrentIndex < 0) amethystBrowserMarkCurrentIndex = amethystBrowserMarkHighlights.length - 1;
+            if (amethystBrowserMarkCurrentIndex >= amethystBrowserMarkHighlights.length) amethystBrowserMarkCurrentIndex = 0;
 
-            // Markiere und scrolle zum aktuellen Treffer
-            const current = amethystBrowserMarkHighlights[currentIndex];
+            // mark and scroll to current result
+            const current = amethystBrowserMarkHighlights[amethystBrowserMarkCurrentIndex];
             current.classList.add('amethystBrowserCurrent-highlight');
             current.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return amethystBrowserMarkCurrentIndex;
         }
         """
         
-        //let markScript = WKUserScript(source: markjs, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
         let userScript = WKUserScript(source: jsString, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
-        //webView?.configuration.userContentController.addUserScript(markScript)
+        
         webView?.configuration.userContentController.addUserScript(userScript)
     }
     
