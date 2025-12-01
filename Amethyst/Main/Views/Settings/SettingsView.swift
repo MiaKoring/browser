@@ -47,6 +47,11 @@ struct SettingsView: View {
                     Label("Design", systemImage: "paintbrush.pointed")
                 }
                 Tab {
+                    BangSettings()
+                } label: {
+                    Label("Productivity", systemImage: "chart.bar")
+                }
+                Tab {
                     SearchEngineSelectionView()
                 } label: {
                     Label("Search Engine", systemImage: "globe")
@@ -66,11 +71,6 @@ struct SettingsView: View {
                     IgnoredErrorsView()
                 } label: {
                     Label("Ignored Errors", systemImage: "exclamationmark.octagon")
-                }
-                Tab {
-                    Plans()
-                } label: {
-                    Label("Plans", systemImage: "crown.fill")
                 }
             }
         }
@@ -121,6 +121,76 @@ struct SettingsView: View {
                         .fill(.thinMaterial)
                 }
                 .padding(10)
+            }
+        }
+    }
+    
+    struct BangSettings: View {
+        @State var bangManager = BangManager.shared
+        @State var showTemporary = false
+        
+        var body: some View {
+            List {
+                HStack {
+                    Text("Shortcut")
+                        .frame(width: 60, alignment: .leading)
+                    Divider()
+                    Text("Destination")
+                    Spacer()
+                    Button {
+                        showTemporary = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .disabled(showTemporary)
+                }
+                .foregroundStyle(.secondary)
+                if showTemporary {
+                    BangRow(shortcut: "", destination: "") {
+                        self.showTemporary = false
+                    }
+                }
+                ForEach(bangManager.registered.keys.sorted()) { key in
+                    BangRow(shortcut: key, destination: bangManager.registered[key]!)
+                }
+            }
+        }
+        struct BangRow: View {
+            @State var shortcut: String
+            @State var destination: String
+            let oldShortcut: String
+            let oldDestination: String
+            let onPersist: (() -> Void)?
+            
+            init(shortcut: String, destination: String, onPersist: (() -> Void)? = nil) {
+                self._shortcut = State(initialValue: shortcut)
+                self._destination = State(initialValue: destination)
+                self.oldShortcut = shortcut
+                self.oldDestination = destination
+                self.onPersist = onPersist
+            }
+            
+            var body: some View {
+                HStack {
+                    TextField("", text: $shortcut)
+                        .frame(width: 60)
+                    Divider()
+                    TextField("", text: $destination)
+                    Button("Save") {
+                        if shortcut != oldShortcut {
+                            BangManager.shared.remove(key: oldShortcut)
+                        }
+                        BangManager.shared.set(destination, for: shortcut)
+                        onPersist?()
+                    }
+                    .disabled(shortcut.isEmpty || destination.isEmpty || (shortcut == oldShortcut && destination == oldDestination))
+                    Button {
+                        BangManager.shared.remove(key: oldShortcut)
+                        onPersist?()
+                    } label: {
+                        Image(systemName: "minus")
+                    }
+                }
             }
         }
     }
