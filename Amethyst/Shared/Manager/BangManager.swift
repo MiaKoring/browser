@@ -25,7 +25,7 @@ final class BangManager {
             let destination = bangs[parts[0]]
         else { return nil }
         
-        return "\(destination)\(parts[1].addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? parts[1])"
+        return "\(destination)\(parts[1].addingPercentEncoding(withAllowedCharacters: []) ?? parts[1])"
     }
     
     func remove(key: String) {
