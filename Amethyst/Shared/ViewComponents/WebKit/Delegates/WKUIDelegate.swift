@@ -45,6 +45,66 @@ extension WebViewModel: WKUIDelegate {
         }
     }
     
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptAlertPanelWithMessage message: String,
+        initiatedByFrame frame: WKFrameInfo
+    ) async {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = message
+        
+        // TODO: Show website icon
+        alert.runModal()
+    }
+    
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptConfirmPanelWithMessage message: String,
+        initiatedByFrame frame: WKFrameInfo
+    ) async -> Bool {
+        let alert = NSAlert()
+        alert.messageText = message
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+        // TODO: Show website icon
+        alert.layout()
+        
+        let result = alert.runModal()
+        
+        return result == .alertFirstButtonReturn
+    }
+    
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptTextInputPanelWithPrompt prompt: String,
+        defaultText: String?,
+        initiatedByFrame frame: WKFrameInfo,
+        completionHandler: @escaping @MainActor (String?) -> Void
+    ) {
+        let alert = NSAlert()
+        alert.messageText = prompt
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+        
+        let inputField = NSTextField(frame: NSRect(x: 0, y: 0, width: 280, height: 24))
+        inputField.stringValue = defaultText ?? ""
+        alert.accessoryView = inputField
+        
+        alert.layout()
+        alert.window.initialFirstResponder = inputField
+        
+        let result = alert.runModal()
+        
+        if result == .alertFirstButtonReturn {
+            completionHandler(inputField.stringValue)
+        } else {
+            completionHandler(nil)
+        }
+    }
+    
     private func openInNewTab(configuration: WKWebViewConfiguration) -> WKWebView? {
         let newWebViewModel = WebViewModel(config: configuration, contentViewModel: contentViewModel, appViewModel: appViewModel)
         let newTab = ATab(webViewModel: newWebViewModel)
