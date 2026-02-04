@@ -1,7 +1,7 @@
 import SwiftUI
 
 @Observable
-final class BangManager {
+final class BangManager: ShortcutFeatureManager {
     static var shared = BangManager()
     
     private init() {}
@@ -13,7 +13,7 @@ final class BangManager {
     }
     
     func resolve(_ query: String) -> String? {
-        guard query.hasPrefix(":") else { return nil }
+        guard query.hasPrefix("!") else { return nil }
         
         let parts = query
             .dropFirst()
@@ -67,4 +67,11 @@ final class BangManager {
         else { return }
         bangs = decoded
     }
+}
+protocol ShortcutFeatureManager: Observable {
+    func fetch() -> Void
+    func set(_ destination: String, for key: String) -> Void
+    func remove(key: String)
+    func resolve(_ query: String) -> String?
+    var registered: [String: String] { get }
 }
