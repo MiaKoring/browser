@@ -54,7 +54,10 @@ extension WebViewModel: WKUIDelegate {
         alert.alertStyle = .informational
         alert.messageText = message
         
-        // TODO: Show website icon
+        if let window = webView.window {
+            await alert.beginSheetModal(for: window)
+            return
+        }
         alert.runModal()
     }
     
@@ -68,12 +71,17 @@ extension WebViewModel: WKUIDelegate {
         alert.alertStyle = .informational
         alert.addButton(withTitle: "OK")
         alert.addButton(withTitle: "Cancel")
-        // TODO: Show website icon
         alert.layout()
         
-        let result = alert.runModal()
+        var response: NSApplication.ModalResponse
         
-        return result == .alertFirstButtonReturn
+        if let window = webView.window {
+            response = await alert.beginSheetModal(for: window)
+        } else {
+            response = alert.runModal()
+        }
+        
+        return response == .alertFirstButtonReturn
     }
     
     func webView(
@@ -96,9 +104,18 @@ extension WebViewModel: WKUIDelegate {
         alert.layout()
         alert.window.initialFirstResponder = inputField
         
-        let result = alert.runModal()
-        
-        if result == .alertFirstButtonReturn {
+        if let window = webView.window {
+            alert.beginSheetModal(for: window) { response in
+                if response == .alertFirstButtonReturn {
+                    completionHandler(inputField.stringValue)
+                } else {
+                    completionHandler(nil)
+                }
+            }
+            return
+        }
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
             completionHandler(inputField.stringValue)
         } else {
             completionHandler(nil)
