@@ -42,6 +42,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         BangManager.shared.fetch()
+        CommandsManager.shared.fetch()
         DispatchQueue.main.async {
             let hasVisibleContentWindows = NSApp.windows.contains { window in
                 window.isVisible && window.canBecomeMain

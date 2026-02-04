@@ -17,6 +17,7 @@ enum UDKey: String, CaseIterable, UserDefaultWrapper {
     case useOldDesign
     case tranclucency
     case bangs
+    case commands
     
     case userEmail
 }

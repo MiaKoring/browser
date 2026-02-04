@@ -14,6 +14,10 @@ extension InputBar {
             quickSearchResults = [SearchSuggestion(title: text, urlString: bang, origin: .bang)]
             return
         }
+        if let command = CommandsManager.shared.resolve(text) {
+            quickSearchResults = [SearchSuggestion(title: text, urlString: command, origin: .command)]
+            return
+        }
         if let meili = appViewModel.meili {
             async let results = await fetchSearchEngineSuggestions()
             async let meiliRes = await fetchHistorySuggestions(meili)

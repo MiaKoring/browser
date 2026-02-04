@@ -85,6 +85,10 @@ fileprivate struct InputParser {
         if let bangResult = BangManager.shared.resolve(text) {
             text = bangResult
         }
+        
+        if let shortcut = CommandsManager.shared.resolve(text) {
+            text = shortcut
+        }
 
         // Then, try to interpret the text as a URL
         if let url = createURL(from: text) {

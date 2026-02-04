@@ -47,7 +47,7 @@ struct SettingsView: View {
                     Label("Design", systemImage: "paintbrush.pointed")
                 }
                 Tab {
-                    BangSettings()
+                    ProductivitySettings()
                 } label: {
                     Label("Productivity", systemImage: "chart.bar")
                 }
@@ -125,8 +125,8 @@ struct SettingsView: View {
         }
     }
     
-    struct BangSettings: View {
-        @State var bangManager = BangManager.shared
+    struct ShortcutEditView: View {
+        @State var manager: ShortcutFeatureManager
         @State var showTemporary = false
         
         var body: some View {
@@ -146,23 +146,25 @@ struct SettingsView: View {
                 }
                 .foregroundStyle(.secondary)
                 if showTemporary {
-                    BangRow(shortcut: "", destination: "") {
+                    ShortcutRow(manager: manager, shortcut: "", destination: "") {
                         self.showTemporary = false
                     }
                 }
-                ForEach(bangManager.registered.keys.sorted()) { key in
-                    BangRow(shortcut: key, destination: bangManager.registered[key]!)
+                ForEach(manager.registered.keys.sorted()) { key in
+                    ShortcutRow(manager: manager, shortcut: key, destination: manager.registered[key]!)
                 }
             }
         }
-        struct BangRow: View {
+        struct ShortcutRow: View {
+            let manager: ShortcutFeatureManager
             @State var shortcut: String
             @State var destination: String
             let oldShortcut: String
             let oldDestination: String
             let onPersist: (() -> Void)?
             
-            init(shortcut: String, destination: String, onPersist: (() -> Void)? = nil) {
+            init(manager: ShortcutFeatureManager, shortcut: String, destination: String, onPersist: (() -> Void)? = nil) {
+                self.manager = manager
                 self._shortcut = State(initialValue: shortcut)
                 self._destination = State(initialValue: destination)
                 self.oldShortcut = shortcut
@@ -178,17 +180,58 @@ struct SettingsView: View {
                     TextField("", text: $destination)
                     Button("Save") {
                         if shortcut != oldShortcut {
-                            BangManager.shared.remove(key: oldShortcut)
+                            manager.remove(key: oldShortcut)
                         }
-                        BangManager.shared.set(destination, for: shortcut)
+                        manager.set(destination, for: shortcut)
                         onPersist?()
                     }
                     .disabled(shortcut.isEmpty || destination.isEmpty || (shortcut == oldShortcut && destination == oldDestination))
                     Button {
-                        BangManager.shared.remove(key: oldShortcut)
+                        manager.remove(key: oldShortcut)
                         onPersist?()
                     } label: {
                         Image(systemName: "minus")
+                    }
+                }
+            }
+        }
+    }
+    
+    struct ProductivitySettings: View {
+        @State private var selection = ProductivityView.bangs
+        var body: some View {
+            HStack {
+                ForEach(ProductivityView.allCases, id: \.rawValue) { feature in
+                    feature.button(selection: $selection)
+                }
+            }
+            switch selection {
+                case .bangs:
+                    ShortcutEditView(manager: BangManager.shared)
+                case .commands:
+                    ShortcutEditView(manager: CommandsManager.shared)
+            }
+        }
+        
+        private enum ProductivityView: String, CaseIterable {
+            case bangs = "Bang Queries"
+            case commands = "Commands"
+            
+            @ViewBuilder
+            func button(selection: Binding<Self>) -> some View {
+                if #available(macOS 26, *) {
+                    Button(rawValue) {
+                        selection.wrappedValue = self
+                    }
+                    .if(selection.wrappedValue == self) { view in
+                        view.buttonStyle(.glassProminent)
+                    }
+                } else {
+                    Button(rawValue) {
+                        selection.wrappedValue = self
+                    }
+                    .if(selection.wrappedValue == self) { view in
+                        view.buttonStyle(.borderedProminent)
                     }
                 }
             }
