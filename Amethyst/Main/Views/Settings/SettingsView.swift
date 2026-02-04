@@ -126,7 +126,7 @@ struct SettingsView: View {
     }
     
     struct ShortcutEditView: View {
-        @State var manager: ShortcutFeatureManager
+        let manager: ShortcutFeatureManager
         @State var showTemporary = false
         
         var body: some View {
