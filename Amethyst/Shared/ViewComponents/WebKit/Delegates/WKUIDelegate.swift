@@ -45,6 +45,83 @@ extension WebViewModel: WKUIDelegate {
         }
     }
     
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptAlertPanelWithMessage message: String,
+        initiatedByFrame frame: WKFrameInfo
+    ) async {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = message
+        
+        if let window = webView.window {
+            await alert.beginSheetModal(for: window)
+            return
+        }
+        alert.runModal()
+    }
+    
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptConfirmPanelWithMessage message: String,
+        initiatedByFrame frame: WKFrameInfo
+    ) async -> Bool {
+        let alert = NSAlert()
+        alert.messageText = message
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+        alert.layout()
+        
+        var response: NSApplication.ModalResponse
+        
+        if let window = webView.window {
+            response = await alert.beginSheetModal(for: window)
+        } else {
+            response = alert.runModal()
+        }
+        
+        return response == .alertFirstButtonReturn
+    }
+    
+    func webView(
+        _ webView: WKWebView,
+        runJavaScriptTextInputPanelWithPrompt prompt: String,
+        defaultText: String?,
+        initiatedByFrame frame: WKFrameInfo,
+        completionHandler: @escaping @MainActor (String?) -> Void
+    ) {
+        let alert = NSAlert()
+        alert.messageText = prompt
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+        
+        let inputField = NSTextField(frame: NSRect(x: 0, y: 0, width: 280, height: 24))
+        inputField.stringValue = defaultText ?? ""
+        alert.accessoryView = inputField
+        
+        alert.layout()
+        alert.window.initialFirstResponder = inputField
+        
+        if let window = webView.window {
+            alert.beginSheetModal(for: window) { response in
+                if response == .alertFirstButtonReturn {
+                    completionHandler(inputField.stringValue)
+                } else {
+                    completionHandler(nil)
+                }
+            }
+            return
+        }
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            completionHandler(inputField.stringValue)
+        } else {
+            completionHandler(nil)
+        }
+    }
+    
     private func openInNewTab(configuration: WKWebViewConfiguration) -> WKWebView? {
         let newWebViewModel = WebViewModel(config: configuration, contentViewModel: contentViewModel, appViewModel: appViewModel)
         let newTab = ATab(webViewModel: newWebViewModel)
