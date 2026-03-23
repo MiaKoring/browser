@@ -7,19 +7,18 @@
 
 import SwiftUI
 import AppKit
+import TipKit
 
 struct SettingsView: View {
     @Environment(AppViewModel.self) var appViewModel
     @StateObject var fileDownloader = SetupStep.DownloadIndexView.FileDownloader()
-    @State var useMacos26upDesign = !UDKey.useOldDesign.boolValue
-    @State var translucency: Double = UDKey.tranclucency.doubleValue <= 0 ? 0.4 : UDKey.tranclucency.doubleValue
+    
     var body: some View {
         ZStack {
             HostingWindowFinder(callback: { window in
                 if let window {
                     if let id = window.identifier {
                         self.appViewModel.currentlyActiveWindowId = id.rawValue
-                        //self.appViewModel.displayedWindows.insert(id.rawValue)
                     }
                 }
             })
@@ -30,19 +29,7 @@ struct SettingsView: View {
                     Label("Key Bindings", systemImage: "keyboard")
                 }
                 Tab {
-                    Toggle("Use New Design", isOn: $useMacos26upDesign)
-                        .toggleStyle(.switch)
-                        .onChange(of: useMacos26upDesign) {
-                            UDKey.useOldDesign.boolValue = !useMacos26upDesign
-                            appViewModel.useMacOS26Design = useMacos26upDesign
-                        }
-                    Slider(value: $translucency, in: 0.1...0.9) {
-                        Text("Opacity while floating: \(translucency)")
-                    } onEditingChanged: { isEditing in
-                        if !isEditing {
-                            UDKey.tranclucency.doubleValue = translucency
-                        }
-                    }
+                    ViewOptions()
                 } label: {
                     Label("Design", systemImage: "paintbrush.pointed")
                 }
@@ -73,6 +60,36 @@ struct SettingsView: View {
                     Label("Ignored Errors", systemImage: "exclamationmark.octagon")
                 }
             }
+        }
+    }
+    
+    struct ViewOptions: View {
+        @Environment(AppViewModel.self) var appViewModel
+        @State var useMacos26upDesign = !UDKey.useOldDesign.boolValue
+        @State var translucency: Double = UDKey.tranclucency.doubleValue <= 0 ? 0.4 : UDKey.tranclucency.doubleValue
+        
+        var body: some View {
+            Form {
+                Toggle("Use New Design", isOn: $useMacos26upDesign)
+                    .toggleStyle(.switch)
+                    .onChange(of: useMacos26upDesign) {
+                        UDKey.useOldDesign.boolValue = !useMacos26upDesign
+                        appViewModel.useMacOS26Design = useMacos26upDesign
+                    }
+                Slider(value: $translucency, in: 0.1...0.9) {
+                    Text("Opacity while floating")
+                } minimumValueLabel: {
+                    Text("0.1")
+                } maximumValueLabel: {
+                    Text("0.9")
+                } onEditingChanged: { isEditing in
+                    if !isEditing {
+                        UDKey.tranclucency.doubleValue = translucency
+                    }
+                }
+                
+            }
+            .formStyle(.grouped)
         }
     }
     
@@ -130,6 +147,7 @@ struct SettingsView: View {
         @State var showTemporary = false
         
         var body: some View {
+            TipView(manager.tip)
             List {
                 HStack {
                     Text("Shortcut")
@@ -199,12 +217,15 @@ struct SettingsView: View {
     
     struct ProductivitySettings: View {
         @State private var selection = ProductivityView.bangs
+        @State var showHelpSheet = false
+        
         var body: some View {
             HStack {
                 ForEach(ProductivityView.allCases, id: \.rawValue) { feature in
                     feature.button(selection: $selection)
                 }
             }
+            
             switch selection {
                 case .bangs:
                     ShortcutEditView(manager: BangManager.shared)
@@ -236,5 +257,31 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+}
+
+struct CommandsTip: Tip {
+    var title: Text {
+        Text("Get to websites quickly")
+    }
+    
+    var message: Text? {
+        Text("To use a command type ") +
+        Text(":shortcut").fontDesign(.monospaced) +
+        Text(" in the input bar and press enter. It will take you directly to the set destination.")
+    }
+}
+
+struct BangTip: Tip {
+    var title: Text {
+        Text("Quick search various websites")
+    }
+    
+    var message: Text? {
+        Text("To use a bang type ") +
+        Text("!shortcut <searchterm>").fontDesign(.monospaced) +
+        Text(" in the input bar and press enter. It will directly search on the set website.\n") +
+        Text("Create a bang by setting a shortcut and adding the destination including the search query parameter. The searchterm will be formatted and appended to the base url. A destination should be formatted like this: ") +
+        Text("https://github.com/search?q=").fontDesign(.monospaced)
     }
 }

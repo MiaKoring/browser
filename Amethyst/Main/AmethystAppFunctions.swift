@@ -7,9 +7,13 @@
 
 import SwiftUI
 import MeiliSearch
+import TipKit
 
 extension AmethystApp {
     func onAppear() {
+        do {
+            try Tips.configure()
+        } catch {}
         #if DEBUG
         appViewModel.showsSetup = true
         #else

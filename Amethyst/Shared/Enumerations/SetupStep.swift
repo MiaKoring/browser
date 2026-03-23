@@ -14,6 +14,7 @@ enum SetupStep: Int, CaseIterable {
     case welcome
     case searchEngine
     case sidebarOrientation
+    case shortcuts
     case downloadIndex
     case setupAutostart
     case checkMeiliRunning
@@ -48,6 +49,8 @@ extension SetupStep {
             }
         case .sidebarOrientation:
             SidebarOrientation()
+        case .shortcuts:
+            ShortcutsInfoScreen()
         case .downloadIndex:
             DownloadIndexView()
         case .setupAutostart:
@@ -56,6 +59,22 @@ extension SetupStep {
             CheckMeiliRunning()
         }
         
+    }
+    
+    private struct ShortcutsInfoScreen: View {
+        @Environment(\.openWindow) var openWindow
+        var body: some View {
+            VStack {
+                Text("Amethyst Browser is largely designed for keyboard use.")
+                    .font(.title)
+                Text("To learn and customize Shortcuts open the Key Bindings tab in the Amethyst Browser Settings.")
+                    .font(.title3)
+                Image(.keyboardShortcutSettings)
+                    .resizable()
+                    .scaledToFit()
+            }
+            .padding()
+        }
     }
     
     private struct SetupAutostart: View {
@@ -331,4 +350,8 @@ extension SetupStep {
             }
         }
     }
+}
+
+#Preview {
+    Setup()
 }

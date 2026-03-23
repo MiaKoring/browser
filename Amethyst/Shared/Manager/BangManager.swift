@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 @Observable
 final class BangManager: ShortcutFeatureManager {
@@ -67,6 +68,8 @@ final class BangManager: ShortcutFeatureManager {
         else { return }
         bangs = decoded
     }
+    
+    var tip: any Tip = BangTip()
 }
 protocol ShortcutFeatureManager: Observable {
     func fetch() -> Void
@@ -74,4 +77,5 @@ protocol ShortcutFeatureManager: Observable {
     func remove(key: String)
     func resolve(_ query: String) -> String?
     var registered: [String: String] { get }
+    var tip: any Tip { get }
 }

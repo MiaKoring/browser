@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 @Observable
 final class CommandsManager: ShortcutFeatureManager {
@@ -63,4 +64,6 @@ final class CommandsManager: ShortcutFeatureManager {
         else { return }
         commands = decoded
     }
+    
+    var tip: any Tip = CommandsTip()
 }
