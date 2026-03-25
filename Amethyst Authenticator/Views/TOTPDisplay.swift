@@ -46,42 +46,77 @@ struct TOTPDisplay: View, TOTPUser {
                 }
             }
             .padding(.bottom, 5)
-            if let timer = copiedTimper, timer.isValid {
-                Text("Copied")
-                    .font(.title2)
-                    .monospaced()
-                    .padding(5)
-                    .background() {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(.tertiary)
-                    }
-            } else {
-                Text(totpCode ?? "--- ---")
-                    .font(.title)
-                    .monospaced()
-                    .contentTransition(.numericText(value: Double((totpCode ?? "000 000").replacingOccurrences(of: " ", with: "")) ?? 0))
-                    .bold()
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if let totpCode {
-                            UIPasteboard.general.string = totpCode
-                            copiedTimper = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-                                timer.invalidate()
-                                copiedTimper = nil
+            ZStack {
+                if #available(iOS 26.0, *) {
+                    GlassEffectContainer {
+                        Button {
+                            if let totpCode {
+                                UIPasteboard.general.string = totpCode.replacingOccurrences(of: " ", with: "")
+                                withAnimation(.bouncy) {
+                                    copiedTimper = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
+                                        withAnimation(.bouncy) {
+                                            timer.invalidate()
+                                            copiedTimper = nil
+                                        }
+                                    }
+                                }
                             }
+                        } label: {
+                            Text(totpCode ?? "--- ---")
+                                .font(.title)
+                                .monospaced()
+                                .contentTransition(.numericText(value: Double((totpCode ?? "000 000").replacingOccurrences(of: " ", with: "")) ?? 0))
+                                .bold()
                         }
+                        .buttonStyle(.bordered)
+                        .glassEffect()
+                        .tint(copiedTimper?.isValid ?? false ? .green: .primary)
                     }
+                }
+                else {
+                    if let timer = copiedTimper, timer.isValid {
+                        Text("Copied")
+                            .font(.title2)
+                            .monospaced()
+                            .padding(5)
+                            .background() {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(.tertiary)
+                            }
+                    } else {
+                        Button {
+                            if let totpCode {
+                                UIPasteboard.general.string = totpCode.replacingOccurrences(of: " ", with: "")
+                                withAnimation(.bouncy) {
+                                    copiedTimper = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
+                                        withAnimation(.bouncy) {
+                                            timer.invalidate()
+                                            copiedTimper = nil
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            Text(totpCode ?? "--- ---")
+                                .font(.title)
+                                .monospaced()
+                                .contentTransition(.numericText(value: Double((totpCode ?? "000 000").replacingOccurrences(of: " ", with: "")) ?? 0))
+                                .bold()
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
             }
-        }
-        .contextMenu {
-            NavigationLink {
-                AccountDetail(account: account)
-            } label: {
-                Text("Show Account")
+            .contextMenu {
+                NavigationLink {
+                    AccountDetail(account: account)
+                } label: {
+                    Text("Show Account")
+                }
             }
-        }
-        .onAppear() {
-            handleTOTPonAppear()
+            .onAppear() {
+                handleTOTPonAppear()
+            }
         }
     }
     

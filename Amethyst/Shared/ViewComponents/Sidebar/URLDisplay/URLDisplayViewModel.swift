@@ -7,8 +7,11 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 struct URLDisplay: TabOpener {
+    static let logger = Logger(subsystem: AmethystApp.subSystem, category: "URLDisplay")
+    
     @Environment(ContentViewModel.self) var contentViewModel
     @Environment(AppViewModel.self) var appViewModel: AppViewModel
     @Environment(\.modelContext) var context: ModelContext

@@ -19,8 +19,7 @@ class AWKWebView: WKWebView {
             if let id = items[idx].identifier?.rawValue {
                 if id == "WKMenuItemIdentifierOpenLinkInNewWindow" ||
                     id == "WKMenuItemIdentifierOpenImageInNewWindow" ||
-                    id == "WKMenuItemIdentifierOpenMediaInNewWindow" ||
-                    id == "WKMenuItemIdentifierOpenFrameInNewWindow" {
+                    id == "WKMenuItemIdentifierOpenMediaInNewWindow" {
                     
                     let object:String
                     if id == "WKMenuItemIdentifierOpenLinkInNewWindow" {
@@ -62,7 +61,9 @@ class AWKWebView: WKWebView {
         
         for idx in (0..<items.count).reversed() {
           if let id = items[idx].identifier?.rawValue {
-              if id == "WKMenuItemIdentifierOpenLinkInNewWindow" || id.contains("Download") {
+              if id == "WKMenuItemIdentifierOpenLinkInNewWindow" ||
+                    id.contains("Download") ||
+                    id == "WKMenuItemIdentifierOpenFrameInNewWindow" {
               items.remove(at:idx)
             }
           }

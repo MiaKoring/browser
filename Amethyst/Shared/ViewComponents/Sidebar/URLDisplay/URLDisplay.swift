@@ -7,7 +7,6 @@
 import SwiftUI
 
 extension URLDisplay: View {
-    
     var body: some View {
         VStack {
             if !showTextField {

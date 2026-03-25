@@ -8,11 +8,39 @@
 import SwiftUI
 
 extension Image {
-    func sidebarTopButton(hovered: Binding<Bool>, appearance: ColorScheme = .dark, onTap: @escaping () -> Void) -> some View {
+    @ViewBuilder
+    func sidebarTopButton(hovered: Binding<Bool>, appearance: ColorScheme = .dark, useMacos26Design: Bool, onTap: @escaping () -> Void) -> some View {
+        if #available(macOS 26, *), useMacos26Design {
+            self.sidebarTopButton26(hovered: hovered, appearance: appearance, onTap: onTap)
+        } else {
+            self
+                .font(.title2)
+                .foregroundStyle(appearance == .dark ? Color.gray: Color.gray.mix(with: .black, by: 0.4))
+                .padding(3)
+                .background() {
+                    if !hovered.wrappedValue {
+                        Color.clear
+                    } else {
+                        Color.white.opacity(0.1)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                .onHover { hovering in
+                    withAnimation(.linear(duration: 0.07)) {
+                        hovered.wrappedValue = hovering
+                    }
+                }
+                .onTapGesture {
+                    onTap()
+                }
+        }
+    }
+    @available(macOS 26.0, *)
+    func sidebarTopButton26(hovered: Binding<Bool>, appearance: ColorScheme = .dark, onTap: @escaping () -> Void) -> some View {
         self
             .font(.title2)
             .foregroundStyle(appearance == .dark ? Color.gray: Color.gray.mix(with: .black, by: 0.4))
-            .padding(3)
+            .padding(5)
             .background() {
                 if !hovered.wrappedValue {
                     Color.clear
@@ -20,7 +48,7 @@ extension Image {
                     Color.white.opacity(0.1)
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .clipShape(Capsule())
             .onHover { hovering in
                 withAnimation(.linear(duration: 0.07)) {
                     hovered.wrappedValue = hovering
@@ -29,5 +57,23 @@ extension Image {
             .onTapGesture {
                 onTap()
             }
+    }
+    
+    func sizeRef(_ view: @escaping () -> some View) -> some View {
+        view()
+            .hidden()
+            .overlay {
+                self
+                    .resizable()
+                    .scaledToFit()
+            }
+    }
+    
+    func setupImageStyle() -> some View {
+        self
+            .resizable()
+            .scaledToFit()
+            .shadow(color: .myPurple, radius: 10)
+            .padding(.horizontal, 30)
     }
 }

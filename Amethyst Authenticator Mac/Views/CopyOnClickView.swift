@@ -24,37 +24,35 @@ struct CopyOnClickView: View {
     var body: some View {
         HStack {
             Spacer()
-            if !showCopiedLabel {
-                Text(!obfuscated ? text: Array(repeating: "•", count: text.count).joined())
-                    .fontWeight(!obfuscated ? .regular: .heavy)
-                    .foregroundStyle(.secondary)
-                    .padding(3)
+            if #available(macOS 26.0, *) {
+                Button {
+                    copyAndDeobfuscate()
+                } label: {
+                    Text(!obfuscated ? text: Array(repeating: "•", count: text.count).joined())
+                        .fontWeight(!obfuscated ? .regular: .heavy)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.bordered)
+                .tint(showCopiedLabel ? .green: .secondary)
             } else {
-                Label("Copied", systemImage: "square.on.square")
-                    .padding(3)
-                    .background {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(.tertiary)
-                    }
+                if !showCopiedLabel {
+                    Text(!obfuscated ? text: Array(repeating: "•", count: text.count).joined())
+                        .fontWeight(!obfuscated ? .regular: .heavy)
+                        .foregroundStyle(.secondary)
+                        .padding(3)
+                        .onTapGesture {
+                            copyAndDeobfuscate()
+                        }
+                } else {
+                    Label("Copied", systemImage: "square.on.square")
+                        .padding(3)
+                        .background {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(.tertiary)
+                        }
+                }
             }
         }
-            .onTapGesture {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(text, forType: .string)
-                withAnimation(.linear(duration: 0.15)) {
-                    showCopiedLabel = true
-                }
-                obfuscated = false
-                resetToDisplayTimer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { timer in
-                    if !isHovered && shouldObfuscate {
-                        obfuscated = true
-                    }
-                    withAnimation(.linear(duration: 0.15)) {
-                        showCopiedLabel = false
-                    }
-                    timer.invalidate()
-                }
-            }
             .contentShape(Rectangle())
             .onHover { hovering in
                 guard shouldObfuscate else { return }
@@ -63,5 +61,22 @@ struct CopyOnClickView: View {
                 }
                 isHovered = hovering
             }
+    }
+    private func copyAndDeobfuscate() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        withAnimation(.linear(duration: 0.15)) {
+            showCopiedLabel = true
+        }
+        obfuscated = false
+        resetToDisplayTimer = Timer.scheduledTimer(withTimeInterval: 0.6, repeats: false) { timer in
+            if !isHovered && shouldObfuscate {
+                obfuscated = true
+            }
+            withAnimation(.linear(duration: 0.15)) {
+                showCopiedLabel = false
+            }
+            timer.invalidate()
+        }
     }
 }

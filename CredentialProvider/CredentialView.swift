@@ -78,9 +78,9 @@ struct CredentialView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         NavigationLink {
-                            AccountDetailEdit(account: Account(service: "", username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation)
+                            AccountDetailEdit(account: Account(service: viewController.shortestIdentifier, username: "", totp: false), create: true, accountAfterCreation: $accountAfterCreation)
                         } label: {
-                            Image(systemName: "plus")
+                            Label("Create", systemImage: "plus")
                         }
                     }
                 }

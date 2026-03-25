@@ -21,8 +21,8 @@ struct PasswordList: View {
     @State var showClearConfirmation: Bool = false
     var showTOTP = false
     
-    var body: some View {
-        List(accounts
+    var displayedAccounts: [Account] {
+        accounts
             .filter({ account in
                 let passesDeletedFilter = showDeleted ? (account.deletedAt != nil) : (account.deletedAt == nil)
                 
@@ -37,7 +37,10 @@ struct PasswordList: View {
                 return passesDeletedFilter && passesSearchFilter && passesTOTPFilter
             })
             .sorted(by: { sortFilter.shouldPrecede(lhs: $0, rhs: $1, ascending: sortDirectionAcending) })
-        ) { account in
+    }
+    
+    var body: some View {
+        List(displayedAccounts) { account in
             if !showTOTP {
                 NavigationLink {
                     AccountDetail(account: account, showDeleted: showDeleted)
@@ -49,11 +52,9 @@ struct PasswordList: View {
             }
         }
         .searchable(text: $searchText)
+        .navigationTitle(!showDeleted ? !showTOTP ? Text("Passwords"): Text("TOTP"): Text("Trash"))
         .listStyle(.plain)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                !showDeleted ? !showTOTP ? Text("Passwords").font(.title).bold(): Text("TOTP").font(.title).bold(): Text("Trash").font(.title).bold()
-            }
             ToolbarItem(placement: .topBarTrailing) {
                 SelectionMenu(sortDirectionAcending: $sortDirectionAcending, sortFilter: $sortFilter)
             }
@@ -68,7 +69,9 @@ struct PasswordList: View {
             } else if showDeleted {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(role: .destructive) {
-                        showClearConfirmation = true
+                        if !displayedAccounts.isEmpty {
+                            showClearConfirmation = true
+                        }
                     } label: {
                         Image(systemName: "trash")
                     }

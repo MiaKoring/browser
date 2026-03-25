@@ -7,82 +7,90 @@
 import SwiftData
 import SwiftUI
 import WebKit
+import OSLog
+
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var appViewModel: AppViewModel?
-    var contentViewModel: ContentViewModel?
-    var contentViewModel2: ContentViewModel?
-    var contentViewModel3: ContentViewModel?
+    private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "AppDelegate")
+    private var launchedViaURL = false
     
-    func configure(appViewModel: AppViewModel, contentViewModel: ContentViewModel, contentViewModel2: ContentViewModel, contentViewModel3: ContentViewModel) {
+    static let settingsGroupID: String = {
+        guard let teamID = Bundle.main.object(forInfoDictionaryKey: "TeamID") as? String else { fatalError("TeamID not found")}
+        return "\(teamID)group.de.touchthegrass.Amethyst.Index"
+    }()
+    
+    func configure(appViewModel: AppViewModel) {
         self.appViewModel = appViewModel
-        self.contentViewModel = contentViewModel
-        self.contentViewModel2 = contentViewModel2
-        self.contentViewModel3 = contentViewModel3
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        print("Appviewmodel is nil: \(appViewModel == nil)")
-        if let appViewModel {
-            CDTabController.clear()
-            
-            if appViewModel.displayedWindows.contains("window1") {
-                if let contentViewModel {
-                    insertTo(valuesOf: contentViewModel, id: "window1")
-                }
-            }
-            if appViewModel.displayedWindows.contains("window2") {
-                if let contentViewModel2 {
-                    insertTo(valuesOf: contentViewModel2, id: "window2")
-                }
-            }
-            if appViewModel.displayedWindows.contains("window3") {
-                if let contentViewModel3 {
-                    insertTo(valuesOf: contentViewModel3, id: "window3")
-                }
-            }
-            print("presave")
-            print(CDTabController.shared.container.viewContext.hasChanges)
-            CDTabController.save()
-            print("postsave")
-            print(CDTabController.shared.container.viewContext.hasChanges)
+        guard let appViewModel else { return .terminateNow }
+        CDTabController.clear()
+        
+        for contentViewModel in appViewModel.displayedWindows.values {
+            insert(valuesOf: contentViewModel, id: contentViewModel.id)
         }
         
+        Self.logger.info("about to save tab changes")
+        Self.logger.info("Container has changes: \(CDTabController.shared.container.viewContext.hasChanges)")
+        CDTabController.save()
+        Self.logger.info("tabs saved")
+        Self.logger.info("Container has changes after saving: \(CDTabController.shared.container.viewContext.hasChanges)")
         return .terminateNow
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        print("applicationLaunched")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let window1Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window1"))
-            let window2Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window2"))
-            let window3Count = CDTabController.fetchCount(NSPredicate(format: "windowID == %@", "window3"))
-            if let appViewModel = self.appViewModel, let open = appViewModel.openWindowByID {
-                if window1Count > 0 {
-                    open("window1")
-                }
-                if window2Count > 0 {
-                    open("window2")
-                }
-                if window3Count > 0 {
-                    open("window3")
-                }
+        BangManager.shared.fetch()
+        CommandsManager.shared.fetch()
+        DispatchQueue.main.async {
+            let hasVisibleContentWindows = NSApp.windows.contains { window in
+                window.isVisible && window.canBecomeMain
+            }
+            
+            if !hasVisibleContentWindows {
+                self.appViewModel?.createNewWindow.toggle()
             }
         }
     }
+    
     func application(_ application: NSApplication, open urls: [URL]) {
-        print("urls opened")
-        for url in urls {
-            if let openWindow = appViewModel?.openWindow {
-                openWindow(url)
-            } else {
-                print("failed")
+        self.launchedViaURL = true
+        Self.logger.warning("trying to open url")
+        guard let url = urls.first else { return }
+        if let appVMopenWindow = appViewModel?.openWindow {
+            DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .milliseconds(500))) {
+                print("called handle")
+                appVMopenWindow(url)
             }
+        } else {
+            Self.logger.error("failed to open url")
         }
     }
     
     
-    private func insertTo(valuesOf values: ContentViewModel, id: String) {
+    
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
+        if !hasVisibleWindows {
+            return true
+        }
+        var miniaturizedWindow: NSWindow? = nil
+        let shouldRestoreMiniaturized = !sender.windows.contains(where: {!$0.isMiniaturized})
+        if shouldRestoreMiniaturized {
+            for window in sender.windows {
+                if window.identifier?.rawValue.hasPrefix("mainWindow") ?? false,
+                   window.isMiniaturized,
+                   miniaturizedWindow == nil {
+                    miniaturizedWindow = window
+                }
+            }
+            guard let window = miniaturizedWindow else { return true }
+            window.deminiaturize(nil)
+        }
+        return false
+    }
+    
+    private func insert(valuesOf values: ContentViewModel, id: String) {
         for i in 0..<values.tabs.count {
             let tab = values.tabs[i]
             

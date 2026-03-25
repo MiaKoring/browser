@@ -26,9 +26,10 @@ extension AccountDetailEdit: View {
                 }
                 WebsiteSection(account: account)
             }
-            
-            Button(account.deletedAt != nil ? "Restore Account": "Delete Account" , role: account.deletedAt != nil ? .cancel: .destructive) {
-                handleDeletionAndRestoration()
+            if !create {
+                Button(account.deletedAt != nil ? "Restore Account": "Delete Account" , role: account.deletedAt != nil ? .cancel: .destructive) {
+                    handleDeletionAndRestoration()
+                }
             }
         }
         .formStyle(.grouped)

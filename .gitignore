@@ -6,3 +6,4 @@ build/
 DerivedData/
 Amethyst Browser.xcodeproj/xcshareddata/xcschemes/Amethyst Authenticator 1.xcscheme
 Amethyst Browser.xcodeproj/xcuserdata/miakoring.xcuserdatad/xcschemes/xcschememanagement.plist
+.vscode

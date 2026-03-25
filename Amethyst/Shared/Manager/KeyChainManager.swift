@@ -9,7 +9,7 @@ import Foundation
 import KeychainAccess
 
 struct KeyChainManager {
-    static private let service = "de.touchthegrass.BloomBuddy.app"
+    static private let service = "de.touchthegrass.Amethyst-Index.app"
     static func setValue(_ value: String?, for key: KeychainKey) {
         let kc = Keychain(service: KeyChainManager.service).synchronizable(false).accessibility(.alwaysThisDeviceOnly)
         kc[key.rawValue] = value
@@ -31,7 +31,6 @@ struct KeyChainManager {
             return nil
         }
         
-        // Encode the bytes in Base64 (oder Hex, falls bevorzugt)
         return keyData.base64EncodedString()
     }
 }

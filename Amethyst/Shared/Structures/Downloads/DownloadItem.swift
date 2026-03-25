@@ -14,7 +14,6 @@ struct DownloadItem: Hashable, Observable {
     let id = UUID()
     let name: String
     let dateCreated: Double
-    var progress: Progress?
     let url: URL?
     let icon: Image
     var info: DownloadInfo?

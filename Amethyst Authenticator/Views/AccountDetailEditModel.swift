@@ -31,10 +31,11 @@ struct AccountDetailEdit {
         self.username = account.username
         if !create {
             self.password = account.password ?? ""
+            self.title = account.title ?? ""
         } else {
             self.password = ""
+            self.title = ""
         }
-        self.title = account.title ?? ""
         self.create = create
         self.accountAfterCreation = accountAfterCreation
         self.createWithCode = createWithCode

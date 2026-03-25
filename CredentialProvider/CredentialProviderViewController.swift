@@ -14,6 +14,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController, Obse
     
     @Published var identifiers: [String] = []
     @Published var type: UIType = .passwordList
+    @Published var shortestIdentifier: String = ""
 
     /*
      Prepare your UI to list available credentials for the user to choose from. The items in
@@ -35,6 +36,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController, Obse
             urlSet.insert(subdomainless)
         }
         identifiers = Array(urlSet)
+        shortestIdentifier = urlSet.sorted(by: { $0.count < $1.count }).first ?? ""
         type = .passwordList
     }
     
@@ -103,6 +105,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController, Obse
         switch credentialRequest.type {
         case .password:
             type = .passwordList
+            shortestIdentifier = identifiers.sorted(by: {$0.count < $1.count}).first ?? ""
         case .passkeyAssertion:
             break
         case .passkeyRegistration:
@@ -130,6 +133,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController, Obse
             urlSet.insert(subdomainless)
         }
         identifiers = Array(urlSet)
+        shortestIdentifier = urlSet.sorted(by: { $0.count < $1.count }).first ?? ""
         type = .totpList
     }
     

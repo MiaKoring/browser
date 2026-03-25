@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SidebarResizer: View {
+    @Environment(AppViewModel.self) var appViewModel
     @Binding var sidebarWidth: CGFloat
     var trailing: Bool = false
     var body: some View {
@@ -21,10 +22,15 @@ struct SidebarResizer: View {
                     .onChanged { value in
                         NSCursor.frameResize(position: .right, directions: .all).set()
                         let changed = value.startLocation.x - value.location.x
-                        sidebarWidth = max(220, min(trailing ? sidebarWidth + changed: sidebarWidth - changed, 400))
+                        sidebarWidth = max(245, min(trailing ? sidebarWidth + changed: sidebarWidth - changed, 400))
                     }
                     .onEnded { _ in
                         NSCursor.arrow.set()
+                        if trailing {
+                            UDKey.trailingFixedSidebarWidth.doubleValue = sidebarWidth
+                        } else {
+                            UDKey.leadingFixedSidebarWidth.doubleValue = sidebarWidth
+                        }
                     }
             )
             .onHover { hovering in
@@ -34,6 +40,9 @@ struct SidebarResizer: View {
                     NSCursor.arrow.set()
                 }
             }
-            .offset(x: trailing ? -10: 10)
+            .applyDesign(for: appViewModel.useMacOS26Design) { view in view } old: { view in
+                view
+                    .offset(x: trailing ? -10: 10)
+            }
     }
 }

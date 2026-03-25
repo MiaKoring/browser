@@ -8,10 +8,12 @@ import SwiftUI
 import SwiftData
 import WebKit
 import AuthenticationServices
+import OSLog
 
 @Observable
-class ContentViewModel: NSObject, ObservableObject {
-    let id: String
+class ContentViewModel: NSObject, ObservableObject, Identifiable {
+    var id: String
+    var creationDate = Date()
     var triggerNewTab: Bool = false
     var isSidebarShown: Bool = false
     var isSidebarFixed: Bool = false
@@ -19,15 +21,21 @@ class ContentViewModel: NSObject, ObservableObject {
     var isPasswordFixed: Bool = false
     var currentTab: UUID?
     var tabs: [ATab] = []
-    var wkProcessPool = WKProcessPool()
     var blockNotification: Bool = false
     var showInlineSearch: Bool = false
     var showHistory: Bool = false
     var lastInlineQuery: String = ""
     var isLoaded: Bool = false
+    var sidebarOrientation: SidebarOrientations
+    var showSetup: Bool = false
+    
+    var window: NSWindow? = nil
+    
+    var onClose: (() -> Void)?
     
     init(id: String) {
         self.id = id
+        self.sidebarOrientation = UDKey.sidebarOrientation.boolValue ? .tabsTrailing: .tabsLeading
     }
     
     func handleClose() {
@@ -39,36 +47,59 @@ class ContentViewModel: NSObject, ObservableObject {
         } else {
             currentTab = nil
         }
-        withAnimation(.linear(duration: 0.2)) {
-            Task {
-                await tabs[index].webViewModel.deinitialize()
-            }
-            tabs.remove(at: index)
-        }
     }
+    
     
     func tabFor(id: UUID?) -> ATab? {
         return tabs.first(where: {$0.id == id})
     }
+    
+    func closeTab(id: UUID) {
+        Task {
+            await tabs.first(where: {$0.id == id})?.webViewModel.cleanup()
+            if currentTab == id {
+                handleClose()
+            }
+            tabs.removeAll(where: {$0.id == id})
+        }
+    }
+    
+    func changeToTab(id: UUID) {
+        if let currentTab = tabs.first(where: {$0.id == currentTab}) {
+            currentTab.webViewModel.removeHighlights()
+        }
+        showInlineSearch = false
+        currentTab = id
+    }
 }
+
 struct ContentView {
+    static let logger = Logger(subsystem: AmethystApp.subSystem, category: "ContentViewModel")
+    
     @Environment(AppViewModel.self) var appViewModel: AppViewModel
     @Environment(ContentViewModel.self) var contentViewModel: ContentViewModel
     @Environment(\.dismissWindow) var dismissWindow
     @State var showInputBar: Bool = false
     @State var inputBarText: String = ""
-    @State var sidebarWidth: CGFloat = 308
-    @State var passwordsWidth: CGFloat = 308
     @State var showMacosWindowIconsAreaHovered: Bool = false
     @State var macosWindowIconsHovered: Bool = false
-    @State var window: NSWindow? = nil
     @Environment(\.scenePhase) var scenePhase
     @State var showHistory = false
-    @State var showSetup = true
-    
     
     func onAppear() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let window = contentViewModel.window, let id = window.identifier?.rawValue {
+                window.standardWindowButton(.closeButton)?.isHidden = true
+                window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                window.standardWindowButton(.zoomButton)?.isHidden = true
+                window.delegate = appViewModel
+                appViewModel.displayedWindows[id] = contentViewModel
+                contentViewModel.id = id
+            }
+        }
+        #if DEBUG
         CDTabController.shared.printKnownEntities()
+        #endif
         NotificationCenter.default.addObserver(
             forName: NSWindow.didBecomeMainNotification,
             object: nil,
@@ -78,33 +109,35 @@ struct ContentView {
                 contentViewModel.blockNotification = false
                 return
             }
-            if let name = window?.identifier?.rawValue {
-                appViewModel.displayedWindows.insert(name)
-            }
-        }
-        #if DEBUG
-        #else
-        showSetup = appViewModel.showSetup
-        #endif
-        if contentViewModel.tabs.isEmpty {
-            contentViewModel.isSidebarShown = true
         }
         
-        if contentViewModel.tabs.isEmpty {
-            let savedTabs = CDTabController.fetchAll().filter({
-                $0.windowID == contentViewModel.id
-            })
+        if let newURL = appViewModel.newURLToOpen {
+            appViewModel.newURLToOpen = nil
             
-            var memoizedIDs = [UUID]()
-            for savedTab in savedTabs {
-                guard let id = savedTab.tabID, !memoizedIDs.contains(id) else {
-                    continue
+            let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
+            vm.load(url: newURL)
+            let newTab = ATab(webViewModel: vm)
+            
+            contentViewModel.tabs.append(newTab)
+            contentViewModel.currentTab = newTab.id
+        }
+        if contentViewModel.tabs.isEmpty {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                let savedTabs = CDTabController.fetchAllFor(windowID: contentViewModel.id)
+                
+                var memoizedIDs = [UUID]()
+                for savedTab in savedTabs {
+                    guard let id = savedTab.tabID, !memoizedIDs.contains(id) else {
+                        continue
+                    }
+                    memoizedIDs.append(id)
+                    let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
+                    vm.load(urlString: savedTab.url?.absoluteString ?? "about:blank")
+                    let newTab = ATab(id: id, webViewModel: vm)
+                    contentViewModel.tabs.append(newTab)
                 }
-                memoizedIDs.append(id)
-                let vm = WebViewModel(contentViewModel: contentViewModel, appViewModel: appViewModel)
-                vm.load(urlString: savedTab.url?.absoluteString ?? "https://miakoring.de")
-                let newTab = ATab(id: id, webViewModel: vm)
-                contentViewModel.tabs.append(newTab)
+                CDTabController.deleteFor(windowID: contentViewModel.id)
+                contentViewModel.isSidebarFixed = true
             }
         }
     }

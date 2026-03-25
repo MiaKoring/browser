@@ -67,7 +67,6 @@ struct Amethyst_Authenticator_MacApp: App {
                 }
                 .modelContainer(container)
         }
-        .windowStyle(HiddenTitleBarWindowStyle())
         .commands {
             CommandGroup(replacing: .importExport) {
                 Button("Import Credentials") {

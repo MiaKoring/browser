@@ -9,96 +9,66 @@ import WebKit
 extension WebViewModel {
     func injectJavaScript() {
         let jsString = """
-        var markInstance = new Mark(document.querySelector("body"));
-        let highlights = [];
-        let currentIndex = 0;
+        \(markjs)
         
-        function highlightText(searchTerm, options) {
-            markInstance.unmark({"className": "amethystHighlight"});
-            highlights = [];
-            markInstance.mark(searchTerm, options); 
-            return document.querySelectorAll('.amethystHighlight').length;
+        var amethystBrowserMarkInstance = new AmethystBrowserMark(document.querySelector("body"));
+        let amethystBrowserMarkHighlights = [];
+        let amethystBrowserMarkCurrentIndex = 0;
+        
+        function amethystBrowserMarkHighlightText(searchTerm, options) {
+            amethystBrowserMarkInstance.unmark({"className": "amethystBrowserHighlight"});
+            amethystBrowserMarkHighlights = [];
+            amethystBrowserMarkInstance.mark(searchTerm, options); 
+            return document.querySelectorAll('.amethystBrowserHighlight').length;
         }
         
-        function removeHighlights() {
-            markInstance.unmark({"className": "amethystHighlight"});
+        function amethystBrowserMarkRemoveHighlights() {
+            amethystBrowserMarkInstance.unmark({"className": "amethystBrowserHighlight"});
         }
 
-        function navigateHighlights(direction) {
-            if (highlights.length === 0) {
-                highlights = document.querySelectorAll('.amethystHighlight');
+        function amethystBrowserMarkNavigateHighlights(direction) {
+            if (amethystBrowserMarkHighlights.length === 0) {
+                amethystBrowserMarkHighlights = document.querySelectorAll('.amethystBrowserHighlight');
             }
-            if (highlights.length === 0) return 0;
+            if (amethystBrowserMarkHighlights.length === 0) return 0;
 
-            // Entferne vorherige Markierung
-            highlights[currentIndex]?.classList.remove('amethystCurrent-highlight');
+            // Remove old highlights
+            amethystBrowserMarkHighlights[amethystBrowserMarkCurrentIndex]?.classList.remove('amethystBrowserCurrent-highlight');
 
-            // Aktualisiere den Index
-            currentIndex += direction;
-            if (currentIndex < 0) currentIndex = highlights.length - 1;
-            if (currentIndex >= highlights.length) currentIndex = 0;
+            // update index
+            amethystBrowserMarkCurrentIndex += direction;
+            if (amethystBrowserMarkCurrentIndex < 0) amethystBrowserMarkCurrentIndex = amethystBrowserMarkHighlights.length - 1;
+            if (amethystBrowserMarkCurrentIndex >= amethystBrowserMarkHighlights.length) amethystBrowserMarkCurrentIndex = 0;
 
-            // Markiere und scrolle zum aktuellen Treffer
-            const current = highlights[currentIndex];
-            current.classList.add('amethystCurrent-highlight');
+            // mark and scroll to current result
+            const current = amethystBrowserMarkHighlights[amethystBrowserMarkCurrentIndex];
+            current.classList.add('amethystBrowserCurrent-highlight');
             current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return currentIndex;
+            return amethystBrowserMarkCurrentIndex;
         }
         """
-        let markScript = WKUserScript(source: markjs, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
-        let userScript = WKUserScript(source: jsString, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
-        webView?.configuration.userContentController.addUserScript(markScript)
-        webView?.configuration.userContentController.addUserScript(userScript)
-    }
-    
-    func injectCustomWebAuthn() {
-        let jsString = """
-        window.customWebAuthn = {
-          request: async function (options) {
-            return new Promise((resolve, reject) => {
-              window.webkit.messageHandlers.webauthn.postMessage(options);
-              window.customWebAuthn.resolve = resolve;
-              window.customWebAuthn.reject = reject;
-            });
-          },
-          complete: function (data) {
-            window.customWebAuthn.resolve(data);
-          },
-          error: function (error) {
-            window.customWebAuthn.reject(error);
-          },
-        };
-
-        // WebAuthn Call überschreiben
-        navigator.credentials.create = function (options) {
-          return window.customWebAuthn.request(options);
-        };
-
-        navigator.credentials.get = function (options) {
-          return window.customWebAuthn.request(options);
-        };
-        """
         
-        let webauthnScript = WKUserScript(source: jsString, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-        webView?.configuration.userContentController.addUserScript(webauthnScript)
+        let userScript = WKUserScript(source: jsString, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+        
+        webView?.configuration.userContentController.addUserScript(userScript)
     }
     
     func injectCSSGlobally() {
         let cssString = """
-        .amethystHighlight {
+        .amethystBrowserHighlight {
             background-color: yellow;
             
             color: black;
         }
-        .amethystCurrent-highlight {
+        .amethystBrowserCurrent-highlight {
             background-color: orange;
         }
         """
         let jsCode = """
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        style.innerHTML = `\(cssString)`;
-        document.head.appendChild(style);
+        var amethystBrowserHighlightStyle = document.createElement('style');
+        amethystBrowserHighlightStyle.type = 'text/css';
+        amethystBrowserHighlightStyle.innerHTML = `\(cssString)`;
+        document.head.appendChild(amethystBrowserHighlightStyle);
         """
         let userScript = WKUserScript(source: jsCode, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
         webView?.configuration.userContentController.addUserScript(userScript)
@@ -106,29 +76,29 @@ extension WebViewModel {
     
     func navigateHighlight(forward: Bool, completion: @escaping(Any?, (any Error)?) -> Void) {
         let direction = forward ? 1 : -1
-        let jsCode = "navigateHighlights(\(direction));"
+        let jsCode = "amethystBrowserMarkNavigateHighlights(\(direction));"
         webView?.evaluateJavaScript(jsCode) { result, error in
             completion(result, error)
         }
     }
     func removeHighlights() {
         let jsCode = """
-        removeHighlights();
+        amethystBrowserMarkRemoveHighlights();
         """
         webView?.evaluateJavaScript(jsCode) { result, error in
             if let error = error {
-                print("Fehler beim Entfernen des Highlightings: \(error)")
+                print("Error while removing higlighting: \(error)")
             }
         }
     }
     func highlight(searchTerm: String, caseSensitive: Bool = false, completion: @escaping(Any?, (any Error)?) -> Void) {
         let jsCode = """
-        var options = {
+        var amethystBrowserMarkHightlightOptions = {
             "element": "span",
-            "className": "amethystHighlight",
+            "className": "amethystBrowserHighlight",
             "caseSensitive": \(caseSensitive ? "true": "false"),
         };
-        highlightText('\(searchTerm)', options);
+        amethystBrowserMarkHighlightText('\(searchTerm)', amethystBrowserMarkHightlightOptions);
         """
         webView?.evaluateJavaScript(jsCode) { result, error in
             completion(result, error)

@@ -47,8 +47,8 @@
 			</array>
 		</dict>
 	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
+	<key>IndexURL</key>
+	<string>https://latest.index.downloads.amethystbrowser.de</string>
 	<key>LSDefaultWebBrowser</key>
 	<string>Owner</string>
 	<key>NSAppTransportSecurity</key>

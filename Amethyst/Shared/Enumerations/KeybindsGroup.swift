@@ -4,11 +4,10 @@
 //
 //  Created by Mia Koring on 13.12.24.
 //
-
+import SwiftUI
 enum KeybindsGroup: String, CaseIterable {
     case window = "Window"
-    case sidebar = "Sidebar"
-    case passwords = "Passwords"
+    case sidebars = "Sidebars"
     case search = "Search"
     case navigation = "Navigation"
     case archive = "Archive"
@@ -16,22 +15,61 @@ enum KeybindsGroup: String, CaseIterable {
 }
 
 extension KeybindsGroup {
-    var children: [UDKey] {
+    var children: [Keybind] {
         switch self {
         case .window:
-            [.newWindowShortcut]
-        case .sidebar:
-            [.toggleSidebarShortcut, .toggleSidebarFixedShortcut]
-        case .passwords:
-            [.togglePasswordsShortcut, .togglePasswordsFixedShortcut, .triggerPasswordsAuth]
+            [.newWindow, .toggleTranslucentFloatingWindow]
+        case .sidebars:
+            [.toggleSidebar, .toggleSidebarFixed, .togglePasswords, .togglePasswordsFixed, .triggerPasswordsAuth]
         case .search:
-            [.openSearchbarShortcut, .openInlineSearchShortcut]
+            [.openSearchbar, .openInlineSearch]
         case .view:
-            [.zoomInShortcut, .zoomOutShortcut, .resetZoomShortcut]
+            [.zoomIn, .zoomOut, .resetZoom, .sidebarOrientation, .moveSingleFrameToWindow]
         case .navigation:
-            [.goBackShortcut, .goForwardShortcut, .reloadShortcut, .reloadFromSourceShortcut, .previousTabShortcut, .nextTabShortcut, .closeCurrentTabShortcut]
+            [.goBack, .goForward, .reload, .reloadFromSource, .previousTab, .nextTab, .closeCurrentTab]
         case .archive:
-            [.showHistoryShortcut]
+            [.showHistory]
+        }
+    }
+    
+    @CommandsBuilder
+    func commandGroup(appViewModel: AppViewModel, openWindow: OpenWindowAction) -> some Commands {
+        switch self {
+        case .window:
+            CommandGroup(replacing: .newItem) {
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
+            }
+        case .sidebars:
+            CommandGroup(after: .sidebar) {
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
+            }
+        case .search:
+            CommandMenu("Find") {
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
+            }
+        case .navigation:
+            CommandMenu("Navigation") {
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
+            }
+        case .archive:
+            CommandMenu("Archive") {
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
+            }
+        case .view:
+            CommandMenu("View") {
+                self.commands(appViewModel: appViewModel, openWindow: openWindow)
+            }
+        }
+    }
+    
+    @ViewBuilder func commands(appViewModel: AppViewModel, openWindow: OpenWindowAction) -> some View {
+        ForEach(self.children, id: \.hashValue) { child in
+            Button(child.menuButtonName) {
+                _ = child.execute(appViewModel: appViewModel, openWindow: openWindow)
+            }
+            .keyboardShortcut(child.keyboardShortcut)
+            .disabled(appViewModel.showsSetup)
         }
     }
 }
+

@@ -10,17 +10,21 @@ import AppKit
 import SwiftData
 import WebKit
 import AmethystAuthenticatorCore
-
+import OSLog
 
 @main
 struct AmethystApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) var openWindow
     @State var appViewModel: AppViewModel
-    @State var contentViewModel = ContentViewModel(id: "window1")
-    @State var contentViewModel2 = ContentViewModel(id: "window2")
-    @State var contentViewModel3 = ContentViewModel(id: "window3")
+    
     var container: ModelContainer
+    static var subSystem = "de.touchthegrass.Amethyst"
+    static var logger = Logger(subsystem: Self.subSystem, category: "App")
+    
+    static var windowRound: CGFloat = { if #available(macOS 26.0, *) { 16 } else { 10 } }()
+    
+    //@State private var accProvider = AccountProvider.shared
     
     init() {
 #if DEBUG
@@ -38,19 +42,50 @@ struct AmethystApp: App {
         } catch {
             fatalError("Couldn't create Model Container. Failed with: \(error.localizedDescription)")
         }
-        self.appViewModel = AppViewModel()
-        self.appViewModel.downloadManager = DownloadManager()
+        let viewModel = AppViewModel()
+        viewModel.downloadManager = DownloadManager()
+        
+        self._appViewModel = State(initialValue: viewModel)
+        
+        self.appDelegate.configure(appViewModel: viewModel)
     }
     
-    
-    
     var body: some Scene {
-        createWindow(id: "window1", viewModel: contentViewModel)
+        
+        WindowGroup(id: "mainWindow") {
+            ContentView()
+                .frame(minWidth: 600, minHeight: 600)
+                .ignoresSafeArea(.container, edges: .top)
+                .onAppear {
+                    onAppear()
+                }
+                .environment(appViewModel)
+                .environment(ContentViewModel(id: UUID().uuidString))
+                //.environment(accProvider)
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+#if DEBUG
+                    print("registered")
+#endif
+                    NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                        return handleAndPassCommand(event)
+                    }
+                }
+                .modelContainer(container)
+                .defaultAppStorage(UserDefaults.standard)
+        }
+        .windowToolbarStyle(.unifiedCompact(showsTitle: false))
+        .windowStyle(.hiddenTitleBar)
+        .restorationBehavior(.automatic)
+        .handlesExternalEvents(matching: [])
+        .onChange(of: appViewModel.createNewWindow) {
+            openWindow(id: "mainWindow")
+        }
+        
         WindowGroup(id: "singleWindow", for: URL.self) { value in
             if let _ = value.wrappedValue {
                 SingleFrame(appViewModel: appViewModel, url: value)
                     .environment(appViewModel)
-                    .environment(contentViewModel)
+                    //.environment(accProvider)
                     .onAppear() {
                         onAppear()
                     }
@@ -65,107 +100,39 @@ struct AmethystApp: App {
         }
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
         .windowStyle(.hiddenTitleBar)
-        createWindow(id: "window2", viewModel: contentViewModel2)
-        createWindow(id: "window3", viewModel: contentViewModel3)
-            .commands {
-                CommandGroup(replacing: .newItem) {
-                    Button("New Window") {
-                        createNewWindow()
-                    }
-                    .keyboardShortcut(UDKey.newWindowShortcut.shortcut.key , modifiers: UDKey.newWindowShortcut.shortcut.modifier)
-                }
-                CommandGroup(after: .sidebar) {
-                    Button("Toggle Sidebar") {
-                        toggleSidebar()
-                    }
-                    .keyboardShortcut(UDKey.toggleSidebarShortcut.shortcut.key, modifiers: UDKey.toggleSidebarShortcut.shortcut.modifier)
-                    Button("Fix Sidebar") {
-                        toggleSidebar(fix: true)
-                    }
-                    .keyboardShortcut(UDKey.toggleSidebarFixedShortcut.shortcut.key, modifiers: UDKey.toggleSidebarFixedShortcut.shortcut.modifier)
-                    Button("Toggle Passwords") {
-                        togglePasswordSidebar()
-                    }
-                    .keyboardShortcut(UDKey.togglePasswordsShortcut.shortcut.key, modifiers: UDKey.togglePasswordsShortcut.shortcut.modifier)
-                    Button("Fix Passwords") {
-                        togglePasswordSidebar(fix: true)
-                    }
-                    .keyboardShortcut(UDKey.togglePasswordsFixedShortcut.shortcut.key, modifiers: UDKey.togglePasswordsFixedShortcut.shortcut.modifier)
-                }
-                CommandMenu("Find") {
-                    Button("Open Searchbar") {
-                        newTab()
-                    }
-                    .keyboardShortcut(UDKey.openSearchbarShortcut.shortcut.key, modifiers: UDKey.openSearchbarShortcut.shortcut.modifier)
-                    Button("Document Search") {
-                        search()
-                    }
-                    .keyboardShortcut(UDKey.openInlineSearchShortcut.shortcut.key, modifiers: UDKey.openInlineSearchShortcut.shortcut.modifier)
-                    .disabled(!appViewModel.currentlyActiveWindowId.hasPrefix("window"))
-                }
-                CommandMenu("View") {
-                    Button("Zoom In") {
-                        zoom()
-                    }
-                    .keyboardShortcut(UDKey.zoomInShortcut.shortcut.key, modifiers: UDKey.zoomInShortcut.shortcut.modifier)
-                    .disabled(contentViewModel(for: appViewModel.currentlyActiveWindowId)?.currentTab != nil)
-                    Button("Zoom Out") {
-                        zoom(enlarge: false)
-                    }
-                    .keyboardShortcut(UDKey.zoomOutShortcut.shortcut.key, modifiers: UDKey.zoomOutShortcut.shortcut.modifier)
-                    .disabled(contentViewModel(for: appViewModel.currentlyActiveWindowId)?.currentTab != nil)
-                    Button("Reset Zoom") {
-                        resetZoom()
-                    }
-                    .keyboardShortcut(UDKey.resetZoomShortcut.shortcut.key, modifiers: UDKey.resetZoomShortcut.shortcut.modifier)
-                    .disabled(contentViewModel(for: appViewModel.currentlyActiveWindowId)?.currentTab != nil)
-                }
-                CommandMenu("Navigation") {
-                    Button("Go Back") {
-                        navigate()
-                    }
-                    .keyboardShortcut(UDKey.goBackShortcut.shortcut.key, modifiers: UDKey.goBackShortcut.shortcut.modifier)
-                    Button("Go Forward") {
-                        navigate(back: false)
-                    }
-                    .keyboardShortcut(UDKey.goForwardShortcut.shortcut.key, modifiers: UDKey.goForwardShortcut.shortcut.modifier)
-                    Button("Reload") {
-                        reload()
-                    }
-                    .keyboardShortcut(UDKey.reloadShortcut.shortcut.key, modifiers: UDKey.reloadShortcut.shortcut.modifier)
-                    .disabled(reloadDisabled())
-                    Button("Reload from source") {
-                        reload(fromSource: true)
-                    }
-                    .keyboardShortcut(UDKey.reloadFromSourceShortcut.shortcut.key, modifiers: UDKey.reloadFromSourceShortcut.shortcut.modifier)
-                    .disabled(reloadDisabled())
-                    Button("Previous Tab") {
-                        navigateTabs()
-                    }
-                    .keyboardShortcut(UDKey.previousTabShortcut.shortcut.key, modifiers: UDKey.previousTabShortcut.shortcut.modifier)
-                    .disabled(tabSwitchingDisabled())
-                    Button("Next Tab") {
-                        navigateTabs(back: false)
-                    }
-                    .keyboardShortcut(UDKey.nextTabShortcut.shortcut.key, modifiers: UDKey.nextTabShortcut.shortcut.modifier)
-                    .disabled(tabSwitchingDisabled(back: false))
-                    Button("Close current Tab") {
-                        closeCurrentTab()
-                    }
-                    .keyboardShortcut(UDKey.closeCurrentTabShortcut.shortcut.key, modifiers: UDKey.closeCurrentTabShortcut.shortcut.modifier)
-                    .disabled(contentViewModel(for: appViewModel.currentlyActiveWindowId)?.currentTab == nil)
-                }
-                CommandMenu("Archive") {
-                    Button("Show History") {
-                        showHistory()
-                    }
-                    .keyboardShortcut(UDKey.showHistoryShortcut.shortcut.key, modifiers: UDKey.showHistoryShortcut.shortcut.modifier)
-                }
-            }
+        .handlesExternalEvents(matching: [])
+        .commands {
+            KeybindsGroup.window.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.sidebars.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.search.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.view.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.navigation.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+            KeybindsGroup.archive.commandGroup(
+                appViewModel: appViewModel,
+                openWindow: openWindow
+            )
+        }
+        
         Settings {
             SettingsView()
                 .frame(width: 900, height: 500)
                 .environment(appViewModel)
+                //.environment(accProvider)
         }
     }
 }

@@ -12,6 +12,7 @@ import MeiliSearch
 import AuthenticationServices
 
 class WebViewModel: NSObject, ObservableObject {
+    private static var accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
     @Published var canGoBack: Bool = false
     @Published var canGoForward: Bool = false
     @Published var currentURL: URL? = nil
@@ -20,7 +21,6 @@ class WebViewModel: NSObject, ObservableObject {
     @Published var isUsingCamera: WKMediaCaptureState = .none
     @Published var isUsingMicrophone: WKMediaCaptureState = .none
     @Published var error: (any Error)? = nil
-    @Published var pendingDownload: PendingDownload? = nil
     @Published var blockDownloadCheckforURL: URL? = nil
     @ObservedObject var contentViewModel: ContentViewModel
     @ObservedObject var appViewModel: AppViewModel
@@ -30,136 +30,36 @@ class WebViewModel: NSObject, ObservableObject {
     var historyBlocked: [URL: Double] = [:]
     var webView: AWKWebView?
     var cancellables: Set<AnyCancellable> = []
-    var processPool: WKProcessPool
-    var downloadDelegate: DownloadDelegate = DownloadDelegate()
     var cache: Bool? = nil
     
-    init(contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        self.processPool = contentViewModel.wkProcessPool
+    // MARK: - Initializers
+
+    // This is the new Designated Initializer. It's the most fundamental one.
+    // It takes a fully prepared configuration and does the final setup.
+    init(
+        configuration: WKWebViewConfiguration,
+        contentViewModel: ContentViewModel,
+        appViewModel: AppViewModel
+    ) {
         self.contentViewModel = contentViewModel
         self.appViewModel = appViewModel
         super.init()
-        
-        
-        
-        let webConfiguration = WKWebViewConfiguration()
-        webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
-        webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
-        webConfiguration.allowsInlinePredictions = true
-        webConfiguration.allowsAirPlayForMediaPlayback = true
-        webConfiguration.mediaTypesRequiringUserActionForPlayback = []
-        webConfiguration.suppressesIncrementalRendering = false
-        webConfiguration.processPool = processPool
-        webConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        webConfiguration.websiteDataStore = WKWebsiteDataStore.default()
-        webConfiguration.preferences.isElementFullscreenEnabled = true
-        webConfiguration.upgradeKnownHostsToHTTPS = true
-        webConfiguration.preferences.isFraudulentWebsiteWarningEnabled = true
-        webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
-        
-        let contentController = WKUserContentController()
-        webConfiguration.userContentController = contentController
-        
-        self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
-        self.webView?.allowsBackForwardNavigationGestures = false
-        self.webView?.underPageBackgroundColor = .myPurple
-        self.webView?.uiDelegate = self
-        self.webView?.navigationDelegate = self
-        self.webView?.isInspectable = true
-        self.webView?.allowsLinkPreview = true
-        self.webView?.isInspectable = true
-        setupBindings()
-        injectJavaScript()
-        injectCSSGlobally()
-        injectCustomWebAuthn()
-        injectAutofillCode()
+
+        self.webView = AWKWebView(frame: .zero, configuration: configuration)
+        self.configureWebView() // Centralized webView setup
+        self.setupBindings()
+        self.injectAllJS()
     }
     
-    init(processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        self.processPool = processPool
-        self.contentViewModel = contentViewModel
-        self.appViewModel = appViewModel
-        super.init()
-        
-        let webConfiguration = WKWebViewConfiguration()
-        webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
-        webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
-        webConfiguration.allowsInlinePredictions = true
-        webConfiguration.allowsAirPlayForMediaPlayback = true
-        webConfiguration.mediaTypesRequiringUserActionForPlayback = []
-        webConfiguration.suppressesIncrementalRendering = false
-        webConfiguration.processPool = processPool
-        webConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        webConfiguration.websiteDataStore = WKWebsiteDataStore.default()
-        webConfiguration.preferences.isElementFullscreenEnabled = true
-        webConfiguration.upgradeKnownHostsToHTTPS = true
-        webConfiguration.preferences.isFraudulentWebsiteWarningEnabled = true
-        webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
-        
-        let contentController = WKUserContentController()
-        contentController.addScriptMessageHandler(self, contentWorld: .defaultClient, name: "webauthn")
-        webConfiguration.userContentController = contentController
-        
-        self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
-        self.webView?.allowsBackForwardNavigationGestures = false
-        self.webView?.underPageBackgroundColor = .myPurple
-        self.webView?.uiDelegate = self
-        self.webView?.navigationDelegate = self
-        self.webView?.isInspectable = true
-        self.webView?.allowsLinkPreview = true
-        self.webView?.isInspectable = true
-        setupBindings()
-        injectJavaScript()
-        injectCSSGlobally()
-        injectCustomWebAuthn()
-        injectAutofillCode()
+    // Convenience init for a standard new tab.
+    // It derives the processPool from the contentViewModel.
+    convenience init(contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
+        let config = Self.makeDefaultConfiguration()
+        // No special configuration needed, so we call the designated init directly.
+        self.init(configuration: config, contentViewModel: contentViewModel, appViewModel: appViewModel)
     }
     
-    init(processPool: WKProcessPool, restore tab: SavedTab, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        self.processPool = processPool
-        self.contentViewModel = contentViewModel
-        self.appViewModel = appViewModel
-        super.init()
-        let webConfiguration = WKWebViewConfiguration()
-        webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
-        webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
-        webConfiguration.allowsInlinePredictions = true
-        webConfiguration.allowsAirPlayForMediaPlayback = true
-        webConfiguration.mediaTypesRequiringUserActionForPlayback = []
-        webConfiguration.suppressesIncrementalRendering = false
-        webConfiguration.processPool = processPool
-        webConfiguration.websiteDataStore = WKWebsiteDataStore.default()
-        webConfiguration.preferences.isElementFullscreenEnabled = true
-        webConfiguration.upgradeKnownHostsToHTTPS = true
-        webConfiguration.preferences.isFraudulentWebsiteWarningEnabled = true
-        webConfiguration.preferences.isSiteSpecificQuirksModeEnabled = true
-        webConfiguration.preferences.setValue(true, forKey: "allowWebAuthentication")
-        
-        let contentController = WKUserContentController()
-        contentController.addScriptMessageHandler(self, contentWorld: .defaultClient, name: "webauthn")
-        webConfiguration.userContentController = contentController
-        
-        self.webView = AWKWebView(frame: .zero, configuration: webConfiguration)
-        self.webView?.allowsBackForwardNavigationGestures = false
-        self.webView?.underPageBackgroundColor = .myPurple
-        self.webView?.uiDelegate = self
-        self.webView?.navigationDelegate = self
-        self.webView?.isInspectable = true
-        self.webView?.allowsLinkPreview = true
-        self.webView?.isInspectable = true
-        if let url = tab.url {
-            self.webView?.load(URLRequest(url: url))
-        }
-        
-        setupBindings()
-        injectJavaScript()
-        injectCSSGlobally()
-        injectCustomWebAuthn()
-        injectAutofillCode()
-    }
-    
-    init(config: WKWebViewConfiguration, processPool: WKProcessPool, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
-        self.processPool = processPool
+    init(config: WKWebViewConfiguration, contentViewModel: ContentViewModel, appViewModel: AppViewModel) {
         self.contentViewModel = contentViewModel
         self.appViewModel = appViewModel
         super.init()
@@ -172,33 +72,54 @@ class WebViewModel: NSObject, ObservableObject {
         self.webView?.isInspectable = true
         
         setupBindings()
-        injectJavaScript()
-        injectCustomWebAuthn()
-        injectAutofillCode()
+        injectAllJS()
     }
     
-    func deinitialize() {
-        SwiftUI.Task {
-            await self.webView?.pauseAllMediaPlayback()
-            await self.webView?.closeAllMediaPresentations()
-            await self.webView?.setCameraCaptureState(.none)
-            await self.webView?.setMicrophoneCaptureState(.none)
-            self.cancellables.removeAll()
-            self.webView?.configuration.userContentController.removeAllUserScripts()
-            self.webView?.stopLoading()
-            self.webView?.removeFromSuperview()
-            guard let url = URL(string: "https://bloombuddy.touchthegrass.de") else {
-                self.webView?.navigationDelegate = nil
-                self.webView?.uiDelegate = nil
-                self.webView = nil
-                return
-            }
-            self.webView?.load( URLRequest(url: url))
+    deinit {
+        webView?.stopLoading()
         
-            self.webView?.navigationDelegate = nil
-            self.webView?.uiDelegate = nil
-            self.webView = nil
-        }
+        let userContentController = webView?.configuration.userContentController
+        userContentController?.removeAllUserScripts()
+        userContentController?.removeScriptMessageHandler(forName: "webauthn")
+        
+        webView?.uiDelegate = nil
+        webView?.navigationDelegate = nil
+        
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
+        
+        webView?.removeFromSuperview()
+        webView = nil
+    }
+    
+    func cleanup() async {
+        // 1. Perform all async cleanup operations first.
+        // We can safely await them here because we are in an async context
+        // and the webView is guaranteed to still exist.
+        await webView?.pauseAllMediaPlayback()
+        await webView?.closeAllMediaPresentations()
+        await webView?.setCameraCaptureState(.none)
+        await webView?.setMicrophoneCaptureState(.none)
+
+        // 2. Perform synchronous cleanup.
+        // This part is similar to the deinit logic.
+        webView?.stopLoading()
+        webView?.load(URLRequest(url: URL(string: "about:blank")!))
+
+        // 3. Break retain cycles. This is critical.
+        let userContentController = webView?.configuration.userContentController
+        userContentController?.removeAllUserScripts()
+
+        webView?.uiDelegate = nil
+        webView?.navigationDelegate = nil
+
+        // 4. Clean up Combine subscriptions.
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
+
+        // 5. Remove from view hierarchy.
+        webView?.removeFromSuperview()
+        webView = nil
     }
     
     func goBack() {
@@ -218,14 +139,7 @@ class WebViewModel: NSObject, ObservableObject {
         if let webView {
             return webView
         } else {
-            let webConfiguration = WKWebViewConfiguration()
-            webConfiguration.applicationNameForUserAgent = "Version/18.1.1 Safari/605.1.15"
-            webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
-            webConfiguration.allowsInlinePredictions = true
-            webConfiguration.allowsAirPlayForMediaPlayback = true
-            webConfiguration.mediaTypesRequiringUserActionForPlayback = []
-            webConfiguration.suppressesIncrementalRendering = false
-            webConfiguration.processPool = processPool
+            let webConfiguration = Self.makeDefaultConfiguration()
             let webView = AWKWebView(frame: .zero, configuration: webConfiguration)
             self.webView = webView
             self.webView?.allowsBackForwardNavigationGestures = false
@@ -239,69 +153,23 @@ class WebViewModel: NSObject, ObservableObject {
     
     func load(urlString: String) {
         guard let url = URL(string: urlString) else { return }
+        load(url: url)
+    }
+    
+    func load(url: URL) {
         var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
-       request.setValue("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", forHTTPHeaderField: "Accept")
-        request.setValue("https://duckduckgo.com/", forHTTPHeaderField: "Referer")
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
+        request.setValue(Self.accept, forHTTPHeaderField: "Accept")
         webView?.load(request)
     }
     
-    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
-        download.delegate = downloadDelegate
-    }
-        
-    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
-        download.delegate = downloadDelegate
-    }
-    
     func appendHistory() {
-        typealias MeiliResult = Result<Searchable<HistoryEntry>, Swift.Error>
         if let url = currentURL, cache != nil {
             if let blockedTime = historyBlocked[url], blockedTime > Date().timeIntervalSinceReferenceDate {
                 return
             }
             if let meili = appViewModel.meili {
-                let index = meili.index("history")
-                let param = SearchParameters(query: url.absoluteString, limit: 1, attributesToSearchOn: ["url"], filter: "url = '\(url.absoluteString)'")
-                index.search(param) { (result: MeiliResult) in
-                    switch result {
-                    case .success(let result):
-                        if let res = result.hits.first {
-                            let new = HistoryEntry(id: res.id, title: self.title ?? res.title, url: res.url, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: res.amount + 1)
-                            SwiftUI.Task {
-                                do {
-                                    _ = try await index.updateDocuments(documents: [new], primaryKey: "id")
-                                } catch {
-                                    print(error)
-                                }
-                            }
-                        } else {
-                            let new = HistoryEntry(id: UUID(), title: self.title ?? "", url: url.absoluteString, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: 1)
-                            SwiftUI.Task {
-                                do {
-                                    _ = try await index.addDocuments(documents: [new], primaryKey: "id")
-                                } catch {
-                                    print(error)
-                                }
-                            }
-                        }
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                        if error.localizedDescription.contains("MeiliSearchApiError: Index `history` not found.") ||
-                            error.localizedDescription.contains("is not filterable. This index does not have configured filterable attributes."){
-                            SwiftUI.Task {
-                                do {
-                                    _ = try await meili.createIndex(uid: "history", primaryKey: "id")
-                                    _ = try await meili.index("history").updateSearchableAttributes(["url", "title"])
-                                    _ = try await meili.index("history").updateFilterableAttributes(["url", "title", "id", "lastSeen", "amount"])
-                                    _ = try await meili.index("history").updateSortableAttributes(["lastSeen", "amount"])
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
-                        }
-                    }
-                }
+                addToHistory(meili: meili, url: url)
             }
             
             let day = CDHistoryController.currentHistoryDay
@@ -313,6 +181,40 @@ class WebViewModel: NSObject, ObservableObject {
             CDHistoryController.save()
            
             historyBlocked[url] = Date.now.timeIntervalSinceReferenceDate + 300
+        }
+    }
+    
+    func addToHistory(meili: MeiliSearch, url: URL) {
+        typealias MeiliResult = Searchable<HistoryEntry>
+        SwiftUI.Task(priority: .background) {
+            let index = meili.index("history")
+            let param = SearchParameters(query: url.absoluteString, limit: 1, attributesToSearchOn: ["url"], filter: "url = '\(url.absoluteString)'")
+            do {
+                let result: MeiliResult = try await index.search(param)
+                if let res = result.hits.first {
+                    let new = HistoryEntry(id: res.id, title: self.title ?? res.title, url: res.url, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: res.amount + 1)
+                    _ = try await index.updateDocuments(documents: [new], primaryKey: "id")
+                } else {
+                    let new = HistoryEntry(id: UUID(), title: self.title ?? "", url: url.absoluteString, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: 1)
+                    _ = try await index.addDocuments(documents: [new], primaryKey: "id")
+                }
+            } catch let error as MeiliSearch.Error {
+                Self.logger.error("Error occured while appending Meili history: \(error.localizedDescription)")
+                if error.localizedDescription.contains("MeiliSearchApiError: Index `history` not found.") ||
+                    error.localizedDescription.contains("is not filterable") ||
+                    error.localizedDescription.contains("is not searchable") {
+                    do {
+                        _ = try await meili.createIndex(uid: "history", primaryKey: "id")
+                        _ = try await meili.index("history").updateSearchableAttributes(["url", "title"])
+                        _ = try await meili.index("history").updateFilterableAttributes(["url", "title", "id", "lastSeen", "amount"])
+                        _ = try await meili.index("history").updateSortableAttributes(["lastSeen", "amount"])
+                        let new = HistoryEntry(id: UUID(), title: self.title ?? "", url: url.absoluteString, lastSeen: Int(Date.now.timeIntervalSinceReferenceDate), amount: 1)
+                        _ = try await index.addDocuments(documents: [new], primaryKey: "id")
+                    } catch {
+                        Self.logger.error("Error occured while configuring Meili index: \(error.localizedDescription)")
+                    }
+                }
+            }
         }
     }
     
@@ -367,6 +269,58 @@ class WebViewModel: NSObject, ObservableObject {
                 self?.isUsingMicrophone = value
             }
             .store(in: &cancellables)
+    }
+    
+    private func injectAllJS() {
+        injectJavaScript()
+        injectCSSGlobally()
+        injectAutofillCode()
+    }
+   
+    // MARK: - Private Helper Methods
+
+    /// Configures the common properties of the AWKWebView instance.
+    private func configureWebView() {
+        webView?.allowsBackForwardNavigationGestures = false
+        webView?.underPageBackgroundColor = .myPurple
+        webView?.uiDelegate = self
+        webView?.navigationDelegate = self
+        webView?.allowsLinkPreview = true
+        webView?.isInspectable = true // isInspectable was set twice, once is enough.
+    }
+
+    /// Factory method to create a default WKWebViewConfiguration for Amethyst.
+    private static func makeDefaultConfiguration() -> WKWebViewConfiguration {
+        let webConfiguration = WKWebViewConfiguration()
+        // Set User-Agent
+        webConfiguration.applicationNameForUserAgent =
+            "Version/18.1.1 Safari/605.1.15"
+
+        // Configure preferences
+        let preferences = webConfiguration.preferences
+        preferences.javaScriptCanOpenWindowsAutomatically = true
+        preferences.isElementFullscreenEnabled = true
+        preferences.isFraudulentWebsiteWarningEnabled = true
+        preferences.isSiteSpecificQuirksModeEnabled = true
+
+        // Configure default webpage preferences
+        webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
+
+        // Configure webView behavior
+        webConfiguration.allowsInlinePredictions = true
+        webConfiguration.allowsAirPlayForMediaPlayback = true
+        webConfiguration.mediaTypesRequiringUserActionForPlayback = []
+        webConfiguration.suppressesIncrementalRendering = false
+        webConfiguration.upgradeKnownHostsToHTTPS = true
+
+        // Data Store
+        webConfiguration.websiteDataStore = WKWebsiteDataStore.default()
+
+        // User Content Controller
+        // The controller is created here, but handlers are added in the specific inits.
+        webConfiguration.userContentController = WKUserContentController()
+
+        return webConfiguration
     }
     
 }

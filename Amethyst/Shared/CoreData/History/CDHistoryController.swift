@@ -7,16 +7,18 @@
 
 import Foundation
 import CoreData
+import OSLog
 
-class CDHistoryController: ObservableObject {
+class CDHistoryController {
     public static var shared = CDHistoryController(name: "History")
     var container: NSPersistentContainer
+    private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "CDHistroryController")
     
-    init(name: String) {
+    private init(name: String) {
         container = NSPersistentContainer(name: name)
         container.loadPersistentStores { _, error in
             if let error {
-                print("Error initializing CoreData: \(error.localizedDescription)")
+                Self.logger.error("Error initializing CoreData: \(error.localizedDescription)")
             }
         }
     }
@@ -28,32 +30,45 @@ class CDHistoryController: ObservableObject {
         do {
             return try container.viewContext.fetch(request)
         } catch {
-            print("Error while fetching all SavedTabs: \(error.localizedDescription)")
+            Self.logger.error("Error while fetching all HistoryDays: \(error.localizedDescription)")
         }
         return []
     }
     
     func delete(_ item: HistoryItem) {
         container.viewContext.delete(item)
+        save()
     }
     
     func clearEntity() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "HistoryDay")
-        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        do {
-            try container.viewContext.execute(batchDeleteRequest)
-            save()
-        } catch {
-            print("An error occured while emptying HistoryDay: \(error.localizedDescription)")
+        container.performBackgroundTask { context in
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "HistoryDay")
+            let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            batchDeleteRequest.resultType = .resultTypeObjectIDs
+
+            do {
+                let result = try context.execute(batchDeleteRequest) as? NSBatchDeleteResult
+                
+                if let objectIDs = result?.result as? [NSManagedObjectID] {
+                    let changes = [NSDeletedObjectsKey: objectIDs]
+                    NSManagedObjectContext.mergeChanges(
+                        fromRemoteContextSave: changes,
+                        into: [self.container.viewContext]
+                    )
+                }
+            } catch {
+                Self.logger.error("An error occured while emptying HistoryDay: \(error.localizedDescription)")
+            }
         }
     }
     
     func printKnownEntities() {
-        print("Known Entities: \(container.managedObjectModel.entities.compactMap(\.name))")
+        Self.logger.info("Known Entities: \(self.container.managedObjectModel.entities.compactMap(\.name))")
     }
     
     func insertHistoryDay(_ day: HistoryDay) {
         container.viewContext.insert(day)
+        save()
     }
     
     func save() {
@@ -61,7 +76,7 @@ class CDHistoryController: ObservableObject {
             do {
                 try container.viewContext.save()
             } catch {
-                print("Error saving CoreData: \(error.localizedDescription)")
+                Self.logger.error("Error saving CoreData: \(error.localizedDescription)")
             }
         }
     }
@@ -72,7 +87,7 @@ class CDHistoryController: ObservableObject {
         do {
             return try container.viewContext.count(for: request)
         } catch {
-            print("Error while fetching count with Predicate")
+            Self.logger.error("Error while fetching count with Predicate")
         }
         return 0
     }
@@ -83,7 +98,7 @@ class CDHistoryController: ObservableObject {
         do {
             return try container.viewContext.count(for: request)
         } catch {
-            print("Error while fetching count with Predicate")
+            Self.logger.error("Error while fetching count with Predicate")
         }
         return 0
     }
@@ -98,13 +113,19 @@ class CDHistoryController: ObservableObject {
         })
         request.fetchLimit = 1
         
-        guard let day = try? container.viewContext.fetch(request).first else {
+        do {
+            if let day = try container.viewContext.fetch(request).first { return day }
+        } catch {
+            Self.logger.log("Failed to create HistoryDay: \(error.localizedDescription)")
+        }
+        return createAndSaveHistoryDay(rangeStart: rangeStart)
+        
+        func createAndSaveHistoryDay(rangeStart: Double) -> HistoryDay {
             let day = HistoryDay()
             day.dayTime = rangeStart
             insertHistoryDay(day)
             return day
         }
-        return day
     }
     
 }

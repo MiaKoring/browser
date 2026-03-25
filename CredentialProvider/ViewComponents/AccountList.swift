@@ -20,9 +20,9 @@ struct AccountList: View {
   
     var body: some View {
         VStack(alignment: .leading) {
-            TextField("Search", text: $searchText)
+            /*TextField("Search", text: $searchText)
                 .textFieldStyle(.roundedBorder)
-                .padding(.horizontal)
+                .padding(.horizontal)*/
             List {
                 Section("Most likely") {
                     ForEach(accounts.filter { account in
@@ -53,6 +53,7 @@ struct AccountList: View {
                 }
             }
             .listStyle(.plain)
+            .searchable(text: $searchText)
         }
         .padding(.trailing)
 #if DEBUG

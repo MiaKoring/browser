@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import OSLog
 
 class PasswordChecker {
+    private static let logger = Logger(subsystem: AmethystApp.subSystem, category: "PasswordChecker")
     private var commonPasswords: Set<String> = []
     
     init() {
@@ -15,38 +17,36 @@ class PasswordChecker {
     }
     
     private func loadCommonPasswords() {
-        // Suche nach der Datei im Bundle
         if let fileURL = Bundle.main.url(forResource: "mostCommonPasswords", withExtension: "txt") {
             do {
                 let passwordsContent = try String(contentsOf: fileURL, encoding: .utf8)
                 let passwords = passwordsContent.components(separatedBy: .newlines)
                 
-                // In ein Set umwandeln für schnelle Suche (O(1) Komplexität)
+                //convert to set for faster lookup
                 commonPasswords = Set(passwords.filter { !$0.isEmpty })
-                print("Erfolgreich \(commonPasswords.count) Passwörter geladen")
+                Self.logger.debug("Erfolgreich \(self.commonPasswords.count) Passwörter geladen")
             } catch {
-                print("Fehler beim Laden der Passwortdatei: \(error)")
+                Self.logger.debug("Fehler beim Laden der Passwortdatei: \(error)")
             }
         } else {
-            print("Passwortdatei nicht gefunden")
+            Self.logger.debug("Passwortdatei nicht gefunden")
         }
     }
     
-    /// Überprüft, ob das Passwort in der Liste der häufigen Passwörter ist
-    /// - Parameter password: Zu überprüfendes Passwort
-    /// - Returns: True wenn das Passwort zu häufig ist, false wenn es sicher erscheint
+    /// Checks if password list contains password
+    /// - Parameter password
     func isCommonPassword(_ password: String) -> Bool {
         return commonPasswords.contains(password) || commonPasswords.contains(password.lowercased())
     }
     
-    /// Erweiterte Passwortprüfung mit Stärkebewertung
-    /// - Parameter password: Zu überprüfendes Passwort
-    /// - Returns: Tuple mit Informationen zur Passwortstärke und ob es häufig ist
+    /// extended check with strength eval
+    /// - Parameter password
+    /// - Returns: Double (strength value)
     func checkPassword(_ password: String) -> Double {
         let isCommon = isCommonPassword(password)
         let strength = calculateStrength(password)
         
-        print(isCommon)
+        Self.logger.debug("isPasswordCommon: \(isCommon)")
         
         return isCommon ? -1.0: strength
     }
@@ -80,3 +80,4 @@ class PasswordChecker {
         return min(max(score / 7.0, 0.0), 1.0)
     }
 }
+

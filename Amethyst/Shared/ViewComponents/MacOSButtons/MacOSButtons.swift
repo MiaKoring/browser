@@ -11,6 +11,7 @@ struct MacOSButtons: View {
     @Environment(ContentViewModel.self) var contentViewModel
     @Environment(AppViewModel.self) var appViewModel
     @Environment(\.dismissWindow) var dismissWindow
+    
     var body: some View {
         HStack {
             if let window = NSApplication.shared.windows.first(where: {$0.identifier?.rawValue == contentViewModel.id}) {
@@ -19,10 +20,11 @@ struct MacOSButtons: View {
                     .foregroundColor(.red)
                     .onTapGesture {
                         contentViewModel.blockNotification = true //to block notification didBecomeMain in ContentView
-                        self.appViewModel.displayedWindows.remove(window.identifier?.rawValue ?? "")
+                        if let identifier = window.identifier?.rawValue {
+                            self.appViewModel.displayedWindows[identifier] = nil
+                        }
                         dismissWindow()
                     }
-                
                 if !window.isZoomed {
                     Image(systemName: isHovered ? "minus.circle.fill": "circle.fill")
                         .font(.system(size: 12))

@@ -11,6 +11,7 @@ struct Setup: View {
     @State private var current: SetupStep = .welcome
     @Environment(AppViewModel.self) var appViewModel
     @Environment(\.dismiss) var dismiss
+    @StateObject var fileDownloader = SetupStep.DownloadIndexView.FileDownloader()
     var body: some View {
         BackgroundView(shouldRotate: false) {
             VStack {
@@ -22,11 +23,12 @@ struct Setup: View {
                                 view.hidden()
                             }
                             .padding(.top, 10)
+                            .environmentObject(fileDownloader)
                     }
                     .overlay(alignment: .topTrailing) {
-                        if current == .whatIs {
+                        if current == .downloadIndex {
                             Button("Skip") {
-                                appViewModel.shouldSkipMeiliNotification = true
+                                UDKey.wasSetupOnce.boolValue = true
                                 dismiss()
                             }
                             .buttonStyle(.borderless)
@@ -60,10 +62,18 @@ struct Setup: View {
                 .frame(height: 380)
             }
             .background() {
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(.thinMaterial)
+                if #available(macOS 26.0, *) {
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(.thinMaterial)
+                } else {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.thinMaterial)
+                }
             }
             .padding(10)
+        }
+        .onAppear() {
+            ErrorIgnoreManager.addIgnoredURLError("Frame load interrupted")
         }
     }
 }

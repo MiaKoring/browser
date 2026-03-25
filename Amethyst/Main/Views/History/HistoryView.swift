@@ -19,7 +19,7 @@ struct HistoryView: View {
                         ForEach(days) { day in
                             DetailView(title: Text(
                                 "\(Date(timeIntervalSinceReferenceDate: day.dayTime).toString(with: "dd.MM.yyyy"))"
-                            ), isExpanded: true) {
+                            ), isExpanded: false) {
                                 HistoryListView(items: day.sortedItems, proxy: proxy)
                             }
                             .listRowSeparator(.hidden)

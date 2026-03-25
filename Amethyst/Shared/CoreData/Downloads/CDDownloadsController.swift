@@ -7,18 +7,20 @@
 
 import Foundation
 import CoreData
+import OSLog
 
 class CDDownloadsController: ObservableObject {
     public static var shared = CDDownloadsController(name: "Downloads")
+    private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "CDDownloadsController")
     var container: NSPersistentContainer
     
     @Published var latestFour = [DownloadedItem]()
     
-    init(name: String) {
+    private init(name: String) {
         container = NSPersistentContainer(name: name)
         container.loadPersistentStores { _, error in
             if let error {
-                print("Error initializing CoreData: \(error.localizedDescription)")
+                Self.logger.error("Error initializing CoreData: \(error.localizedDescription)")
             }
         }
         latestFour = fetchLatestFour()
@@ -30,7 +32,7 @@ class CDDownloadsController: ObservableObject {
         do {
             return try container.viewContext.fetch(request)
         } catch {
-            print("Error while fetching all SavedTabs: \(error.localizedDescription)")
+            Self.logger.error("Error while fetching all SavedTabs: \(error.localizedDescription)")
         }
         return []
     }
@@ -38,7 +40,6 @@ class CDDownloadsController: ObservableObject {
     func delete(_ item: DownloadedItem) {
         container.viewContext.delete(item)
         save()
-        latestFour = fetchLatestFour()
     }
     
     func fetchLatestFour() -> [DownloadedItem] {
@@ -54,7 +55,7 @@ class CDDownloadsController: ObservableObject {
             let latest = try container.viewContext.fetch(request)
             return latest
         } catch {
-            print("Error while fetching latest DownloadedItems: \(error.localizedDescription)")
+            Self.logger.error("Error while fetching latest DownloadedItems: \(error.localizedDescription)")
         }
         return []
     }
@@ -66,27 +67,26 @@ class CDDownloadsController: ObservableObject {
             try container.viewContext.execute(batchDeleteRequest)
             save()
         } catch {
-            print("An error occured while emptying SavedTabs: \(error.localizedDescription)")
+            Self.logger.error("An error occured while emptying SavedTabs: \(error.localizedDescription)")
         }
     }
     
     func printKnownEntities() {
-        print("Known Entities: \(container.managedObjectModel.entities.compactMap(\.name))")
+        Self.logger.info("Known Entities: \(self.container.managedObjectModel.entities.compactMap(\.name))")
     }
     
     func insertDownloadedItem(_ item: DownloadedItem) {
         container.viewContext.insert(item)
         save()
-        
-        latestFour = fetchLatestFour()
     }
     
     func save() {
         if container.viewContext.hasChanges {
             do {
                 try container.viewContext.save()
+                latestFour = fetchLatestFour()
             } catch {
-                print("Error saving CoreData: \(error.localizedDescription)")
+                Self.logger.error("Error saving CoreData: \(error.localizedDescription)")
             }
         }
     }
@@ -97,7 +97,7 @@ class CDDownloadsController: ObservableObject {
         do {
             return try container.viewContext.count(for: request)
         } catch {
-            print("Error while fetching count with Predicate")
+            Self.logger.error("Error while fetching count with Predicate: \(error.localizedDescription)")
         }
         return 0
     }

@@ -10,6 +10,7 @@ import SwiftUI
 struct IgnoredErrorsView: View {
     @State var ignoredErrors = [String]()
     @State var selectedErrors = [String]()
+    
     var body: some View {
         VStack(alignment: .leading) {
             Button {

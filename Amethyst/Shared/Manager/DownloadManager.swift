@@ -5,175 +5,127 @@
 //  Created by Mia Koring on 10.12.24.
 //
 import SwiftUI
-import SwiftData
+import CoreData
+import OSLog
+import WebKit
 
 @Observable
-class Progress: Equatable {
-    static func == (lhs: Progress, rhs: Progress) -> Bool {
-        lhs.value == rhs.value
-    }
+class DownloadManager: NSObject {
+    public static var downloadsExtension = "amthDownload"
+    var activeDownloads: [WKDownload: DownloadInfo] = [:]
     
-    var value: Double
-    
-    init(value: Double) {
-        self.value = value
-    }
-}
-
-@Observable
-class DownloadManager: NSObject, URLSessionDownloadDelegate {
-    var activeDownloads: [URLSessionTask: DownloadInfo] = [:]
-    private var session: URLSession!
-    private var resumeData: [URLSessionTask: Data] = [:]
+    private static var logger = Logger(subsystem: AmethystApp.subSystem, category: "DownloadManager")
         
     override init() {
         super.init()
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 60  // Längeres Request-Timeout
-        config.timeoutIntervalForResource = 600  // 10 Minuten Gesamttimeout
-        config.waitsForConnectivity = true
-        config.httpMaximumConnectionsPerHost = 1 // Für stabilere große Downloads
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        
-        session = URLSession(
-            configuration: config,
-            delegate: self,
-            delegateQueue: .main
-        )
     }
     
-    func downloadFile(from url: URL, withName name: String?, referedBy: String? = nil) {
-        var request = URLRequest(url: url)
-        
-        // Headers für große Downloads
-        request.setValue("bytes=0-", forHTTPHeaderField: "Range")
-        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
-        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
-        
-        if let referedBy {
-            request.setValue(referedBy, forHTTPHeaderField: "Referer")
-        }
-        
-        let downloadTask = session.downloadTask(with: request)
-        
+    func startTracking(download: WKDownload, withName name: String?) {
         let downloadsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
-        let filename = name ?? url.lastPathComponent
+        // The final filename might be provided by the download object itself later.
+        let filename = name ?? download.originalRequest?.url?.lastPathComponent ?? "Download"
         let targetURL = downloadsDirectory.appendingPathComponent(filename)
-        let downloadSidecarURL = targetURL.appendingPathExtension("download")
-
-        activeDownloads[downloadTask] = DownloadInfo(
-            originalURL: url,
-            targetURL: targetURL,
-            downloadURL: downloadSidecarURL,
-            progress: Progress(value: 0.0),
-            totalBytes: 0,
-            downloadedBytes: 0,
-            task: downloadTask
-        )
         
-        downloadTask.resume()
+        let downloadInfo = DownloadInfo(download: download, targetURL: targetURL)
+        
+        activeDownloads[download] = downloadInfo
+        Self.logger.info("Started tracking new WKDownload for \(filename)")
     }
     
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let error = error as NSError? else { return }
-        
-#if DEBUG
-        print("Download-Fehler: \(error.localizedDescription)")
-        print("Error Domain: \(error.domain)")
-        print("Error Code: \(error.code)")
-#endif
-        
-        // Detailed Errorhandling
-        if error.domain == NSURLErrorDomain {
-            switch error.code {
-            case NSURLErrorTimedOut,
-                 NSURLErrorCancelled,
-                 NSURLErrorNetworkConnectionLost:
-                // Try to proceed download
-                if let resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData] as? Data {
-#if DEBUG
-                    print("Try to resume download")
-#endif
-                    let newDownloadTask = session.downloadTask(withResumeData: resumeData)
-                    
-                    // copy download info
-                    if let originalTask = activeDownloads[task] {
-                        activeDownloads[newDownloadTask] = originalTask
-                    }
-                    
-                    newDownloadTask.resume()
-                }
-            default:
-                print("Unhandled Error-Code: \(error.code)")
-            }
+    func updateProgress(for download: WKDownload, progress: Double, downloadedBytes: Int64, totalBytes: Int64) {
+        if let downloadInfo = activeDownloads[download] {
+            downloadInfo.progress = progress
+            downloadInfo.downloadedBytes = downloadedBytes
+            downloadInfo.totalBytes = totalBytes
         }
     }
     
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let downloadInfo = activeDownloads[downloadTask] else {
+    func finishDownload(for download: WKDownload) {
+        guard let downloadInfo = activeDownloads.removeValue(forKey: download) else {
+            Self.logger.warning("Finished download for an untracked WKDownload.")
             return
         }
         
-        do {
-            let targetURL = determineUniqueTargetURL(for: downloadInfo.targetURL)
-            
-            try FileManager.default.moveItem(at: location, to: targetURL)
-            try? FileManager.default.removeItem(at: downloadInfo.downloadURL)
-            
-            activeDownloads.removeValue(forKey: downloadTask)
-            
-            saveBookmark(targetURL: downloadInfo.targetURL)
-        } catch {
-            print("Error while finishing download: \(error)")
+        if let destinationURL = downloadInfo.destinationURL {
+            saveBookmark(targetURL: destinationURL)
+            Self.logger.info("Successfully moved downloaded file to \(destinationURL.path)")
         }
     }
     
-    private func determineUniqueTargetURL(for originalURL: URL) -> URL {
+    func failDownload(for download: WKDownload, error: Error, resumeData: Data?) {
+        activeDownloads[download]?.didFail = true
+        Self.logger.error("Download failed for \(download.debugDescription) with error: \(error.localizedDescription)")
+        // TODO: Add resume logic
+    }
+    
+    func determineUniqueTargetURL(for originalURL: URL, download: WKDownload) -> URL {
         var targetURL = originalURL
+        let fileManager = FileManager.default
         var suffix = 0
         
-        while FileManager.default.fileExists(atPath: targetURL.path) {
+        let fileExtension = originalURL.pathExtension
+        let fileNameWithoutExtension = {
+            let initialURL = originalURL.deletingPathExtension().lastPathComponent
+            guard !initialURL.isEmpty else {
+                return "AmethystDownload"
+            }
+            return initialURL
+        }()
+        
+        let directory = originalURL.deletingLastPathComponent()
+        
+        while fileManager.fileExists(atPath: targetURL.path) {
             suffix += 1
-            let fileExtension = targetURL.pathExtension
-            let fileNameWithoutExtension = targetURL.deletingPathExtension().lastPathComponent
-            
-            targetURL = originalURL
-                .deletingLastPathComponent()
-                .appendingPathComponent("\(fileNameWithoutExtension)(\(suffix))")
+            let newFileName = "\(fileNameWithoutExtension) (\(suffix))"
+            targetURL = directory
+                .appendingPathComponent(newFileName)
                 .appendingPathExtension(fileExtension)
         }
         
-        return targetURL
+        activeDownloads[download]?.destinationURL = targetURL
+        
+        return targetURL.appendingPathExtension(Self.downloadsExtension)
     }
     
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
-        guard var item = activeDownloads[downloadTask] else {
+    func cancelDownload(_ download: WKDownload?) {
+        guard let download else {
+            Self.logger.error("failed to cancel download, recieved nil value")
             return
         }
-        
-        item.progress.value = progress
-        item.downloadedBytes = totalBytesWritten
-        item.totalBytes = totalBytesExpectedToWrite
-        
-        activeDownloads[downloadTask] = item
+        if let info = activeDownloads[download],
+           let destination = info.destinationURL {
+            download.cancel()
+            info.isCanceled = true
+            info.progress = -1
+            do {
+                try FileManager.default.removeItem(at: destination.appendingPathExtension(DownloadManager.downloadsExtension))
+            } catch {
+                Self.logger.error("Failed to remove dangling temp download file with error: \(error.localizedDescription)")
+            }
+        } else {
+            Self.logger.error("Failed to remove dangling temp download file with reason: couldn't find destination)")
+        }
     }
     
-    func saveBookmark(targetURL: URL) {
-        guard let bookmark = try? targetURL.bookmarkData(
-            options: .withSecurityScope,
-            includingResourceValuesForKeys: [.nameKey, .contentTypeKey, .creationDateKey],
-            relativeTo: nil
-        ) else {
-            print("failed to create Bookmark")
-            return
-        }
-        
-        DispatchQueue.main.async(execute: DispatchWorkItem(block: {
+    private func saveBookmark(targetURL: URL) {
+        do {
+            do {
+                try FileManager.default.moveItem(at: targetURL.appendingPathExtension(Self.downloadsExtension), to: targetURL)
+            } catch {
+                Self.logger.error("failed to set quarantine value for: \(targetURL.absoluteString)\nwith error: \(error.localizedDescription)")
+            }
+            
+            let bookmark = try targetURL.bookmarkData(
+                options: .withSecurityScope,
+                includingResourceValuesForKeys: [.nameKey, .contentTypeKey, .creationDateKey],
+                relativeTo: nil
+            )
             let downloaded = DownloadedItem()
             downloaded.createdAt =  Date.now.timeIntervalSinceReferenceDate
             downloaded.bookmark = bookmark
             CDDownloadsController.insert(downloaded)
-        }))
+        } catch {
+            Self.logger.error("failed to create Bookmark with Error: \(error.localizedDescription)")
+        }
     }
 }

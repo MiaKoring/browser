@@ -21,14 +21,13 @@ class MiniWebViewModel: NSObject, ObservableObject {
     
     private var webView: AWKWebView?
     private var cancellables: Set<AnyCancellable> = []
-    var downloadDelegate = DownloadDelegate()
     
     init(appViewModel: AppViewModel) {
         self.appViewModel = appViewModel
         super.init()
         
         let webConfiguration = WKWebViewConfiguration()
-        webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36"
+        webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15"
         webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
         webConfiguration.allowsInlinePredictions = true
         webConfiguration.allowsAirPlayForMediaPlayback = true
@@ -82,7 +81,7 @@ class MiniWebViewModel: NSObject, ObservableObject {
             return webView
         } else {
             let webConfiguration = WKWebViewConfiguration()
-            webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36"
+            webConfiguration.applicationNameForUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15"
             webConfiguration.defaultWebpagePreferences.allowsContentJavaScript = true
             webConfiguration.allowsInlinePredictions = true
             webConfiguration.allowsAirPlayForMediaPlayback = true
@@ -101,7 +100,7 @@ class MiniWebViewModel: NSObject, ObservableObject {
     func load(urlString: String) {
         guard let url = URL(string: urlString) else { return }
         var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0 (Macintosh; Apple Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/13.1 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15", forHTTPHeaderField: "User-Agent")
         webView?.load(request)
     }
     
@@ -160,16 +159,17 @@ class MiniWebViewModel: NSObject, ObservableObject {
 extension MiniWebViewModel: WKUIDelegate {
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         let url = navigationAction.request.url
+        let windowToOpenIn = appViewModel.currentlyActiveWindowId
         
         if let customAction = (webView as? AWKWebView)?.contextualMenuAction {
             switch customAction {
             case .openInNewTab:
                 guard let openFromMiniTab = appViewModel.openMiniInNewTab else { return nil }
-                openFromMiniTab(url, "window1", true)
+                openFromMiniTab(url, windowToOpenIn, true)
                 return nil
             case .openInBackground:
                 guard let openFromMiniTab = appViewModel.openMiniInNewTab else { return nil }
-                openFromMiniTab(url, "window1", false)
+                openFromMiniTab(url, windowToOpenIn, false)
                 return nil
             case .openInNewWindow:
                 guard let url, let open = appViewModel.openWindow else { return nil }
@@ -178,10 +178,11 @@ extension MiniWebViewModel: WKUIDelegate {
             }
         } else if navigationAction.targetFrame == nil {
             guard let openFromMiniTab = appViewModel.openMiniInNewTab else { return nil }
-            openFromMiniTab(url, "window1", true)
+            openFromMiniTab(url, windowToOpenIn, true)
             return nil
         } else {
             return nil
         }
     }
 }
+

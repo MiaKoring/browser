@@ -4,24 +4,63 @@
 //
 //  Created by Mia Koring on 11.03.25.
 //
+
 import SwiftUI
 import AmethystAuthenticatorCore
 
-struct TOTPSection: View, TOTPUser {
+struct TOTPSection: View {
     @Bindable var account: Account
     @Binding var deleteAction: DeleteAction?
-    @State var totpTimer: Timer?
-    @Binding var totpCode: String?
     @State var showAddVerificationCodeAlert: Bool = false
-    var editable: Bool = true
     
     var body: some View {
-        HStack {
-            Text("Verification Code")
-            Spacer()
+        Section {
+            HStack {
+                Text("Verification Code")
+                Spacer()
+                VerificationCodeView(account: account)
+            }
+            .alert("Add Verification Code", isPresented: $showAddVerificationCodeAlert) {
+                TOTPInputView() { key in
+                    account.setTOTPSecret(to: key.replacingOccurrences(of: " ", with: ""))
+                    showAddVerificationCodeAlert = false
+                }
+                Button("Cancel", role: .cancel) {
+                    showAddVerificationCodeAlert = false
+                }
+            }
+            if account.totp {
+                Button("Delete Verification Code", role: .destructive) {
+                    deleteAction = .code
+                }
+            } else {
+                Button("Setup Verification Code") {
+                    showAddVerificationCodeAlert = true
+                }
+            }
+        }
+    }
+    
+    struct TOTPInputView: View {
+        let completion: (String) -> Void
+        @State var totpSecret: String = ""
+        var body: some View {
+            TextField("Setup Key", text: $totpSecret)
+            Button("Use Setup Key") {
+                completion(totpSecret)
+            }
+            .disabled(totpSecret.isEmpty)
+        }
+    }
+    
+    struct VerificationCodeView: View {
+        let account: Account
+        @State var totpCode: String?
+        @State var totpTimer: Timer?
+        var body: some View {
             Menu {
                 Button("Copy Verification Code") {
-                    NSPasteboard.general.setString(account.getCurrentTOTPCode() ?? "", forType: .string)
+                    NSPasteboard.general.setString(totpCode?.replacingOccurrences(of: " ", with: "") ?? "", forType: .string)
                 }
             } label: {
                 Text(totpCode ?? "--- ---")
@@ -32,52 +71,37 @@ struct TOTPSection: View, TOTPUser {
             }
             .menuStyle(.button)
             .buttonStyle(.plain)
+            .onAppear() { if account.totp { handleTOTPonAppear() } }
         }
-        .alert("Add Verification Code", isPresented: $showAddVerificationCodeAlert) {
-            TOTPInputView() { key in
-                account.setTOTPSecret(to: key.replacingOccurrences(of: " ", with: ""))
-                showAddVerificationCodeAlert = false
-            }
-            Button("Cancel", role: .cancel) {
-                showAddVerificationCodeAlert = false
-            }
+        
+        func handleTOTPonAppear() {
+            self.totpCode = getCurrentTOTP()
+            scheduleNextTOTPUpdate()
         }
-        .onAppear() {
-            if account.totp {
-                handleTOTPonAppear()
-            }
-        }
-        if account.totp && editable {
-            Button("Delete Verification Code", role: .destructive) {
-                deleteAction = .code
-            }
-        } else if editable {
-            Button("Setup Verification Code") {
-                showAddVerificationCodeAlert = true
-            }
-        }
-    }
-    
-    func handleTOTPonAppear() {
-        let code = getCurrentTOTP()
-        totpCode = code
-        totpTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-            if AccountDetail.getRemainingTOTPTime() == 0 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        
+        func scheduleNextTOTPUpdate() {
+            totpTimer?.invalidate()
+            let remainingTime = AuthenticatorHelper.getRemainingTOTPTime()
+            let nextUpdateTime = max(0.1, Double(remainingTime) + 0.1)
+
+            totpTimer = Timer.scheduledTimer(withTimeInterval: nextUpdateTime, repeats: false) {_ in
+                DispatchQueue.main.async {
                     withAnimation {
-                        let code = getCurrentTOTP()
-                        totpCode = code
+                        self.totpCode = self.getCurrentTOTP()
                     }
+                    self.scheduleNextTOTPUpdate()
                 }
             }
         }
-    }
-    
-    func getCurrentTOTP() -> String {
-        guard var code  = account.getCurrentTOTPCode() else {
-            return "Error"
+        
+        func getCurrentTOTP() -> String {
+            guard var code  = account.getCurrentTOTPCode() else {
+                return "Error"
+            }
+            code.insert(" ", at: code.index(code.startIndex, offsetBy: 3))
+            return code
         }
-        code.insert(" ", at: code.index(code.startIndex, offsetBy: 3))
-        return code
     }
+
 }
+
